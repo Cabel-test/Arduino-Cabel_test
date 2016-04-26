@@ -2017,6 +2017,155 @@ void test_cabel_N1()
 	}
 	*/
 }
+void test_cabel_N2()
+{
+	myGLCD.clrScr();
+	myGLCD.print(txt_menu1_1, CENTER, 10); 
+	myGLCD.setColor(255, 255, 255);                                             // Белая окантовка
+	myGLCD.drawRoundRect (5, 200, 155, 239);
+ 	myGLCD.drawRoundRect (160, 200, 315, 239);
+	myGLCD.setColor(0, 0, 255);
+	myGLCD.fillRoundRect (6, 201, 154, 238);
+	myGLCD.fillRoundRect (161, 201, 314, 238);
+	myGLCD.setColor(255, 255, 255);  
+	myGLCD.setBackColor( 0, 0, 255);
+	myGLCD.print( txt_test_repeat, 10, 210);                                    // Повторить
+	myGLCD.print( txt_test_end, 168, 210);                                      // Завершить
+
+	byte  _size_block = i2c_eeprom_read_byte(deviceaddress,adr_memN1_2);        // Получить количество выводов проверяемого разъема 
+	byte canal_N = 0;
+	pinMode(47, INPUT);                                                         // Установить на вход  выход коммутаторов U15,U18,U22 (разъемы серии А на передней панели)
+	pinMode(46, INPUT);                                                         // Установить на вход  выход коммутаторов U13,U17,U23 (разъемы серии В на задней панели)
+	digitalWrite(47, HIGH);                                                     // Установить высокий уровень на выводе 47
+	digitalWrite(46, HIGH);                                                     // Установить высокий уровень на выводе 46
+	test_cabel_N2_run();
+
+	while (true)
+		{
+
+		if (myTouch.dataAvailable())
+			{
+			myTouch.read();
+			x=myTouch.getX();
+			y=myTouch.getY();
+		
+			if (((y>=200) && (y<=239)) && ((x>=5) && (x<=155)))                    //Повторить
+				{
+					waitForIt(5, 200, 155, 239);
+					myGLCD.setFont(BigFont);
+					test_cabel_N2_run();
+				}
+			if (((y>=200) && (y<=239)) && ((x>=160) && (x<=315)))                 //Завершить
+				{
+					waitForIt(160, 200, 315, 239);
+					myGLCD.setFont(BigFont);
+					break;
+				}
+			}
+
+		}
+
+}
+void test_cabel_N3()
+{
+	myGLCD.clrScr();
+	myGLCD.print(txt_menu1_1, CENTER, 10); 
+	myGLCD.setColor(255, 255, 255);                                             // Белая окантовка
+	myGLCD.drawRoundRect (5, 200, 155, 239);
+ 	myGLCD.drawRoundRect (160, 200, 315, 239);
+	myGLCD.setColor(0, 0, 255);
+	myGLCD.fillRoundRect (6, 201, 154, 238);
+	myGLCD.fillRoundRect (161, 201, 314, 238);
+	myGLCD.setColor(255, 255, 255);  
+	myGLCD.setBackColor( 0, 0, 255);
+	myGLCD.print( txt_test_repeat, 10, 210);                                    // Повторить
+	myGLCD.print( txt_test_end, 168, 210);                                      // Завершить
+
+	byte  _size_block = i2c_eeprom_read_byte(deviceaddress,adr_memN1_3);        // Получить количество выводов проверяемого разъема 
+	byte canal_N = 0;
+	pinMode(47, INPUT);                                                         // Установить на вход  выход коммутаторов U15,U18,U22 (разъемы серии А на передней панели)
+	pinMode(46, INPUT);                                                         // Установить на вход  выход коммутаторов U13,U17,U23 (разъемы серии В на задней панели)
+	digitalWrite(47, HIGH);                                                     // Установить высокий уровень на выводе 47
+	digitalWrite(46, HIGH);                                                     // Установить высокий уровень на выводе 46
+	test_cabel_N3_run();
+
+	while (true)
+		{
+
+		if (myTouch.dataAvailable())
+			{
+			myTouch.read();
+			x=myTouch.getX();
+			y=myTouch.getY();
+		
+			if (((y>=200) && (y<=239)) && ((x>=5) && (x<=155)))                    //Повторить
+				{
+					waitForIt(5, 200, 155, 239);
+					myGLCD.setFont(BigFont);
+					test_cabel_N3_run();
+				}
+			if (((y>=200) && (y<=239)) && ((x>=160) && (x<=315)))                 //Завершить
+				{
+					waitForIt(160, 200, 315, 239);
+					myGLCD.setFont(BigFont);
+					break;
+				}
+			}
+
+		}
+
+
+}
+void test_cabel_N4()
+{
+	myGLCD.clrScr();
+	myGLCD.print(txt_menu1_1, CENTER, 10); 
+	myGLCD.setColor(255, 255, 255);                                             // Белая окантовка
+	myGLCD.drawRoundRect (5, 200, 155, 239);
+ 	myGLCD.drawRoundRect (160, 200, 315, 239);
+	myGLCD.setColor(0, 0, 255);
+	myGLCD.fillRoundRect (6, 201, 154, 238);
+	myGLCD.fillRoundRect (161, 201, 314, 238);
+	myGLCD.setColor(255, 255, 255);  
+	myGLCD.setBackColor( 0, 0, 255);
+	myGLCD.print( txt_test_repeat, 10, 210);                                    // Повторить
+	myGLCD.print( txt_test_end, 168, 210);                                      // Завершить
+
+	byte  _size_block = i2c_eeprom_read_byte(deviceaddress,adr_memN1_4);        // Получить количество выводов проверяемого разъема 
+	byte canal_N = 0;
+	pinMode(47, INPUT);                                                         // Установить на вход  выход коммутаторов U15,U18,U22 (разъемы серии А на передней панели)
+	pinMode(46, INPUT);                                                         // Установить на вход  выход коммутаторов U13,U17,U23 (разъемы серии В на задней панели)
+	digitalWrite(47, HIGH);                                                     // Установить высокий уровень на выводе 47
+	digitalWrite(46, HIGH);                                                     // Установить высокий уровень на выводе 46
+	test_cabel_N4_run();
+
+	while (true)
+		{
+
+		if (myTouch.dataAvailable())
+			{
+			myTouch.read();
+			x=myTouch.getX();
+			y=myTouch.getY();
+		
+			if (((y>=200) && (y<=239)) && ((x>=5) && (x<=155)))                    //Повторить
+				{
+					waitForIt(5, 200, 155, 239);
+					myGLCD.setFont(BigFont);
+					test_cabel_N4_run();
+				}
+			if (((y>=200) && (y<=239)) && ((x>=160) && (x<=315)))                 //Завершить
+				{
+					waitForIt(160, 200, 315, 239);
+					myGLCD.setFont(BigFont);
+					break;
+				}
+			}
+
+		}
+
+}
+
 void test_cabel_N1_run()
 {
 	byte  _size_block = i2c_eeprom_read_byte(deviceaddress,adr_memN1_1);
@@ -2034,7 +2183,7 @@ void test_cabel_N1_run()
 		 Serial.println(i2c_eeprom_read_byte(deviceaddress,adr_memN1_1 + x_mem+_size_block));
 	}
 }
-void test_cabel_N2()
+void test_cabel_N2_run()
 {
     byte  _size_block = i2c_eeprom_read_byte(deviceaddress,adr_memN1_2);
 	byte canal_N = 0;
@@ -2051,7 +2200,7 @@ void test_cabel_N2()
 		 Serial.println(i2c_eeprom_read_byte(deviceaddress,adr_memN1_2 + x_mem+_size_block));
 	}
 }
-void test_cabel_N3()
+void test_cabel_N3_run()
 {
     byte  _size_block = i2c_eeprom_read_byte(deviceaddress,adr_memN1_3);
 	byte canal_N = 0;
@@ -2068,7 +2217,7 @@ void test_cabel_N3()
 		 Serial.println(i2c_eeprom_read_byte(deviceaddress,adr_memN1_3 + x_mem+_size_block));
 	}
 }
-void test_cabel_N4()
+void test_cabel_N4_run()
 {
 	byte  _size_block = i2c_eeprom_read_byte(deviceaddress,adr_memN1_4);
 	byte canal_N = 0;
