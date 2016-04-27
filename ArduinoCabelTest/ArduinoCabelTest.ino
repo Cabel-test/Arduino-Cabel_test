@@ -193,8 +193,8 @@ int but1, but2, but3, but4, but5, but6, but7, but8, but9, but10, butX, butY, but
  char  txt_test_all_exit2[]     = "\xA3""p""\x9D\x9F""oc""\xA2\x9D""c""\xAC"" ""\x9F"" ""\xAD\x9F""pa""\xA2""y";  // прикоснись к экрану
  char  txt_test_end[]           = "\x85""a""\x97""ep""\xA8\x9D\xA4\xAC";                                    // Завершить
  char  txt_test_repeat[]        = "\x89""o""\x97\xA4""op""\x9D\xA4\xAC";                                    //Повторить
-
-
+ char  txt_error_connect1[]     = "O""\x8E\x86\x80""K""\x80";                                                 //Ошибка
+ char  txt_error_connect2[]     = "\xA3""o""\x99\x9F\xA0\xAE\xA7""e""\xA2\x9D\xAF"" ""\x9F""a""\x96""e""\xA0\xAF";  //подключения кабеля
 
 
 
@@ -1921,6 +1921,53 @@ void mem_byte_trans_savePC()                                      //  Получить т
 	delay(200);
 }
 
+int search_cabel(int sc)
+{
+	pinMode(46, OUTPUT);                                                        // Установить на выход выход коммутаторов U13,U17,U23 (разъемы серии В на задней панели)
+	digitalWrite(46, LOW);                                                 // Установить контрольный уровень на коммутаторе
+	pinMode(47, INPUT);                                                         // Установить на вход  выход коммутаторов U15,U18,U22 (разъемы серии А на передней панели)
+	digitalWrite(47, HIGH);                                                     // Установить высокий уровень на выводе 47
+ 	int n_connect = 0;
+	for (int i = 1; i < 42;i++)
+	{
+		set_komm_mcp('A', i,'O');
+		set_komm_mcp('B', i,'O');
+		delay(10);
+		if (digitalRead(47) == LOW ) 
+			{
+			if (i == sc)
+				{
+					switch (i) 
+					{
+					case 1:
+					  n_connect = 2;
+					  Serial.println("Connector N2");
+					  break;
+					case 39:
+					  n_connect = 3;
+					  Serial.println("Connector N3");
+					  break;
+					case 40:
+					  n_connect = 1;
+					  Serial.println("Connector N1");
+					  break;
+					case 41:
+					  n_connect = 4;
+					  Serial.println("Connector N4");
+					  break;
+				  }
+
+				}
+			}
+		else
+		{
+         //  Serial.println("Connector is not detected");
+		}
+	}
+
+	if(n_connect ==0) Serial.println("Connector is not detected");
+	return n_connect;
+}
 void test_cabel_N1()
 {
 	myGLCD.clrScr();
@@ -1935,87 +1982,44 @@ void test_cabel_N1()
 	myGLCD.setBackColor( 0, 0, 255);
 	myGLCD.print( txt_test_repeat, 10, 210);                                    // Повторить
 	myGLCD.print( txt_test_end, 168, 210);                                      // Завершить
-
-	byte  _size_block = i2c_eeprom_read_byte(deviceaddress,adr_memN1_1);        // Получить количество выводов проверяемого разъема 
-	byte canal_N = 0;
-	pinMode(47, INPUT);                                                         // Установить на вход  выход коммутаторов U15,U18,U22 (разъемы серии А на передней панели)
-	pinMode(46, INPUT);                                                         // Установить на вход  выход коммутаторов U13,U17,U23 (разъемы серии В на задней панели)
-	digitalWrite(47, HIGH);                                                     // Установить высокий уровень на выводе 47
-	digitalWrite(46, HIGH);                                                     // Установить высокий уровень на выводе 46
-	test_cabel_N1_run();
-
-	while (true)
-		{
-
-		if (myTouch.dataAvailable())
-			{
-			myTouch.read();
-			x=myTouch.getX();
-			y=myTouch.getY();
-		
-			if (((y>=200) && (y<=239)) && ((x>=5) && (x<=155)))                    //Повторить
-				{
-					waitForIt(5, 200, 155, 239);
-					myGLCD.setFont(BigFont);
-					test_cabel_N1_run();
-				}
-			if (((y>=200) && (y<=239)) && ((x>=160) && (x<=315)))                 //Завершить
-				{
-					waitForIt(160, 200, 315, 239);
-					myGLCD.setFont(BigFont);
-					break;
-				}
-			}
-
-		}
-
-	/*
-
-	for (unsigned int x_mem = 1;x_mem < _size_block+1;x_mem++)                  // Проверить состояние выводов проверяемого разъема
+	myGLCD.setBackColor( 0, 0, 0);
+	if (search_cabel(40)== 1)
 	{
-		 canal_N = i2c_eeprom_read_byte(deviceaddress,adr_memN1_1 + x_mem);     // Получить номер канала из таблицы в памяти
-		 if (canal_N == 1) canal_N = 40;                                        // 40 канал для проверки номера проверяемого разъема
-		 set_komm_mcp('A', canal_N,'O');                                        // Переключить коммутатор разъемов серии "А" на вход
-		//// digitalWrite(46, HIGH);      
-		// // digitalWrite(46, LOW);    // 
-		// for (unsigned int x_mem1 = 1;x_mem1 < _size_block+1;x_mem1++)
-	 //    {
-		//	 canal_N = i2c_eeprom_read_byte(deviceaddress,adr_memN1_1 + x_mem1 + _size_block);
-			 set_komm_mcp('B', canal_N,'O');                                    // Переключить коммутатор разъемов серии "В" на вход
-		//	 if (digitalRead(47) == LOW)
-		//	 {
-		//		 Serial.print(" - ");
-		//		 Serial.println(canal_N);
-		//	 }
+		test_cabel_N1_run();
 
+		while (true)
+			{
 
-		// }
-			  delay(10);
-		  if (digitalRead(47) == LOW) 
-			 {
-				 Serial.print("A - ");
-				 Serial.println(canal_N);
-			 }
-		  	  if (digitalRead(46) == LOW) 
-			 {
-				 Serial.print("B - ");
-				 Serial.println(canal_N);
-			 }
+			if (myTouch.dataAvailable())
+				{
+				myTouch.read();
+				x=myTouch.getX();
+				y=myTouch.getY();
+		
+				if (((y>=200) && (y<=239)) && ((x>=5) && (x<=155)))                    //Повторить
+					{
+						waitForIt(5, 200, 155, 239);
+						myGLCD.setFont(BigFont);
+						test_cabel_N1_run();
+					}
+				if (((y>=200) && (y<=239)) && ((x>=160) && (x<=315)))                 //Завершить
+					{
+						waitForIt(160, 200, 315, 239);
+						myGLCD.setFont(BigFont);
+						break;
+					}
+				}
 
-			 delay(10);
-
-	   //  if (digitalRead(46) == 0); 
-			 //{
-				// Serial.print("B - ");
-				// Serial.println(canal_N);
-			 //}
-
-
-		// Serial.print(i2c_eeprom_read_byte(deviceaddress,adr_memN1_1 + x_mem));
-		// Serial.print(" - ");
-		// Serial.println(i2c_eeprom_read_byte(deviceaddress,adr_memN1_1 + x_mem+_size_block));
+			}
+	 }
+	else
+	{
+      Serial.println("Cable connection error");
+	  myGLCD.setColor(VGA_RED);  
+	  myGLCD.print(txt_error_connect1, CENTER, 80); 
+	  myGLCD.print(txt_error_connect2, CENTER, 110); 
+	  delay(3000);
 	}
-	*/
 }
 void test_cabel_N2()
 {
@@ -2168,19 +2172,80 @@ void test_cabel_N4()
 
 void test_cabel_N1_run()
 {
-	byte  _size_block = i2c_eeprom_read_byte(deviceaddress,adr_memN1_1);
+	byte  _size_block = i2c_eeprom_read_byte(deviceaddress,adr_memN1_1);        // Получить количество выводов проверяемого разъема 
 	byte canal_N = 0;
-    Serial.println(_size_block);
+	pinMode(46, OUTPUT);                                                        // Установить на выход выход коммутаторов U13,U17,U23 (разъемы серии В на задней панели)
+	pinMode(47, INPUT);                                                         // Установить на вход  выход коммутаторов U15,U18,U22 (разъемы серии А на передней панели)
+	digitalWrite(47, HIGH);                                                     // Установить высокий уровень на выводе 47
+	unsigned int x_A = 1;
+	unsigned int x_B = 1;
 
-	for (unsigned int x_mem = 1;x_mem < _size_block+1;x_mem++)
+	for (x_A = 1;x_A < _size_block+1;x_A++)                                     // Последовательное чтение контактов разьемов.
 	{
-		 canal_N = i2c_eeprom_read_byte(deviceaddress,adr_memN1_1 + x_mem);
-		 set_komm_mcp('A', canal_N,'O');
-		 canal_N = i2c_eeprom_read_byte(deviceaddress,adr_memN1_1 + x_mem + _size_block);
-		 set_komm_mcp('B', canal_N,'O');
-		 Serial.print(i2c_eeprom_read_byte(deviceaddress,adr_memN1_1 + x_mem));
-		 Serial.print(" - ");
-		 Serial.println(i2c_eeprom_read_byte(deviceaddress,adr_memN1_1 + x_mem+_size_block));
+		 digitalWrite(46, LOW);                                                 // Установить контрольный уровень на коммутаторе
+         delay(100);
+		 canal_N = i2c_eeprom_read_byte(deviceaddress,adr_memN1_1 + x_A);
+
+		 if (canal_N == 1)                                                      // 40 канал для проверки номера проверяемого разъема
+			{
+				set_komm_mcp('A', 40,'O');                                      // Установить вход коммутатора
+			}
+		else
+			{
+	    		set_komm_mcp('A', canal_N,'O');                                 // Установить вход коммутатора
+			}
+
+		 //Serial.print(canal_N);
+		 //Serial.print(" - ");
+
+		 // Здесь установить контрольный сигнал на вывода "А"
+
+
+		 // Последовательно проверить все вывода разьема "В"
+		 for (x_B = 1;x_B < _size_block+1;x_B++)                                    // Последовательное чтение контактов разьемов.
+			{
+				 canal_N = i2c_eeprom_read_byte(deviceaddress,adr_memN1_1 + x_B + _size_block);
+
+				 if (canal_N == 1)                                                             // 40 канал для проверки номера проверяемого разъема
+				 {
+					 set_komm_mcp('B', 40,'O');                                                // Установить вход коммутатора
+				 }
+				 else
+				 {
+	    			 set_komm_mcp('B', canal_N,'O');                                           // Установить вход коммутатора
+				 }
+
+				 if (digitalRead(47) == LOW && canal_N == x_B) 
+					 {
+						// if (canal_N == 1) 		Serial.println(" Konnektor N1");
+						 Serial.print(x_A);
+		                 Serial.print(" - ");
+						 Serial.print(canal_N);
+						 Serial.println(" - Pass");
+					 }
+
+				 if (x_A == canal_N)
+				 {
+					if (digitalRead(47) != LOW) 
+					 {
+						 Serial.print(x_A);
+		                 Serial.print(" - ");
+						 Serial.print(canal_N);
+						 Serial.println(" - False");
+					 }
+
+				 }
+
+				 // Здесь проверить на совпадение
+
+		    }
+
+
+		 
+		 //Serial.print(i2c_eeprom_read_byte(deviceaddress,adr_memN1_1 + x_A));
+		 //Serial.print(" - ");
+		 //Serial.println(i2c_eeprom_read_byte(deviceaddress,adr_memN1_1 + x_A +_size_block));    // 
+
 	}
 }
 void test_cabel_N2_run()
@@ -3357,6 +3422,7 @@ void setup()
 	myGLCD.clrScr();
 	myGLCD.setFont(BigFont);
 	myTouch.InitTouch();
+	delay(1000);
 	//myTouch.setPrecision(PREC_MEDIUM);
 	myTouch.setPrecision(PREC_HI);
 	//myTouch.setPrecision(PREC_EXTREME);

@@ -129,6 +129,7 @@ void set_mcp_byte_2a(int set_byte);
 void set_mcp_byte_2b(int set_byte);
 void mem_byte_trans_readPC();
 void mem_byte_trans_savePC();
+int search_cabel(int sc);
 void test_cabel_N1();
 void test_cabel_N2();
 void test_cabel_N3();
