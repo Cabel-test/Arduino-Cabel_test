@@ -10,7 +10,7 @@
 #include <modbusDevice.h>
 #include <modbusRegBank.h>
 #include <modbusSlave.h>
-#include "MCP23017.h"
+#include "MCP23017.h"   
 #include <avr/pgmspace.h>
 #include <avr/wdt.h>
 #include <stdlib.h> // div, div_t
@@ -19,8 +19,8 @@
 #include <UTFT_Buttons.h>
 #include <Arduino.h>
 
-MCP23017 mcp_Out1;                                 // Назначение портов расширения MCP23017  4 A - Out, B - Out
-MCP23017 mcp_Out2;                                 // Назначение портов расширения MCP23017  6 A - Out, B - Out
+MCP23017 mcp_Out1;                                       // Назначение портов расширения MCP23017  4 A - Out, B - Out
+MCP23017 mcp_Out2;                                       // Назначение портов расширения MCP23017  6 A - Out, B - Out
 
 // Define various ADC prescaler
 const unsigned char PS_16 = (1 << ADPS2);
@@ -34,44 +34,37 @@ modbusDevice regBank;
 modbusSlave slave;
 
 //+++++++++++++++++++++++ Настройка электронного резистора +++++++++++++++++++++++++++++++++++++
-  byte resistance        = 0x00;                     // Сопротивление 0x00..0xFF - 0Ом..100кОм
+  byte resistance        = 0x00;                        // Сопротивление 0x00..0xFF - 0Ом..100кОм
 
 //+++++++++++++++++++++++++++++ Внешняя память +++++++++++++++++++++++++++++++++++++++
-int deviceaddress        = 80;                     // Адрес микросхемы памяти
-unsigned int eeaddress   =  0;                     // Адрес ячейки памяти
-byte hi;                                           // Старший байт для преобразования числа
-byte low;                                          // Младший байт для преобразования числа
+int deviceaddress        = 80;                          // Адрес микросхемы памяти
+unsigned int eeaddress   =  0;                          // Адрес ячейки памяти
+byte hi;                                                // Старший байт для преобразования числа
+byte low;                                               // Младший байт для преобразования числа
 
 //********************* Настройка монитора ***********************************
+//UTFT        myGLCD(ITDB32S,38,39,40,41);              // Дисплей 3.2"
+UTFT        myGLCD(ITDB24E_8,38,39,40,41);              // Дисплей 2.4" !! Внимание! Изменены настройки UTouchCD.h
+UTouch        myTouch(6,5,4,3,2);                       // Standard Arduino Mega/Due shield            : 6,5,4,3,2
+UTFT_Buttons  myButtons(&myGLCD, &myTouch);             // Finally we set up UTFT_Buttons :)
 
-// Standard Arduino Mega/Due shield            : <display model>,38,39,40,41
-//UTFT        myGLCD(ITDB32S,38,39,40,41);     // Дисплей 3.2"
-UTFT        myGLCD(ITDB24E_8,38,39,40,41);     // Дисплей 2.4" !! Внимание! Изменены настройки UTouchCD.h
-
-
-// Standard Arduino Mega/Due shield            : 6,5,4,3,2
-UTouch        myTouch(6,5,4,3,2);
-// Finally we set up UTFT_Buttons :)
-UTFT_Buttons  myButtons(&myGLCD, &myTouch);
-
-boolean default_colors = true;
+boolean default_colors = true;                          // 
 uint8_t menu_redraw_required = 0;
-
-// Declare which fonts we will be using
-extern uint8_t SmallFont[];
+                                                        // Declare which fonts we will be using
+extern uint8_t SmallFont[];                            
 extern uint8_t BigFont[];
 extern uint8_t Dingbats1_XL[];
 extern uint8_t SmallSymbolFont[];
 
 //+++++++++++++++++++++++++++ Настройка часов +++++++++++++++++++++++++++++++
-uint8_t second = 0;                      //Initialization time
+uint8_t second = 0;                                    //Initialization time
 uint8_t minute = 10;
 uint8_t hour   = 10;
 uint8_t dow    = 2;
 uint8_t day    = 15;
 uint8_t month  = 3;
 uint16_t year  = 16;
-RTC_DS1307 RTC;                         // define the Real Time Clock object
+RTC_DS1307 RTC;                                       // define the Real Time Clock object
 
 int clockCenterX               = 119;
 int clockCenterY               = 119;
@@ -79,24 +72,23 @@ int oldsec                     = 0;
 const char* str[]              = {"MON","TUE","WED","THU","FRI","SAT","SUN"};
 const char* str1[]             = {"Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"};
 const char* str_mon[]          = {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
-unsigned long wait_time        = 0;         // Время простоя прибора
-unsigned long wait_time_Old    = 0;         // Время простоя прибора
-int time_minute                = 5;         // Время простоя прибора
+unsigned long wait_time        = 0;                               // Время простоя прибора
+unsigned long wait_time_Old    = 0;                               // Время простоя прибора
+int time_minute                = 5;                               // Время простоя прибора
 //------------------------------------------------------------------------------
 
-const unsigned int adr_control_command    PROGMEM       = 40001; // Адрес передачи комманд на выполнение 
-const unsigned int adr_reg_count_err      PROGMEM       = 40002; // Адрес счетчика всех ошибок
+const unsigned int adr_control_command    PROGMEM       = 40001;  // Адрес передачи комманд на выполнение 
+const unsigned int adr_reg_count_err      PROGMEM       = 40002;  // Адрес счетчика всех ошибок
 //-------------------------------------------------------------------------------------------------------
 
 //++++++++++++++++++++++++++++ Переменные для цифровой клавиатуры +++++++++++++++++++++++++++++
 int x, y, z;
-char stCurrent[20]    ="";         // Переменная хранения введенной строки 
-int stCurrentLen      =0;          // Переменная хранения длины введенной строки 
-int stCurrentLen1     =0;          // Переменная временного хранения длины введенной строки  
-char stLast[20]       ="";         // Данные в введенной строке строке.
-int ret               = 0;         // Признак прерывания операции
+char stCurrent[20]    ="";                                        // Переменная хранения введенной строки 
+int stCurrentLen      =0;                                         // Переменная хранения длины введенной строки 
+int stCurrentLen1     =0;                                         // Переменная временного хранения длины введенной строки  
+char stLast[20]       ="";                                        // Данные в введенной строке строке.
+int ret               = 0;                                        // Признак прерывания операции
 //-------------------------------------------------------------------------------------------------
-
 
 //++++++++++++++++++++++++++ Настройки осциллографа  +++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -106,7 +98,7 @@ int x_osc,y_osc;
 int mode = 0;
 int dTime = 1;
 int tmode = 1;
-int mode1 = 0;             //Переключение чувствительности
+int mode1 = 0;                                                     //Переключение чувствительности
 int Trigger = 0;
 int MinAnalog = 500;
 int MinAnalog0 = 500;
@@ -120,7 +112,7 @@ float StartSample = 0;
 float EndSample = 0;
 int t_in_mode = 0;
 bool strob_start = true;
-// Analog pin number list for a sample. 
+
 int Channel_x = 0;
 int Channel_trig = 0;
 bool Channel0 = true;
