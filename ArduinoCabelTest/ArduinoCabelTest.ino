@@ -2711,7 +2711,7 @@ void test_cabel_N3_run()
 						if (x_B != canal_N_err)                                      // Проверяемое соединение не записано в таблицу
 						{
 							                                                         // Проверим дополнительную 4 таблицу
-							int canal_N_err = i2c_eeprom_read_byte(deviceaddress,adr_memN3_1 + x_A +(_size_block*3)); // Получить из таблицы номер входа коммутатора.
+							int canal_N_err = i2c_eeprom_read_byte(deviceaddress,adr_memN1_3 + x_A +(_size_block*3)); // Получить из таблицы номер входа коммутатора.
 							if (x_B != canal_N_err)                                  // Проверяемое соединение не записано в таблицу
 							{
 								count_error++;
