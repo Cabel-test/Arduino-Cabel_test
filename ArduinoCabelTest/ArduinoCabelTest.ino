@@ -44,7 +44,7 @@ byte low;                                               // Младший байт для прео
 
 //********************* Настройка монитора ***********************************
 //UTFT        myGLCD(ITDB32S,38,39,40,41);              // Дисплей 3.2"
-UTFT        myGLCD(ITDB24E_8,38,39,40,41);              // Дисплей 2.4" !! Внимание! Изменены настройки UTouchCD.h
+UTFT          myGLCD(ITDB24E_8,38,39,40,41);            // Дисплей 2.4" !! Внимание! Изменены настройки UTouchCD.h
 UTouch        myTouch(6,5,4,3,2);                       // Standard Arduino Mega/Due shield            : 6,5,4,3,2
 UTFT_Buttons  myButtons(&myGLCD, &myTouch);             // Finally we set up UTFT_Buttons :)
 
