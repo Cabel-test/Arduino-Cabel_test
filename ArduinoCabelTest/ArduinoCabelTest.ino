@@ -2252,23 +2252,21 @@ void test_cabel_N1_run()
 				if (x_A == x_B)    
 				{
 					myGLCD.printNumI(x_A, 30, 40); 
-					myGLCD.print("<->", 66, 40); 
+					if(ware_on == 1)myGLCD.print("<->", 66, 40); 
+					else myGLCD.print("<X>", 66, 40); 
 					myGLCD.printNumI(canal_N, 130, 40); 
 					if (digitalRead(47) == LOW && ware_on == 1)
 					{
 						myGLCD.print(" - Pass", 170, 40);
-						myGLCD.print("*", 290, 40); 
 					}
 					else
 					{
 						if (digitalRead(47) != LOW && ware_on == 0)                  // Должен быть соединен
 		                {
 							myGLCD.print(" - Pass", 170, 40);
-							myGLCD.print("X", 290, 40); 
 						}
 						else
 						{
-							myGLCD.print("X", 290, 40); 
 							count_error++;
 							myGLCD.print(txt_error_connect4, 50, 65); 
 							myGLCD.printNumI(count_error, 190, 65); 
@@ -2440,23 +2438,21 @@ void test_cabel_N2_run()
 				if (x_A == x_B)    
 				{
 					myGLCD.printNumI(x_A, 30, 40); 
-					myGLCD.print("<->", 66, 40); 
+					if(ware_on == 1)myGLCD.print("<->", 66, 40); 
+					else myGLCD.print("<X>", 66, 40); 
 					myGLCD.printNumI(canal_N, 130, 40); 
 					if (digitalRead(47) == LOW && ware_on == 1)
 					{
 						myGLCD.print(" - Pass", 170, 40);
-						myGLCD.print("*", 290, 40); 
 					}
 					else
 					{
 						if (digitalRead(47) != LOW && ware_on == 0)                  // Должен быть соединен
 		                {
 							myGLCD.print(" - Pass", 170, 40);
-							myGLCD.print("X", 290, 40); 
 						}
 						else
 						{
-							myGLCD.print("X", 290, 40); 
 							count_error++;
 							myGLCD.print(txt_error_connect4, 50, 65); 
 							myGLCD.printNumI(count_error, 190, 65); 
@@ -2631,23 +2627,21 @@ void test_cabel_N3_run()
 				if (x_A == x_B)    
 				{
 					myGLCD.printNumI(x_A, 30, 40); 
-					myGLCD.print("<->", 66, 40); 
+					if(ware_on == 1)myGLCD.print("<->", 66, 40); 
+					else myGLCD.print("<X>", 66, 40); 
 					myGLCD.printNumI(canal_N, 130, 40); 
 					if (digitalRead(47) == LOW && ware_on == 1)
 					{
 						myGLCD.print(" - Pass", 170, 40);
-						myGLCD.print("*", 290, 40); 
 					}
 					else
 					{
 						if (digitalRead(47) != LOW && ware_on == 0)                  // Должен быть соединен
 		                {
 							myGLCD.print(" - Pass", 170, 40);
-							myGLCD.print("X", 290, 40); 
 						}
 						else
 						{
-							myGLCD.print("X", 290, 40); 
 							count_error++;
 							myGLCD.print(txt_error_connect4, 50, 65); 
 							myGLCD.printNumI(count_error, 190, 65); 
@@ -2819,23 +2813,21 @@ void test_cabel_N4_run()
 				if (x_A == x_B)    
 				{
 					myGLCD.printNumI(x_A, 30, 40); 
-					myGLCD.print("<->", 66, 40); 
+					if(ware_on == 1)myGLCD.print("<->", 66, 40); 
+					else myGLCD.print("<X>", 66, 40); 
 					myGLCD.printNumI(canal_N, 130, 40); 
 					if (digitalRead(47) == LOW && ware_on == 1)
 					{
 						myGLCD.print(" - Pass", 170, 40);
-						myGLCD.print("*", 290, 40); 
 					}
 					else
 					{
 						if (digitalRead(47) != LOW && ware_on == 0)                  // Должен быть соединен
 		                {
 							myGLCD.print(" - Pass", 170, 40);
-							myGLCD.print("X", 290, 40); 
 						}
 						else
 						{
-							myGLCD.print("X", 290, 40); 
 							count_error++;
 							myGLCD.print(txt_error_connect4, 50, 65); 
 							myGLCD.printNumI(count_error, 190, 65); 
