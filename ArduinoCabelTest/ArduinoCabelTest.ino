@@ -193,6 +193,7 @@ int but1, but2, but3, but4, but5, but6, but7, but8, but9, but10, butX, butY, but
  char  txt__connect2[]          = "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N2";    // Обнаружен кабель N2
  char  txt__connect3[]          = "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N3";    // Обнаружен кабель N3
  char  txt__connect4[]          = "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N4";    // Обнаружен кабель N4
+ char  txt__test_end[]          = "TECT ""\x85""A""KOH""\x8D""EH";                                         // ТЕСТ ЗАКОНЧЕН
 
 
  byte   temp_buffer[40] ;                                                                                                // Буфер хранения временной информации
@@ -2373,6 +2374,7 @@ void test_cabel_N1_run()
 				} 	//----------------------- Конец проверки на замыкание -----------------------------------------
 			}
 		}
+    if(count_error == 0) myGLCD.print(txt__test_end, CENTER, 120);
 	}
 	else
 	{
@@ -2561,6 +2563,7 @@ void test_cabel_N2_run()
 			//----------------------- Конец проверки на замыкание -----------------------------------------
 			}
 		}
+    if(count_error == 0) myGLCD.print(txt__test_end, CENTER, 120);
 	}
 	else
 	{
@@ -2748,6 +2751,7 @@ void test_cabel_N3_run()
 				}	//----------------------- Конец проверки на замыкание -----------------------------------------
 			}
 		}
+    if(count_error == 0) myGLCD.print(txt__test_end, CENTER, 120);
 	}
 	else
 	{
@@ -2934,6 +2938,7 @@ void test_cabel_N4_run()
 				}  //----------------------- Конец проверки на замыкание -----------------------------------------
 			}
 		}
+    if(count_error == 0) myGLCD.print(txt__test_end, CENTER, 120);
 	}
 	else
 	{
