@@ -139,61 +139,100 @@ int but1, but2, but3, but4, but5, but6, but7, but8, but9, but10, butX, butY, but
  //------------------------------------------------------------------------------------------------------------------
  // Назначение переменных для хранения текстов
 
- char  txt_menu1_1[]            = "Tec\xA4 ""\x9F""a\x96""e\xA0\xAF N1";                                    // Тест кабель N 1
- char  txt_menu1_2[]            = "Tec\xA4 ""\x9F""a\x96""e\xA0\xAF N2";                                    // Тест кабель N 2
- char  txt_menu1_3[]            = "Tec\xA4 ""\x9F""a\x96""e\xA0\xAF N3";                                    // Тест кабель N 3
- char  txt_menu1_4[]            = "Tec\xA4 ""\x9F""a\x96""e\xA0\xAF N4";                                    // Тест кабель N 4
- char  txt_menu2_1[]            = "menu2_1";                                                                // 
- char  txt_menu2_2[]            = "menu2_2";                                                                //
- char  txt_menu2_3[]            = "menu2_3";                                                                //
- char  txt_menu2_4[]            = "Tec""\xA4"" pa""\x9C\xAA""e""\xA1""o""\x97";                             // Тест разъемов                                   //
- char  txt_menu3_1[]            = "Ta""\x96\xA0\x9D\xA6""a coe""\x99"".";                                   // Таблица соед.
- char  txt_menu3_2[]            = "Pe""\x99""a""\x9F\xA4"". ""\xA4""a""\x96\xA0\x9D\xA6";                   // Редакт. таблиц
- char  txt_menu3_3[]            = "\x85""a""\x98""py""\x9C"". y""\xA1""o""\xA0\xA7"".";                     // Загруз. умолч.
- char  txt_menu3_4[]            = "Bpe""\xA1\xAF"" ""\xA3""poc""\xA4""o""\xAF";                             // Время простоя
- char  txt_menu4_1[]            = "C\x9D\xA2yco\x9D\x99""a";                                                // Синусоида
- char  txt_menu4_2[]            = "\x89\x9D\xA0oo\x96pa\x9C\xA2\xAB\x9E";                                   // Пилообразный
- char  txt_menu4_3[]            = "Tpey\x98o\xA0\xAC\xA2\xAB\x9E";                                          // Треугольный
- char  txt_menu4_4[]            = "\x89p\xAF\xA1oy\x98o\xA0\xAC\xA2\xAB\x9E";                               // Прямоугольный
- char  txt_menu5_1[]            = " ";                                                                      // 
- char  txt_menu5_2[]            = " ";                                                                      //
- char  txt_menu5_3[]            = " ";                                                                      // 
- char  txt_menu5_4[]            = " ";                                                                      // 
- char  txt_pass_ok[]            = "Tec\xA4 Pass!";                                                          // Тест Pass!
- char  txt_pass_no[]            = "Tec\xA4 NO!";                                                            // Тест NO!
- char  txt_info1[]              = "Tec\xA4 ""\x9F""a\x96""e\xA0""e\x9E";                                    // Тест кабелей
- char  txt_info2[]              = "Tec\xA4 \x96\xA0o\x9F""a \x98""ap\xA2\x9D\xA4yp";                        // Тест блока гарнитур
- char  txt_info3[]              = "Hac\xA4po\x9E\x9F""a c\x9D""c\xA4""e\xA1\xAB";                           // Настройка системы
- char  txt_info4[]              = "\x81""e\xA2""epa\xA4op c\x9D\x98\xA2""a\xA0o\x97";                       // Генератор сигналов
- char  txt_info5[]              = "Oc\xA6\x9D\xA0\xA0o\x98pa\xA5";                                          // Осциллограф
- char  txt_botton_clear[]       = "C\x96poc";                                                               // Сброс
- char  txt_botton_otmena[]      = "O""\xA4\xA1""e""\xA2""a";                                                // Отмена
- char  txt_system_clear1[]      = "B\xA2\x9D\xA1""a\xA2\x9D""e!";                                           // Внимание !  
- char  txt_system_clear2[]      = "Bc\xAF \xA1\xA2\xA5op\xA1""a""\xA6\xA1\xAF \x96y\x99""e\xA4";            // Вся информация будет 
- char  txt_system_clear3[]      = "\x8A\x82""A""\x88""EHA!";                                                // УДАЛЕНА 
- char  txt9[6]                  = "B\x97o\x99";                                                             // Ввод
- char  txt10[8]                 = "O""\xA4\xA1""e""\xA2""a";                                                // "Отмена"
- char  txt_time_wait[]          = "\xA1\x9D\xA2"".""\x97""pe""\xA1\xAF"" ""\xA3""poc""\xA4""o""\xAF";       //  мин. время простоя
- char  txt_osc_menu1[]          = "Oc\xA6\x9D\xA0\xA0o\x98pa\xA5";                                          //
- char  txt_osc_menu2[]          = "";                                    //
- char  txt_osc_menu3[]          = "";                                                  //
- char  txt_osc_menu4[]          = "";           
- char  txt_info29[]             = "Stop->PUSH Disp"; 
- char  txt_info30[]             = "\x89o\x97\xA4op."; 
- char  txt_test_all[]           = "Tec""\xA4"" ""\x97""cex pa""\x9C\xAA""e""\xA1""o""\x97";                 // Тест всех разъемов
- char  txt_test_all_exit1[]     = "\x82\xA0\xAF"" ""\x97\xAB""xo""\x99""a";                                 // Для выхода
- char  txt_test_all_exit2[]     = "\xA3""p""\x9D\x9F""oc""\xA2\x9D""c""\xAC"" ""\x9F"" ""\xAD\x9F""pa""\xA2""y";  // прикоснись к экрану
- char  txt_test_end[]           = "\x85""a""\x97""ep""\xA8\x9D\xA4\xAC";                                    // Завершить
- char  txt_test_repeat[]        = "\x89""o""\x97\xA4""op""\x9D\xA4\xAC";                                    // Повторить
- char  txt_error_connect1[]     = "O""\x8E\x86\x80""KA";                                                    // Ошибка
- char  txt_error_connect2[]     = "\xA3""o""\x99\x9F\xA0\xAE\xA7""e""\xA2\x9D\xAF"" ""\x9F""a""\x96""e""\xA0\xAF"; //подключения кабеля
- char  txt_error_connect3[]     = "O""\xA8\x9D\x96""o""\x9F"" ""\xA2""e""\xA4";                             // Ошибок нет
- char  txt_error_connect4[]     = "O""\xA8\x9D\x96""o""\x9F"" -         ";                                  // Ошибок  - 
- char  txt__connect1[]          = "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N1";    // Обнаружен кабель N1
- char  txt__connect2[]          = "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N2";    // Обнаружен кабель N2
- char  txt__connect3[]          = "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N3";    // Обнаружен кабель N3
- char  txt__connect4[]          = "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N4";    // Обнаружен кабель N4
- char  txt__test_end[]          = "TECT ""\x85""A""KOH""\x8D""EH";                                          // ТЕСТ ЗАКОНЧЕН
+char  txt_menu1_1[]            = "Tec\xA4 ""\x9F""a\x96""e\xA0\xAF N1";                                    // Тест кабель N 1
+char  txt_menu1_2[]            = "Tec\xA4 ""\x9F""a\x96""e\xA0\xAF N2";                                    // Тест кабель N 2
+char  txt_menu1_3[]            = "Tec\xA4 ""\x9F""a\x96""e\xA0\xAF N3";                                    // Тест кабель N 3
+char  txt_menu1_4[]            = "Tec\xA4 ""\x9F""a\x96""e\xA0\xAF N4";                                    // Тест кабель N 4
+char  txt_menu2_1[]            = "menu2_1";                                                                // 
+char  txt_menu2_2[]            = "menu2_2";                                                                //
+char  txt_menu2_3[]            = "menu2_3";                                                                //
+char  txt_menu2_4[]            = "Tec""\xA4"" pa""\x9C\xAA""e""\xA1""o""\x97";                             // Тест разъемов                                   //
+char  txt_menu3_1[]            = "Ta""\x96\xA0\x9D\xA6""a coe""\x99"".";                                   // Таблица соед.
+char  txt_menu3_2[]            = "Pe""\x99""a""\x9F\xA4"". ""\xA4""a""\x96\xA0\x9D\xA6";                   // Редакт. таблиц
+char  txt_menu3_3[]            = "\x85""a""\x98""py""\x9C"". y""\xA1""o""\xA0\xA7"".";                     // Загруз. умолч.
+char  txt_menu3_4[]            = "Bpe""\xA1\xAF"" ""\xA3""poc""\xA4""o""\xAF";                             // Время простоя
+char  txt_menu4_1[]            = "C\x9D\xA2yco\x9D\x99""a";                                                // Синусоида
+char  txt_menu4_2[]            = "\x89\x9D\xA0oo\x96pa\x9C\xA2\xAB\x9E";                                   // Пилообразный
+char  txt_menu4_3[]            = "Tpey\x98o\xA0\xAC\xA2\xAB\x9E";                                          // Треугольный
+char  txt_menu4_4[]            = "\x89p\xAF\xA1oy\x98o\xA0\xAC\xA2\xAB\x9E";                               // Прямоугольный
+char  txt_menu5_1[]            = " ";                                                                      // 
+char  txt_menu5_2[]            = " ";                                                                      //
+char  txt_menu5_3[]            = " ";                                                                      // 
+char  txt_menu5_4[]            = " ";                                                                      // 
+char  txt_osc_menu1[]          = "Oc\xA6\x9D\xA0\xA0o\x98pa\xA5";                                          //
+char  txt_osc_menu2[]          = "";                                                                       //
+char  txt_osc_menu3[]          = "";                                                                       //
+char  txt_osc_menu4[]          = "";                                                                       //          
+
+const char  txt_pass_ok[]           PROGMEM  = " ";                                                                      //  
+const char  txt_pass_no[]           PROGMEM  = " ";                                                                      //  
+const char  txt_info1[]             PROGMEM  = "Tec\xA4 ""\x9F""a\x96""e\xA0""e\x9E";                                    // Тест кабелей
+const char  txt_info2[]             PROGMEM  = "Tec\xA4 \x96\xA0o\x9F""a \x98""ap\xA2\x9D\xA4yp";                        // Тест блока гарнитур
+const char  txt_info3[]             PROGMEM  = "Hac\xA4po\x9E\x9F""a c\x9D""c\xA4""e\xA1\xAB";                           // Настройка системы
+const char  txt_info4[]             PROGMEM  = "\x81""e\xA2""epa\xA4op c\x9D\x98\xA2""a\xA0o\x97";                       // Генератор сигналов
+const char  txt_info5[]             PROGMEM  = "Oc\xA6\x9D\xA0\xA0o\x98pa\xA5";                                          // Осциллограф
+const char  txt_botton_clear[]      PROGMEM  = " ";                                                                      //  
+const char  txt_botton_otmena[]     PROGMEM  = "O""\xA4\xA1""e""\xA2""a";                                                // "Отмена" 
+const char  txt_botton_vvod[]       PROGMEM  = "B\x97o\x99 ";                                                            // Ввод
+const char  txt_botton_ret[]        PROGMEM  = "B""\xAB""x";                                                             // "Вых"
+const char  txt_system_clear3[]     PROGMEM  = " ";                                                                      //  
+const char  txt9[]                  PROGMEM  = " ";                                                                      // 
+const char  txt10[]                 PROGMEM  = " ";                                                                      //  
+const char  txt_time_wait[]         PROGMEM  = "\xA1\x9D\xA2"".""\x97""pe""\xA1\xAF"" ""\xA3""poc""\xA4""o""\xAF";       //  мин. время простоя
+const char  txt_info29[]            PROGMEM  = "Stop->PUSH Disp"; 
+const char  txt_info30[]            PROGMEM  = " "; 
+const char  txt_test_all[]          PROGMEM  = "Tec""\xA4"" ""\x97""cex pa""\x9C\xAA""e""\xA1""o""\x97";                 // Тест всех разъемов
+const char  txt_test_all_exit1[]    PROGMEM  = "\x82\xA0\xAF"" ""\x97\xAB""xo""\x99""a";                                 // Для выхода
+const char  txt_test_all_exit2[]    PROGMEM  = "\xA3""p""\x9D\x9F""oc""\xA2\x9D""c""\xAC"" ""\x9F"" ""\xAD\x9F""pa""\xA2""y";  // прикоснись к экрану
+const char  txt_test_end[]          PROGMEM  = "\x85""a""\x97""ep""\xA8\x9D\xA4\xAC";                                    // Завершить
+const char  txt_test_repeat[]       PROGMEM  = "\x89""o""\x97\xA4""op""\x9D\xA4\xAC";                                    // Повторить
+const char  txt_error_connect1[]    PROGMEM  = "O""\x8E\x86\x80""KA";                                                    // Ошибка
+const char  txt_error_connect2[]    PROGMEM  = "\xA3""o""\x99\x9F\xA0\xAE\xA7""e""\xA2\x9D\xAF"" ""\x9F""a""\x96""e""\xA0\xAF"; //подключения кабеля
+const char  txt_error_connect3[]    PROGMEM  = "O""\xA8\x9D\x96""o""\x9F"" ""\xA2""e""\xA4";                             // Ошибок нет
+const char  txt_error_connect4[]    PROGMEM  = "O""\xA8\x9D\x96""o""\x9F"" -         ";                                  // Ошибок  - 
+const char  txt__connect1[]         PROGMEM  = "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N1";    // Обнаружен кабель N1
+const char  txt__connect2[]         PROGMEM  = "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N2";    // Обнаружен кабель N2
+const char  txt__connect3[]         PROGMEM  = "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N3";    // Обнаружен кабель N3
+const char  txt__connect4[]         PROGMEM  = "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N4";    // Обнаружен кабель N4
+const char  txt__test_end[]         PROGMEM  = "TECT ""\x85""A""KOH""\x8D""EH";                                          // ТЕСТ ЗАКОНЧЕН
+
+char buffer[140];  
+const char* const table_message[] PROGMEM = 
+{
+ txt_pass_ok,             // 0 " ";                                                                      //  
+ txt_pass_no,             // 1 " ";                                                                      //  
+ txt_info1,               // 2 "Tec\xA4 ""\x9F""a\x96""e\xA0""e\x9E";                                    // Тест кабелей
+ txt_info2,               // 3 "Tec\xA4 \x96\xA0o\x9F""a \x98""ap\xA2\x9D\xA4yp";                        // Тест блока гарнитур
+ txt_info3,               // 4 "Hac\xA4po\x9E\x9F""a c\x9D""c\xA4""e\xA1\xAB";                           // Настройка системы
+ txt_info4,               // 5 "\x81""e\xA2""epa\xA4op c\x9D\x98\xA2""a\xA0o\x97";                       // Генератор сигналов
+ txt_info5,               // 6 "Oc\xA6\x9D\xA0\xA0o\x98pa\xA5";                                          // Осциллограф
+ txt_botton_clear,        // 7 " ";                                                                      //  
+ txt_botton_otmena,       // 8 " ";                                                                      //  
+ txt_botton_vvod,         // 9 " ";                                                                      //  
+ txt_botton_ret,          // 10 ""B""\xAB""x" ";                                                         //  Вых
+ txt_system_clear3,       // 11 " ";                                                                     // 
+ txt9,                    // 12 "B\x97o\x99";                                                             // Ввод
+ txt10,                   // 13 "O""\xA4\xA1""e""\xA2""a";                                                // "Отмена"
+ txt_time_wait,           // 14 "\xA1\x9D\xA2"".""\x97""pe""\xA1\xAF"" ""\xA3""poc""\xA4""o""\xAF";       //  мин. время простоя
+ txt_info29,              // 15 "Stop->PUSH Disp"; 
+ txt_info30,              // 16 " "; 
+ txt_test_all,            // 17 "Tec""\xA4"" ""\x97""cex pa""\x9C\xAA""e""\xA1""o""\x97";                 // Тест всех разъемов
+ txt_test_all_exit1,      // 18 "\x82\xA0\xAF"" ""\x97\xAB""xo""\x99""a";                                 // Для выхода
+ txt_test_all_exit2,      // 19 "\xA3""p""\x9D\x9F""oc""\xA2\x9D""c""\xAC"" ""\x9F"" ""\xAD\x9F""pa""\xA2""y";  // прикоснись к экрану
+ txt_test_end,            // 20 "\x85""a""\x97""ep""\xA8\x9D\xA4\xAC";                                    // Завершить
+ txt_test_repeat,         // 21 "\x89""o""\x97\xA4""op""\x9D\xA4\xAC";                                    // Повторить
+ txt_error_connect1,      // 22 "O""\x8E\x86\x80""KA";                                                    // Ошибка
+ txt_error_connect2,      // 23 "\xA3""o""\x99\x9F\xA0\xAE\xA7""e""\xA2\x9D\xAF"" ""\x9F""a""\x96""e""\xA0\xAF"; //подключения кабеля
+ txt_error_connect3,      // 24 "O""\xA8\x9D\x96""o""\x9F"" ""\xA2""e""\xA4";                             // Ошибок нет
+ txt_error_connect4,      // 25 "O""\xA8\x9D\x96""o""\x9F"" -         ";                                  // Ошибок  - 
+ txt__connect1,           // 26 "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N1";    // Обнаружен кабель N1
+ txt__connect2,           // 27 "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N2";    // Обнаружен кабель N2
+ txt__connect3,           // 28 "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N3";    // Обнаружен кабель N3
+ txt__connect4,           // 29 "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N4";    // Обнаружен кабель N4
+ txt__test_end            // 30 "TECT ""\x85""A""KOH""\x8D""EH";                                          // ТЕСТ ЗАКОНЧЕН
+};
+
+
 
 
  byte   temp_buffer[40] ;                                                                                                // Буфер хранения временной информации
@@ -645,14 +684,7 @@ void reset_klav()
 		but_m5 = myButtons.addButton(  214, 199, 45,  40, "5");
 
 }
-void txt_pass_no_all()
-{
-		myGLCD.clrScr();
-		myGLCD.setColor(255, 255, 255);
-		myGLCD.setBackColor(0, 0, 0);
-		myGLCD.print(txt_pass_no, RIGHT, 208);
-		delay (1000);
-}
+
 void klav123() // ввод данных с цифровой клавиатуры
 {
 	ret = 0;
@@ -807,21 +839,24 @@ void drawButtons1() // Отображение цифровой клавиатуры
   myGLCD.fillRoundRect (10, 130, 120, 180);
   myGLCD.setColor(255, 255, 255);
   myGLCD.drawRoundRect (10, 130, 120, 180);
-  myGLCD.print(txt_botton_clear, 25, 147);     //"Сброс"
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[8]))); 
+  myGLCD.print(buffer, 20, 147);                                   // "Отмена"
 
 
   myGLCD.setColor(0, 0, 255);
   myGLCD.fillRoundRect (130, 130, 240, 180);
   myGLCD.setColor(255, 255, 255);
   myGLCD.drawRoundRect (130, 130, 240, 180);
-  myGLCD.print("B\x97o\x99", 155, 147);       // "Ввод"
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[9]))); 
+  myGLCD.print(buffer, 155, 147);                                  // "Ввод"
   
 
   myGLCD.setColor(0, 0, 255);
   myGLCD.fillRoundRect (250, 130, 300, 180);
   myGLCD.setColor(255, 255, 255);
   myGLCD.drawRoundRect (250, 130, 300, 180);
-  myGLCD.print("B""\xAB""x", 252, 147);       // Вых
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[10]))); 
+  myGLCD.print(buffer, 252, 147);                                  // Вых
   myGLCD.setBackColor (0, 0, 0);
 }
 void updateStr(int val)
@@ -1027,20 +1062,25 @@ void draw_Glav_Menu()
 
   switch (m2) 
 				   {
-					case 1:
-					      myGLCD.print(txt_info1, CENTER, 0);
+					 case 1:
+						  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[2]))); 
+					      myGLCD.print(buffer, CENTER, 0);                               // txt_info1
 					      break;
 					 case 2:
-                          myGLCD.print(txt_info2, CENTER, 0);
+						  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[3]))); 
+                          myGLCD.print(buffer, CENTER, 0);                               // txt_info2
 					      break;
 					 case 3:
-					      myGLCD.print(txt_info3, CENTER, 0);
+						  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[4]))); 
+					      myGLCD.print(buffer, CENTER, 0);                               // txt_info3
 					      break;
 					 case 4:
-					      myGLCD.print(txt_info4, CENTER, 0);
+						  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[5]))); 
+					      myGLCD.print(buffer, CENTER, 0);                               // txt_info4
 					      break;
 					 case 5:
-					      myGLCD.print(txt_info5, CENTER, 0);
+						  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[6]))); 
+					      myGLCD.print(buffer, CENTER, 0);                               // txt_info5
 					      break;
 					 }
 }
@@ -1088,7 +1128,8 @@ void swichMenu() // Тексты меню в строках "txt....."
 							  myGLCD.setColor(0, 255, 0);
 							  myGLCD.setBackColor(0, 0, 0);
 							  myGLCD.print("                      ", CENTER, 0); 
-							  myGLCD.print(txt_info1, CENTER, 0);   // "Тест кабелей"
+							  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[2]))); 
+							  myGLCD.print(buffer, CENTER, 0);                               // txt_info1 "Тест кабелей"
 		
 						  }
 				    if (pressed_button==but_m2)
@@ -1104,7 +1145,8 @@ void swichMenu() // Тексты меню в строках "txt....."
 							  myGLCD.setColor(0, 255, 0);
 							  myGLCD.setBackColor(0, 0, 0);
 							  myGLCD.print("                      ", CENTER, 0); 
-							  myGLCD.print(txt_info2, CENTER, 0);     // Тест блока гарнитур
+							  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[3]))); 
+							  myGLCD.print(buffer, CENTER, 0);                              // txt_info2 Тест блока гарнитур
 						 }
 
 				   if (pressed_button==but_m3)
@@ -1120,7 +1162,8 @@ void swichMenu() // Тексты меню в строках "txt....."
 							  myGLCD.setColor(0, 255, 0);
 							  myGLCD.setBackColor(0, 0, 0);
 							  myGLCD.print("                      ", CENTER, 0); 
-							  myGLCD.print(txt_info3, CENTER, 0);      // Настройка системы
+							  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[4]))); 
+							  myGLCD.print(buffer, CENTER, 0);                              // txt_info3 Настройка системы
 						}
 				   if (pressed_button==but_m4)
 						{
@@ -1135,7 +1178,8 @@ void swichMenu() // Тексты меню в строках "txt....."
 							  myGLCD.setColor(0, 255, 0);
 							  myGLCD.setBackColor(0, 0, 0);
 							  myGLCD.print("                      ", CENTER, 0); 
-							  myGLCD.print(txt_info4, CENTER, 0);     // Генератор сигналов
+							  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[5]))); 
+							  myGLCD.print(buffer, CENTER, 0);                                // txt_info4 Генератор сигналов
 						}
 
 				   if (pressed_button==but_m5)
@@ -1151,7 +1195,8 @@ void swichMenu() // Тексты меню в строках "txt....."
 							  myGLCD.setColor(0, 255, 0);
 							  myGLCD.setBackColor(0, 0, 0);
 							  myGLCD.print("                      ", CENTER, 0); 
-							  myGLCD.print(txt_info5, CENTER, 0);     // Осциллограф
+							  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[6]))); 
+							  myGLCD.print(buffer, CENTER, 0);                                // txt_info5  Осциллограф   
 						}
 	
 	               //*****************  Меню №1  **************
@@ -1270,7 +1315,8 @@ void swichMenu() // Тексты меню в строках "txt....."
 							myGLCD.clrScr();
 							drawButtons1();                            // Нарисовать цифровую клавиатуру
 							myGLCD.printNumI(time_minute, LEFT, 208);
-							myGLCD.print(txt_time_wait, 35, 208);      //
+							strcpy_P(buffer, (char*)pgm_read_word(&(table_message[14]))); 
+							myGLCD.print(buffer, 35, 208);             // txt_time_wait
 							klav123();                                 // Считать информацию с клавиатуры
 							if (ret == 1)                              // Если "Возврат" - закончить
 								 {
@@ -1399,20 +1445,25 @@ void print_up() // Печать верхней строчки над меню
 	myGLCD.print("                      ", CENTER, 0); 
 	switch (m2) 
 	{
- 		case 1:
-			myGLCD.print(txt_info1, CENTER, 0);
+	case 1:
+			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[2]))); 
+			myGLCD.print(buffer, CENTER, 0);                                 // txt_info1
 			break;
 		case 2:
-            myGLCD.print(txt_info2, CENTER, 0);
+			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[3]))); 
+            myGLCD.print(buffer, CENTER, 0);                                 // txt_info2
 			break;
 		case 3:
-			myGLCD.print(txt_info3, CENTER, 0);
+			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[4]))); 
+			myGLCD.print(buffer, CENTER, 0);                                 // txt_info3
 			break;
 		case 4:
-			myGLCD.print(txt_info4, CENTER, 0);
+			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[5]))); 
+			myGLCD.print(buffer, CENTER, 0);                                 // txt_info4
 			break;
         case 5:
-			myGLCD.print(txt_info5, CENTER, 0);
+			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[6]))); 
+			myGLCD.print(buffer, CENTER, 0);                                 // txt_info5
 			break;
     }
 }
@@ -1939,8 +1990,8 @@ int search_cabel(int sc)
 		if (digitalRead(47) == LOW ) 
 		{
 			n_connect = 2;
-			Serial.println("Connector N2");
-			myGLCD.print(txt__connect2, CENTER, 20); 
+			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[27]))); 
+			myGLCD.print(buffer, CENTER, 20);                                  // txt__connect2
 		}
 		break;
 	case 39:
@@ -1949,8 +2000,8 @@ int search_cabel(int sc)
 		if (digitalRead(47) == LOW ) 
 		{
 			n_connect = 3;
-			Serial.println("Connector N3");
-			myGLCD.print(txt__connect3, CENTER, 20); 
+			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[28]))); 
+			myGLCD.print(buffer, CENTER, 20);                                 // txt__connect3
 		}
 		break;
 	case 40:
@@ -1959,8 +2010,8 @@ int search_cabel(int sc)
 		if (digitalRead(47) == LOW ) 
 		{
 			n_connect = 1;
-			Serial.println("Connector N1");
-			myGLCD.print(txt__connect1, CENTER, 20); 
+			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[26]))); 
+			myGLCD.print(buffer, CENTER, 20);                                 // txt__connect1
 		}
 		break;
 	case 41:
@@ -1969,8 +2020,8 @@ int search_cabel(int sc)
 		if (digitalRead(47) == LOW ) 
 		{
 			n_connect = 4;
-			Serial.println("Connector N4");
-			myGLCD.print(txt__connect4, CENTER, 20); 
+			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[29]))); 
+			myGLCD.print(buffer, CENTER, 20);                                 // txt__connect4
 		}
 		break;
 	}
@@ -1990,8 +2041,10 @@ void test_cabel_N1()
 	myGLCD.fillRoundRect (161, 201, 314, 238);
 	myGLCD.setColor(255, 255, 255);  
 	myGLCD.setBackColor( 0, 0, 255);
-	myGLCD.print( txt_test_repeat, 10, 210);                                   // Повторить
-	myGLCD.print( txt_test_end, 168, 210);                                     // Завершить
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[21]))); 
+	myGLCD.print(buffer, 10, 210);                                             //txt_test_repeat  Повторить
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[20]))); 
+	myGLCD.print(buffer, 168, 210);                                            //txt_test_end Завершить
 	myGLCD.setBackColor( 0, 0, 0);                                             //  
 
 	if (search_cabel(40)== 1)                                                  // Найден кабель №1
@@ -2024,10 +2077,11 @@ void test_cabel_N1()
 	 }
 	else
 	{
-      Serial.println("Cable connection error");                             // Проверяемый кабель неверно подключен
 	  myGLCD.setColor(VGA_RED);  
-	  myGLCD.print(txt_error_connect1, CENTER, 80);                         // "Ошибка"
-	  myGLCD.print(txt_error_connect2, CENTER, 110);                        // "подключения кабеля" 
+	  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[22]))); 
+	  myGLCD.print(buffer, CENTER, 80);                                       // txt_error_connect1 "Ошибка"
+	  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[23]))); 
+	  myGLCD.print(buffer, CENTER, 110);                                      // txt_error_connect2 "подключения кабеля" 
 	  myGLCD.setColor(255, 255, 255);  
 	  delay(3000);
 	}
@@ -2045,8 +2099,10 @@ void test_cabel_N2()
 	myGLCD.fillRoundRect (161, 201, 314, 238);
 	myGLCD.setColor(255, 255, 255);  
 	myGLCD.setBackColor( 0, 0, 255);
-	myGLCD.print( txt_test_repeat, 10, 210);                                    // Повторить
-	myGLCD.print( txt_test_end, 168, 210);                                      // Завершить
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[21]))); 
+	myGLCD.print(buffer, 10, 210);                                             //txt_test_repeat  Повторить
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[20]))); 
+	myGLCD.print(buffer, 168, 210);                                            //txt_test_end Завершить
 	myGLCD.setBackColor( 0, 0, 0);
 
 	if (search_cabel(1)== 2)
@@ -2079,10 +2135,11 @@ void test_cabel_N2()
 	 }
 	else
 	{
-      Serial.println("Cable connection error");
 	  myGLCD.setColor(VGA_RED);  
-	  myGLCD.print(txt_error_connect1, CENTER, 82+19); 
-	  myGLCD.print(txt_error_connect2, CENTER, 82+38); 
+	  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[22]))); 
+	  myGLCD.print(buffer, CENTER, 80);                                       // txt_error_connect1 "Ошибка"
+	  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[23]))); 
+	  myGLCD.print(buffer, CENTER, 110);                                      // txt_error_connect2 "подключения кабеля" 
 	  myGLCD.setColor(255, 255, 255);  
 	  delay(3000);
 	}
@@ -2100,8 +2157,10 @@ void test_cabel_N3()
 	myGLCD.fillRoundRect (161, 201, 314, 238);
 	myGLCD.setColor(255, 255, 255);  
 	myGLCD.setBackColor( 0, 0, 255);
-	myGLCD.print( txt_test_repeat, 10, 210);                                    // Повторить
-	myGLCD.print( txt_test_end, 168, 210);                                      // Завершить
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[21]))); 
+	myGLCD.print(buffer, 10, 210);                                             //txt_test_repeat  Повторить
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[20]))); 
+	myGLCD.print(buffer, 168, 210);                                            //txt_test_end Завершить
 	myGLCD.setBackColor( 0, 0, 0);
 
 	if (search_cabel(39)== 3)
@@ -2133,10 +2192,11 @@ void test_cabel_N3()
 	 }
 	else
 	{
-      Serial.println("Cable connection error");
 	  myGLCD.setColor(VGA_RED);  
-	  myGLCD.print(txt_error_connect1, CENTER, 82+19); 
-	  myGLCD.print(txt_error_connect2, CENTER, 82+38); 
+	  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[22]))); 
+	  myGLCD.print(buffer, CENTER, 80);                                       // txt_error_connect1 "Ошибка"
+	  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[23]))); 
+	  myGLCD.print(buffer, CENTER, 110);                                      // txt_error_connect2 "подключения кабеля" 
 	  myGLCD.setColor(255, 255, 255);  
 	  delay(3000);
 	}
@@ -2154,8 +2214,10 @@ void test_cabel_N4()
 	myGLCD.fillRoundRect (161, 201, 314, 238);
 	myGLCD.setColor(255, 255, 255);  
 	myGLCD.setBackColor( 0, 0, 255);
-	myGLCD.print( txt_test_repeat, 10, 210);                                    // Повторить
-	myGLCD.print( txt_test_end, 168, 210);                                      // Завершить
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[21]))); 
+	myGLCD.print(buffer, 10, 210);                                             //txt_test_repeat  Повторить
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[20]))); 
+	myGLCD.print(buffer, 168, 210);                                            //txt_test_end Завершить
 	myGLCD.setBackColor( 0, 0, 0);
 
 	if (search_cabel(41)== 4)
@@ -2189,10 +2251,11 @@ void test_cabel_N4()
 	 }
 	else
 	{
-      Serial.println("Cable connection error");
 	  myGLCD.setColor(VGA_RED);  
-	  myGLCD.print(txt_error_connect1, CENTER, 82+19); 
-	  myGLCD.print(txt_error_connect2, CENTER, 82+38); 
+	  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[22]))); 
+	  myGLCD.print(buffer, CENTER, 80);                                       // txt_error_connect1 "Ошибка"
+	  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[23]))); 
+	  myGLCD.print(buffer, CENTER, 110);                                      // txt_error_connect2 "подключения кабеля" 
 	  myGLCD.setColor(255, 255, 255);  
 	  delay(3000);
 	}
@@ -2218,7 +2281,8 @@ void test_cabel_N1_run()
 		y_p += 19;
 	}
 	y_p = 82;                                                                    // Восстановить начало вывода ошибок по У
-	myGLCD.print(txt_error_connect3, 50, 65);                                    // "Ошибок нет"    
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[24]))); 
+	myGLCD.print(buffer, 50, 65);                                                // txt_error_connect3 "Ошибок нет"       
 	if (search_cabel(40)== 1)                                                    // Проверить корректность подключения кабеля №1
 	{
 		digitalWrite(46, LOW);                                                   // Установить контрольный уровень на коммутаторах U13,U17,U23
@@ -2269,7 +2333,8 @@ void test_cabel_N1_run()
 						else
 						{
 							count_error++;
-							myGLCD.print(txt_error_connect4, 50, 65); 
+							strcpy_P(buffer, (char*)pgm_read_word(&(table_message[25]))); 
+							myGLCD.print(buffer, 50, 65);                            // txt_error_connect4
 							myGLCD.printNumI(count_error, 190, 65); 
 
 							if ( ware_on == 1)
@@ -2341,7 +2406,8 @@ void test_cabel_N1_run()
 							if (x_B != canal_N_err)                                  // Проверяемое соединение не записано в таблицу
 							{
 								count_error++;
-								myGLCD.print(txt_error_connect4, 50, 65); 
+								strcpy_P(buffer, (char*)pgm_read_word(&(table_message[25]))); 
+								myGLCD.print(buffer, 50, 65);                        // txt_error_connect4
 								myGLCD.printNumI(count_error, 190, 65); 
 								if(x_A < 10)
 								{
@@ -2374,13 +2440,16 @@ void test_cabel_N1_run()
 				} 	//----------------------- Конец проверки на замыкание -----------------------------------------
 			}
 		}
-    if(count_error == 0) myGLCD.print(txt__test_end, CENTER, 120);
+    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[30]))); 
+    if(count_error == 0) myGLCD.print(buffer, CENTER, 120);                   // txt__test_end  
 	}
 	else
 	{
 		myGLCD.setColor(VGA_RED);  
-		myGLCD.print(txt_error_connect1, CENTER, 82+19);                      // Сообщить что кабель не обнаружен
-		myGLCD.print(txt_error_connect2, CENTER, 82+38); 
+		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[22]))); 
+		myGLCD.print(buffer, CENTER, 82+19);                                  // txt_error_connect1 Сообщить что кабель не обнаружен
+		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[23]))); 
+		myGLCD.print(buffer, CENTER, 82+38);                                  // txt_error_connect2
 		myGLCD.setColor(255, 255, 255);                                       // Восстановить белый шрифт
 		delay(3000);
 	}
@@ -2405,7 +2474,8 @@ void test_cabel_N2_run()
 		y_p += 19;
 	}
 	y_p = 82;                                                                    // Восстановить начало вывода ошибок по У
-	myGLCD.print(txt_error_connect3, 50, 65);                                    // "Ошибок нет"    
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[24]))); 
+	myGLCD.print(buffer, 50, 65);                                                // txt_error_connect3 "Ошибок нет"    
 	if (search_cabel(1)== 2)                                                     // Проверить корректность подключения кабеля №1
 	{
 		digitalWrite(46, LOW);                                                   // Установить контрольный уровень на коммутаторах U13,U17,U23
@@ -2456,9 +2526,9 @@ void test_cabel_N2_run()
 						else
 						{
 							count_error++;
-							myGLCD.print(txt_error_connect4, 50, 65); 
+							strcpy_P(buffer, (char*)pgm_read_word(&(table_message[25]))); 
+							myGLCD.print(buffer, 50, 65);                            // txt_error_connect4							myGLCD.printNumI(count_error, 190, 65); 
 							myGLCD.printNumI(count_error, 190, 65); 
-
 							if ( ware_on == 1)
 							{
 								if(x_A < 10)
@@ -2529,7 +2599,8 @@ void test_cabel_N2_run()
 							if (x_B != canal_N_err)                                  // Проверяемое соединение не записано в таблицу
 							{
 								count_error++;
-								myGLCD.print(txt_error_connect4, 50, 65); 
+								strcpy_P(buffer, (char*)pgm_read_word(&(table_message[25]))); 
+								myGLCD.print(buffer, 50, 65);                        // txt_error_connect4
 								myGLCD.printNumI(count_error, 190, 65); 
 								if(x_A < 10)
 								{
@@ -2563,13 +2634,16 @@ void test_cabel_N2_run()
 			//----------------------- Конец проверки на замыкание -----------------------------------------
 			}
 		}
-    if(count_error == 0) myGLCD.print(txt__test_end, CENTER, 120);
+    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[30]))); 
+    if(count_error == 0) myGLCD.print(buffer, CENTER, 120);                   // txt__test_end  
 	}
 	else
 	{
 		myGLCD.setColor(VGA_RED);  
-		myGLCD.print(txt_error_connect1, CENTER, 82+19);                      // Сообщить что кабель не обнаружен
-		myGLCD.print(txt_error_connect2, CENTER, 82+38); 
+		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[22]))); 
+		myGLCD.print(buffer, CENTER, 82+19);                                  // txt_error_connect1 Сообщить что кабель не обнаружен
+		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[23]))); 
+		myGLCD.print(buffer, CENTER, 82+38);                                  // txt_error_connect2
 		myGLCD.setColor(255, 255, 255);                                       // Восстановить белый шрифт
 		delay(3000);
 	}
@@ -2594,7 +2668,8 @@ void test_cabel_N3_run()
 		y_p += 19;
 	}
 	y_p = 82;                                                                    // Восстановить начало вывода ошибок по У
-	myGLCD.print(txt_error_connect3, 50, 65);                                    // "Ошибок нет"    
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[24]))); 
+	myGLCD.print(buffer, 50, 65);                                                // txt_error_connect3 "Ошибок нет"    
 	if (search_cabel(39)== 3)                                                    // Проверить корректность подключения кабеля №1
 	{
 		digitalWrite(46, LOW);                                                   // Установить контрольный уровень на коммутаторах U13,U17,U23
@@ -2646,9 +2721,9 @@ void test_cabel_N3_run()
 						else
 						{
 							count_error++;
-							myGLCD.print(txt_error_connect4, 50, 65); 
+							strcpy_P(buffer, (char*)pgm_read_word(&(table_message[25]))); 
+							myGLCD.print(buffer, 50, 65);                            // txt_error_connect4							myGLCD.printNumI(count_error, 190, 65); 
 							myGLCD.printNumI(count_error, 190, 65); 
-
 							if ( ware_on == 1)
 							{
 								if(x_A < 10)
@@ -2718,7 +2793,8 @@ void test_cabel_N3_run()
 							if (x_B != canal_N_err)                                  // Проверяемое соединение не записано в таблицу
 							{
 								count_error++;
-								myGLCD.print(txt_error_connect4, 50, 65); 
+								strcpy_P(buffer, (char*)pgm_read_word(&(table_message[25]))); 
+								myGLCD.print(buffer, 50, 65);                        // txt_error_connect4
 								myGLCD.printNumI(count_error, 190, 65); 
 								if(x_A < 10)
 								{
@@ -2751,14 +2827,17 @@ void test_cabel_N3_run()
 				}	//----------------------- Конец проверки на замыкание -----------------------------------------
 			}
 		}
-    if(count_error == 0) myGLCD.print(txt__test_end, CENTER, 120);
+    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[30]))); 
+    if(count_error == 0) myGLCD.print(buffer, CENTER, 120);                   // txt__test_end  
 	}
 	else
 	{
 		myGLCD.setColor(VGA_RED);  
-		myGLCD.print(txt_error_connect1, CENTER, 82+19);                        // Сообщить что кабель не обнаружен
-		myGLCD.print(txt_error_connect2, CENTER, 82+38); 
-		myGLCD.setColor(255, 255, 255);                                         // Восстановить белый шрифт
+		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[22]))); 
+		myGLCD.print(buffer, CENTER, 82+19);                                  // txt_error_connect1 Сообщить что кабель не обнаружен
+		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[23]))); 
+		myGLCD.print(buffer, CENTER, 82+38);                                  // txt_error_connect2
+		myGLCD.setColor(255, 255, 255);                                       // Восстановить белый шрифт
 		delay(3000);
 	}
 }
@@ -2782,7 +2861,8 @@ void test_cabel_N4_run()
 		y_p += 19;
 	}
 	y_p = 82;                                                                    // Восстановить начало вывода ошибок по У
-	myGLCD.print(txt_error_connect3, 50, 65);                                    // "Ошибок нет"    
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[24]))); 
+	myGLCD.print(buffer, 50, 65);                                                // txt_error_connect3 "Ошибок нет"    
 	if (search_cabel(41)== 4)                                                    // Проверить корректность подключения кабеля №1
 	{
 		digitalWrite(46, LOW);                                                   // Установить контрольный уровень на коммутаторах U13,U17,U23
@@ -2833,7 +2913,8 @@ void test_cabel_N4_run()
 						else
 						{
 							count_error++;
-							myGLCD.print(txt_error_connect4, 50, 65); 
+							strcpy_P(buffer, (char*)pgm_read_word(&(table_message[25]))); 
+							myGLCD.print(buffer, 50, 65);                            // txt_error_connect4
 							myGLCD.printNumI(count_error, 190, 65); 
 
 							if ( ware_on == 1)
@@ -2905,7 +2986,8 @@ void test_cabel_N4_run()
 							if (x_B != canal_N_err)                                  // Проверяемое соединение не записано в таблицу
 							{
 								count_error++;
-								myGLCD.print(txt_error_connect4, 50, 65); 
+								strcpy_P(buffer, (char*)pgm_read_word(&(table_message[25]))); 
+								myGLCD.print(buffer, 50, 65);                        // txt_error_connect4
 								myGLCD.printNumI(count_error, 190, 65); 
 								if(x_A < 10)
 								{
@@ -2938,13 +3020,16 @@ void test_cabel_N4_run()
 				}  //----------------------- Конец проверки на замыкание -----------------------------------------
 			}
 		}
-    if(count_error == 0) myGLCD.print(txt__test_end, CENTER, 120);
+    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[30]))); 
+    if(count_error == 0) myGLCD.print(buffer, CENTER, 120);                   // txt__test_end  
 	}
 	else
 	{
 		myGLCD.setColor(VGA_RED);  
-		myGLCD.print(txt_error_connect1, CENTER, 82+19);                      // Сообщить что кабель не обнаружен
-		myGLCD.print(txt_error_connect2, CENTER, 82+38); 
+		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[22]))); 
+		myGLCD.print(buffer, CENTER, 82+19);                                  // txt_error_connect1 Сообщить что кабель не обнаружен
+		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[23]))); 
+		myGLCD.print(buffer, CENTER, 82+38);                                  // txt_error_connect2
 		myGLCD.setColor(255, 255, 255);                                       // Восстановить белый шрифт
 		delay(3000);
 	}
@@ -2957,9 +3042,12 @@ void test_panel_N1()
 void test_all_pin()
 {
 	myGLCD.clrScr();
-	myGLCD.print(txt_test_all, CENTER, 20); 
-	myGLCD.print( txt_test_all_exit1, CENTER, 180); 
-	myGLCD.print( txt_test_all_exit2, CENTER, 200); 
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[17]))); 
+	myGLCD.print(buffer, CENTER, 20);                                           // txt_test_all
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[18]))); 
+	myGLCD.print(buffer, CENTER, 180);                                          // txt_test_all_exit1
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[19]))); 
+	myGLCD.print(buffer, CENTER, 200);                                          // txt_test_all_exit2
 	byte canal_N = 0;
 	pinMode(47, INPUT);                                                         // Установить на вход  выход коммутаторов U15,U18,U22 (разъемы серии А на передней панели)
 	pinMode(46, INPUT);                                                         // Установить на вход  выход коммутаторов U13,U17,U23 (разъемы серии В на задней панели)
@@ -3010,11 +3098,9 @@ void test_all_pin()
 					myGLCD.printNumI(i_step, CENTER, 105);
 				}
 			}
-
 		  i_step++;
 		  if (i_step == 42) i_step = 1;
 	  }
-
 }
 
 //+++++++++++++++++++++ Осциллограф +++++++++++++++++++++++++++++
@@ -3084,7 +3170,8 @@ void oscilloscope()  // просмотр в реальном времени на большой скорости
 	myGLCD.setBackColor( 0, 0, 0);
 	myGLCD.setFont( BigFont);
 	myGLCD.setColor(VGA_LIME);
-	myGLCD.print(txt_info29,LEFT, 180);
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[15]))); 
+	myGLCD.print(buffer,LEFT, 180);                                  // txt_info29
 	int x_dTime;
 	int xpos;
 	int ypos1;

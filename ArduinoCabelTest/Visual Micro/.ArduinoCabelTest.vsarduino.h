@@ -102,7 +102,6 @@ void AnalogClock();
 void flash_time();
 void serialEvent3();
 void reset_klav();
-void txt_pass_no_all();
 void klav123();
 void drawButtons1();
 void updateStr(int val);
