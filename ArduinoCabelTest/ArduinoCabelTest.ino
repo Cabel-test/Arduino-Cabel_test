@@ -23,7 +23,7 @@ MCP23017 mcp_Out1;                                       // Назначение портов ра
 MCP23017 mcp_Out2;                                       // Назначение портов расширения MCP23017  6 A - Out, B - Out
 
 // Define various ADC prescaler
-const unsigned char PS_16 = (1 << ADPS2);
+const unsigned char PS_16 = (1 << ADPS2);  
 const unsigned char PS_32 = (1 << ADPS2) | (1 << ADPS0);
 const unsigned char PS_64 = (1 << ADPS2) | (1 << ADPS1);
 const unsigned char PS_128 = (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
