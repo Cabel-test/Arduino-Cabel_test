@@ -143,7 +143,7 @@ char  txt_menu1_1[]            = "Tec\xA4 ""\x9F""a\x96""e\xA0\xAF N1";         
 char  txt_menu1_2[]            = "Tec\xA4 ""\x9F""a\x96""e\xA0\xAF N2";                                    // Тест кабель N 2
 char  txt_menu1_3[]            = "Tec\xA4 ""\x9F""a\x96""e\xA0\xAF N3";                                    // Тест кабель N 3
 char  txt_menu1_4[]            = "Tec\xA4 ""\x9F""a\x96""e\xA0\xAF N4";                                    // Тест кабель N 4
-char  txt_menu2_1[]            = "menu2_1";                                                                // 
+char  txt_menu2_1[]            = "\x89""a""\xA2""e""\xA0\xAC"" ""\x98""ap""\xA2\x9D\xA4""yp";              // Панель гарнитур                                                // 
 char  txt_menu2_2[]            = "menu2_2";                                                                //
 char  txt_menu2_3[]            = "menu2_3";                                                                //
 char  txt_menu2_4[]            = "Tec""\xA4"" pa""\x9C\xAA""e""\xA1""o""\x97";                             // Тест разъемов                                   //
@@ -1245,7 +1245,9 @@ void swichMenu() // Тексты меню в строках "txt....."
 
 		           if (pressed_button==but1 && m2 == 2)
 					  {
-							// Тест блока гарнитур
+							//Тест панели гарнитур
+
+						    test_panel_N1();
 	        				myGLCD.clrScr();
 							myButtons.drawButtons();
 							print_up();
@@ -1289,7 +1291,6 @@ void swichMenu() // Тексты меню в строках "txt....."
 		           if (pressed_button==but2 && m2 == 3)  // Второй пункт меню 3
 				      {
 							myGLCD.clrScr();
-						//	myGLCD.print(txt_pass_ok, RIGHT, 208);
 							myGLCD.clrScr();
 							myButtons.drawButtons();
 							print_up();
@@ -3036,7 +3037,19 @@ void test_cabel_N4_run()
 }
 void test_panel_N1()
 {
+	set_komm_mcp('B',1,'O');                        // Установить текущий вход коммутатора
+	digitalWrite(9,HIGH);
+	digitalWrite(10,HIGH);
+	mcp_Out2.digitalWrite(14, HIGH);                 // Включить реле. Подать +12в на вывод 2 разъема J12(b2-12)  №1А на передней панели
+	set_komm_mcp('B',10,'O');                        // Установить текущий вход коммутатора
+	digitalWrite(47,LOW);
+	delay(1000);
+	digitalWrite(47,HIGH);
+	set_komm_mcp('B',1,'O');                        // Установить текущий вход коммутатора
 
+	delay(3000);
+
+	mcp_Out2.digitalWrite(14, LOW);                 // Отключить реле
 }
 
 void test_all_pin()
