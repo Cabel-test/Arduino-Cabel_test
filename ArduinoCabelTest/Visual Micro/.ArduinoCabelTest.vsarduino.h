@@ -83,6 +83,7 @@ extern "C" void __cxa_pure_virtual() {;}
 #define portInputRegister(P)
 #define portModeRegister(P)
 
+inline uint8_t queueNext(uint8_t ht);
 void dateTime(uint16_t* date, uint16_t* time);
 void serial_print_date();
 void clock_read();
@@ -139,6 +140,12 @@ void test_cabel_N3_run();
 void test_cabel_N4_run();
 void test_panel_N1();
 void test_all_pin();
+void error_P(const char* msg);
+void fatalBlink();
+void adcInit(metadata_t* meta);
+void adcStart();
+void adcStop();
+void logData();
 void trigger();
 void oscilloscope();
 void buttons_right();
