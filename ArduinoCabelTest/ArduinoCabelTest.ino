@@ -31,7 +31,7 @@ modbusDevice regBank;
 modbusSlave slave;
 
 //+++++++++++++++++++++++ Настройка электронного резистора +++++++++++++++++++++++++++++++++++++
-  byte resistance        = 0x00;                        // Сопротивление 0x00..0xFF - 0Ом..100кОм
+byte resistance          = 0x00;                        // Сопротивление 0x00..0xFF - 0Ом..100кОм
 
 //+++++++++++++++++++++++++++++ Внешняя память +++++++++++++++++++++++++++++++++++++++
 int deviceaddress        = 80;                          // Адрес микросхемы памяти
@@ -104,7 +104,7 @@ int MaxAnalog = 0;
 int MaxAnalog0 = 0;
 int MaxAnalog1 = 0;
 float koeff_h = 7.759*4;
-int Sample_osc[254][2];
+volatile int Sample_osc[254][2];
 float StartSample = 0; 
 float EndSample = 0;
 int t_in_mode = 0;
@@ -129,7 +129,7 @@ bool sled = false;
 bool repeat = false;
 int16_t count_repeat = 0;
 volatile bool ADC_end = false;
-
+volatile int ADC_i = 0;
 
 volatile uint16_t MyBuff[254];  
 volatile uint16_t i_osc=0; 
@@ -303,6 +303,14 @@ volatile bool timerFlag = false;
 
 
 
+
+
+
+
+
+
+
+
 //-------------------------------------------------------------------------------------------------------
 //Назначение переменных для хранения № опций меню (клавиш)
 int but1, but2, but3, but4, but5, but6, but7, but8, but9, but10, butX, butY, butA, butB, butC, butD, but_m1, but_m2, but_m3, but_m4, but_m5, pressed_button;
@@ -458,6 +466,23 @@ unsigned int adr_memN2_3 = 0;                       // Начальный адрес памяти та
 unsigned int adr_memN2_4 = 0;                       // Начальный адрес памяти таблицы соответствия контактов разъемов №4А, №4В
 
 //==========================================================================================================================
+
+
+
+// Запись на ассемблере в регистры (1 sbi) или (0 cbi)
+// Необходим для работы с АЦП (изменение частоты тактирования)
+// Определяет для установки и сброса бита регистра
+#ifndef cbi
+#define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
+#endif
+#ifndef sbi
+#define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
+#endif
+
+
+
+
+
 
 void dateTime(uint16_t* date, uint16_t* time)                                    // Программа записи времени и даты файла
 {
@@ -1572,6 +1597,7 @@ void swichMenu() // Тексты меню в строках "txt....."
 
                    if (pressed_button==but1 && m2 == 5) // Сброс данных
 					  {
+						    myGLCD.clrScr();
 							oscilloscope();
 							myGLCD.clrScr();
 							myButtons.drawButtons();
@@ -1579,9 +1605,9 @@ void swichMenu() // Тексты меню в строках "txt....."
 					  }
 				   if (pressed_button==but2 && m2 == 5)
 					  {
+						    myGLCD.clrScr();
 						    logData();
 							myGLCD.clrScr();   // Очистить экран
-							//  myGLCD.print(txt_pass_ok, RIGHT, 208); 
 							delay (500);
 							myButtons.drawButtons();
 							print_up();
@@ -1590,8 +1616,8 @@ void swichMenu() // Тексты меню в строках "txt....."
 				   if (pressed_button==but3 && m2 == 5) // Ввод пароля пользователя
 					  {
 							myGLCD.clrScr();   // Очистить экран
-							//	  myGLCD.print(txt_pass_ok, RIGHT, 208); 
-
+							test_ADC();
+							myGLCD.clrScr();   // Очистить экран
 							myButtons.drawButtons();
 							print_up();
 					  }
@@ -3329,6 +3355,35 @@ void test_all_pin()
 
 ISR(ADC_vect)  
 {  
+
+    PORTB = B00000000; // пин 12 переводим в состояние LOW
+
+  // PORTB = B01000000; // пин 12 переводим в состояние HIGH
+
+	for (int i=0;i<10;i++)
+	{
+
+	}
+	//Sample_osc[ADC_i][0] = ADC;   // Считываем  ADC; 
+	//Sample_osc[ADC_i][0] = (ADCL|ADCH << 8);   // Считываем  ADC; 
+	//Sample_osc[ADC_i][0] = 0;   // Считываем  ADC; 
+
+
+
+	//ADC_i++;
+	//if (ADC_i == 239)
+	//{
+ //   	ADCSRA &= ~(1 << ADIE); //Выключить
+	//    ADC_i = 0;
+	//	ADC_end = true;
+	//}
+	PORTB = B01000000; // пин 12 переводим в состояние HIGH
+   digitalWrite(ledPin12, !digitalRead(ledPin12));       
+
+
+
+
+	/*
   // Read ADC data.
 #if RECORD_EIGHT_BITS
   uint8_t d = ADCH;
@@ -3378,39 +3433,14 @@ ISR(ADC_vect)
     isrBufNeeded = true;
     isrOver = 0;
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  */
 
   // int  d  = (ADCL|ADCH << 8);      // Считываем  ADC; 
 
  //  Sample_osc[i_osc][0] = (ADCL|ADCH << 8);   // Считываем  ADC; 
 
  //   i_osc++; 
-/*
-	  // Start ADC   Запуск АЦП
-  if (PIN_COUNT > 1)                           // Если входов больше 1 записать их в регистры и сделать измерения.
-  {    
-    ADMUX  = adcmux[adcindex];
-    ADCSRB = adcsrb[adcindex];
-    ADCSRA = adcsra[adcindex];
-  //  if (adcindex == 0) timerFlag = false;
-    adcindex =  adcindex < (PIN_COUNT - 1) ? adcindex + 1 : 0;    //переключаем входа и указываем индекс смещения
-  }
 
-  */
 
 
  /* if(i_osc==240)  
@@ -3419,7 +3449,7 @@ ISR(ADC_vect)
 //        UART_SendByte(204); 
 //        UART_SendByte(195); 
 //        for (i=0; i<800; i++)  UART_SendByte(MyBuff[i]);  
-		  cli(); // Глобально запрещаем прерывания
+//		  cli(); // Глобально запрещаем прерывания
 
 	//	ADCSRA |=   (0 << ADIE);
 /*        ADC_end = true;
@@ -3483,6 +3513,7 @@ Bit 3 – MUX5: Analog Channel and Gain Selection Bit
 // timer1 interrupt to clear OCF1B
 ISR(TIMER1_COMPB_vect) 
 {
+	digitalWrite(ledPin13, !digitalRead(ledPin13));      
   // Make sure ADC ISR responded to timer event.
   if (timerFlag) timerError = true;
   timerFlag = true;
@@ -3510,14 +3541,14 @@ void fatalBlink()
   }
 }
 //==============================================================================
-#if ADPS0 != 0 || ADPS1 != 1 || ADPS2 != 2
-#error unexpected ADC prescaler bits
-#endif
+//#if ADPS0 != 0 || ADPS1 != 1 || ADPS2 != 2
+//#error unexpected ADC prescaler bits
+//#endif
 //------------------------------------------------------------------------------
 // initialize ADC and timer1
 void adcInit(metadata_t* meta) 
 {
-  uint8_t adps;  // prescaler bits for ADCSRA 
+ uint8_t adps;  // prescaler bits for ADCSRA 
   uint32_t ticks = F_CPU*SAMPLE_INTERVAL + 0.5;  // Sample interval cpu cycles.
 
   if (ADC_REF & ~((1 << REFS0) | (1 << REFS1))) {
@@ -3554,7 +3585,8 @@ void adcInit(metadata_t* meta)
   meta->pinCount = PIN_COUNT;
   meta->recordEightBits = RECORD_EIGHT_BITS;
   
-  for (int i = 0; i < PIN_COUNT; i++) {
+  for (int i = 0; i < PIN_COUNT; i++) 
+  {
     uint8_t pin = PIN_LIST[i];
     if (pin >= NUM_ANALOG_INPUTS) error("Invalid Analog pin number");
     meta->pinNumber[i] = pin;
@@ -3664,81 +3696,39 @@ void adcStop()
 uint32_t const ERASE_SIZE = 262144L;
 void logData() 
 {
-  uint32_t bgnBlock, endBlock;
+
+ uint32_t bgnBlock, endBlock;
   
   // Allocate extra buffer space.
   block_t block[BUFFER_BLOCK_COUNT];
   
- // Serial.println();
+  Serial.println();
   
   // Initialize ADC and timer1.
   adcInit((metadata_t*) &block[0]);
-  
-  // Find unused file name.
- /* if (BASE_NAME_SIZE > 6) 
-  {
-    error("FILE_BASE_NAME too long");
-  }*/
-  //while (sd.exists(binName)) 
-  //{
-  //  if (binName[BASE_NAME_SIZE + 1] != '9') {
-  //    binName[BASE_NAME_SIZE + 1]++;
-  //  } else {
-  //    binName[BASE_NAME_SIZE + 1] = '0';
-  //    if (binName[BASE_NAME_SIZE] == '9') {
-  //      error("Can't create file name");
-  //    }
-  //    binName[BASE_NAME_SIZE]++;
-  //  }
-  //}
-  // Delete old tmp file.
- /* if (sd.exists(TMP_FILE_NAME)) 
-  {
-    Serial.println(F("Deleting tmp file"));
-    if (!sd.remove(TMP_FILE_NAME)) {
-      error("Can't remove tmp file");
-    }
-  }*/
-  // Create new file.
-  //Serial.println(F("Creating new file"));
-  //binFile.close();
-  //if (!binFile.createContiguous(sd.vwd(),
-  //  TMP_FILE_NAME, 512 * FILE_BLOCK_COUNT)) {
-  //  error("createContiguous failed");
-  //}
-  // Get the address of the file on the SD.
- /* if (!binFile.contiguousRange(&bgnBlock, &endBlock)) 
-  {
-    error("contiguousRange failed");
-  }*/
-  // Use SdFat's internal buffer.
 
-  uint8_t* cache = (uint8_t*)256;
+  // Get the address of the file on the SD.
+  //if (!binFile.contiguousRange(&bgnBlock, &endBlock)) {
+  //  error("contiguousRange failed");
+  //}
+  // Use SdFat's internal buffer.
+   uint8_t* cache = (uint8_t*) 256;
  /* uint8_t* cache = (uint8_t*)sd.vol()->cacheClear();
-  if (cache == 0) error("cacheClear failed"); */
- 
+  if (cache == 0) error("cacheClear failed"); 
+ */
   // Flash erase all data in the file.
- // Serial.println(F("Erasing all data"));
+  Serial.println(F("Erasing all data"));
   uint32_t bgnErase = bgnBlock;
   uint32_t endErase;
-  //while (bgnErase < endBlock) 
-  //{
-  //  endErase = bgnErase + ERASE_SIZE;
-  //  if (endErase > endBlock) endErase = endBlock;
-  //  if (!sd.card()->erase(bgnErase, endErase)) {
-  //    error("erase failed");
-  //  }
-  //  bgnErase = endErase + 1;
-  //}
-  // Start a multiple block write.
-  //if (!sd.card()->writeStart(bgnBlock, FILE_BLOCK_COUNT)) 
-  //{
+ 
+  //// Start a multiple block write.
+  //if (!sd.card()->writeStart(bgnBlock, FILE_BLOCK_COUNT)) {
   //  error("writeBegin failed");
   //}
-  // Write metadata.
- /* if (!sd.card()->writeData((uint8_t*)&block[0])) {
-    error("Write metadata failed");
-  } */
+  //// Write metadata.
+  //if (!sd.card()->writeData((uint8_t*)&block[0])) {
+  //  error("Write metadata failed");
+  //} 
   // Initialize queues.
   emptyHead = emptyTail = 0;
   fullHead = fullTail = 0;
@@ -3748,14 +3738,13 @@ void logData()
   emptyHead = queueNext(emptyHead);
   
   // Put rest of buffers in the empty queue.
-  for (uint8_t i = 0; i < BUFFER_BLOCK_COUNT; i++) 
-  {
+  for (uint8_t i = 0; i < BUFFER_BLOCK_COUNT; i++) {
     emptyQueue[emptyHead] = &block[i];
     emptyHead = queueNext(emptyHead);
   }
   // Give SD time to prepare for big write.
   delay(1000);
- // Serial.println(F("Logging - type any character to stop"));
+  Serial.println(F("Logging - type any character to stop"));
   // Wait for Serial Idle.
   Serial.flush();
   delay(10);
@@ -3768,25 +3757,19 @@ void logData()
 
   // Start logging interrupts.
   adcStart();
-  while (1) 
-  {
-	  
-    if (fullHead != fullTail) 
-	{
+  while (1) {
+    if (fullHead != fullTail) {
       // Get address of block to write.
       block_t* pBlock = fullQueue[fullTail];
       
       // Write block to SD.
       uint32_t usec = micros();
+	 // Serial.println((uint16_t*)pBlock->data[0]);
+	
 
-
-	 // Serial.println(pBlock->data[0]);
-
-
-    /*  if (!sd.card()->writeData((uint8_t*)pBlock)) {
+ /*     if (!sd.card()->writeData((uint8_t*)pBlock)) {
         error("write data failed");
       }*/
-	  
       usec = micros() - usec;
       t1 = millis();
       if (usec > maxLatency) maxLatency = usec;
@@ -3804,25 +3787,77 @@ void logData()
       emptyHead = queueNext(emptyHead);
       fullTail = queueNext(fullTail);
       bn++;
-      if (bn == FILE_BLOCK_COUNT) 
-	  {
+      if (bn == FILE_BLOCK_COUNT) {
         // File full so stop ISR calls.
         adcStop();
         break;
       }
     }
-	
-
-
-
-
-
-
- /*   if (timerError) 
-	{
+    if (timerError) {
       error("Missed timer event - rate too high");
-    }*/
-    if (myTouch.dataAvailable()) 
+    }
+    if (Serial.available()) 
+	{
+      // Stop ISR calls.
+      adcStop();
+      if (isrBuf != 0 && isrBuf->count >= PIN_COUNT) 
+	  {
+        // Truncate to last complete sample.
+        isrBuf->count = PIN_COUNT*(isrBuf->count/PIN_COUNT);
+        // Put buffer in full queue.
+        fullQueue[fullHead] = isrBuf;
+        fullHead = queueNext(fullHead);
+        isrBuf = 0;
+      }
+      if (fullHead == fullTail) break;
+    }
+  }
+ /* if (!sd.card()->writeStop()) {
+    error("writeStop failed");
+  }*/
+  // Truncate file if recording stopped early.
+  //if (bn != FILE_BLOCK_COUNT) {    
+  //  Serial.println(F("Truncating file"));
+  //  if (!binFile.truncate(512L * bn)) {
+  //    error("Can't truncate file");
+  //  }
+  //}
+  //if (!binFile.rename(sd.vwd(), binName)) {
+  //   error("Can't rename file");
+  // }
+
+  Serial.print(F("Max block write usec: "));
+  Serial.println(maxLatency);
+  Serial.print(F("Record time sec: "));
+  Serial.println(0.001*(t1 - t0), 3);
+  Serial.print(F("Sample count: "));
+  Serial.println(count/PIN_COUNT);
+  Serial.print(F("Samples/sec: "));
+  Serial.println((1000.0/PIN_COUNT)*count/(t1-t0));
+  Serial.print(F("Overruns: "));
+  Serial.println(overruns);
+  Serial.println(F("Done"));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // 	  Serial.println(pBlock->data[0]);
+
+  /*
+     if (myTouch.dataAvailable()) 
 	{
       // Stop ISR calls.
 
@@ -3851,7 +3886,10 @@ void logData()
 			} 
 		}
      }
-  }
+	 */
+
+
+
  /* if (!sd.card()->writeStop()) 
   {
     error("writeStop failed");
@@ -3869,20 +3907,19 @@ void logData()
      error("Can't rename file");
    }*/
 
-  Serial.print(F("Max block write usec: "));
-  Serial.println(maxLatency);
-  Serial.print(F("Record time sec: "));
-  Serial.println(0.001*(t1 - t0), 3);
-  Serial.print(F("Sample count: "));
-  Serial.println(count/PIN_COUNT);
-  Serial.print(F("Samples/sec: "));
-  Serial.println((1000.0/PIN_COUNT)*count/(t1-t0));
-  Serial.print(F("Overruns: "));
-  Serial.println(overruns);
-  Serial.println(F("Done"));
 }
 //------------------------------------------------------------------------------
+void test_ADC()
+{
+	ADCSRA=(1<<ADEN)|(1<<ADIE)|(1<<ADSC)|(1<<ADATE)|(1<<ADPS2)|(1<<ADPS1)|(1<<ADPS0);     //ADC Control and Status Register A 
+    ADMUX=(1<<ADLAR)|(1<<REFS1)|(1<<REFS0);       // Установить источник опорного напряжения и результат преобразования выравнивается по левой границе 
+	//ADCSRA |= (1 << ADIE); // Включить прерывание
+	//adcStart() ;
+	delay(4000);
 
+	adcStop();
+	//ADCSRA &= ~(1 << ADIE); //Выключить
+}
 
 
 
@@ -3947,7 +3984,7 @@ void trigger()
 void oscilloscope()  // просмотр в реальном времени на большой скорости
 {
 	uint32_t bgnBlock, endBlock;
-//	block_t block[BUFFER_BLOCK_COUNT];
+	block_t block[BUFFER_BLOCK_COUNT];
 	myGLCD.clrScr();
 	myGLCD.setBackColor( 0, 0, 0);
 	delay(500);
@@ -4009,7 +4046,7 @@ void oscilloscope()  // просмотр в реальном времени на большой скорости
 
 */
 
-
+ adcInit((metadata_t*) &block[0]);
 
 
 
@@ -4019,7 +4056,8 @@ void oscilloscope()  // просмотр в реальном времени на большой скорости
 			OldSample_osc[xpos][0] = 0;
 			OldSample_osc[xpos][1] = 0;
 		}
-
+  adcStart();
+  //  ADCSRA |= (1 << ADIE); // Включить прерывание
 	while(1) 
 	{
 		 DrawGrid();
@@ -4183,7 +4221,7 @@ void oscilloscope()  // просмотр в реальном времени на большой скорости
 		// Записать аналоговый сигнал в блок памяти
 		StartSample = micros();
 
-		ADCSRA |= (1 << ADSC);  // Запуск преобразования
+	//	ADCSRA |= (1 << ADSC);  // Запуск преобразования
 
 
 			//ADC_CHER = Channel_x;    // this is (1<<7) | (1<<6) for adc 7= A0, 6=A1 , 5=A2, 4 = A3    
@@ -4216,22 +4254,26 @@ void oscilloscope()  // просмотр в реальном времени на большой скорости
 
 
 
-     
-
-
-
 
 
 		while (ADC_end){};
 
-		for( xpos = 0;	xpos < 240; xpos ++) 
-			{
+		//for( xpos = 0;	xpos < 240; xpos ++) 
+		//	{
+
+			//	ADCSRA |= (1 << ADSC) ; // Запуск преобразования
+
 				/*
 			//	ADC_CHER = Channel_x;    // this is (1<<7) | (1<<6) for adc 7= A0, 6=A1 , 5=A2, 4 = A3    
+			   
 
 				ADC_CR = ADC_START ; 	 // Запустить преобразование
 				 while (!(ADC_ISR_DRDY));
 				 */
+				//	while (ADC_end){};
+				// while (!(ADC_ISR_DRDY));
+//					ADC_CR = ADC_START ; 	 // Запустить преобразование
+			//	Sample_osc[xpos][0] = (ADCL|ADCH << 8);      // Считываем  ADC; 
 
 				//Sample_osc[xpos][0] = analogRead(14);
 				//if (Channel0)
@@ -4252,14 +4294,14 @@ void oscilloscope()  // просмотр в реальном времени на большой скорости
 				//	}
 				//delayMicroseconds(dTime); //dTime
 				//
-			}
+			//}
 
-		 //ADC_end = false;
+		// ADC_end = false;
 
 		EndSample = micros();
 		DrawGrid();
   
-
+		//test_ADC();
 
 		// 
 		for( int xpos = 0; xpos < 239;	xpos ++)
@@ -4337,6 +4379,7 @@ void oscilloscope()  // просмотр в реальном времени на большой скорости
 				
 			}
 		  ADC_end = false;
+		   ADCSRA |= (1 << ADIE); // Включить прерывание
 	}
 koeff_h = 7.759*4;
 mode1 = 0;
@@ -5079,8 +5122,11 @@ void setup()
 //	TCCR1B = TCCR1B & 0b11111000 | 1; 
  //
  //  
-  //  ADCSRA=(1<<ADEN)|(1<<ADIE)|(1<<ADSC)|(1<<ADATE)|(1<<ADPS2)|(1<<ADPS1)|(1<<ADPS0);     //ADC Control and Status Register A 
-   // ADMUX=(1<<ADLAR)|(1<<REFS1)|(1<<REFS0);  // Установить источник опорного напряжения и результат преобразования выравнивается по левой границе 
+
+ //ADCSRA=(1<<ADEN)|(1<<ADIE)|(1<<ADPS2)|(1<<ADPS1)|(1<<ADPS0);     //ADC Control and Status Register A 
+
+//ADCSRA=(1<<ADEN)|(1<<ADIE)|(1<<ADSC)|(1<<ADATE)|(1<<ADPS2)|(1<<ADPS1)|(1<<ADPS0);     //ADC Control and Status Register A 
+    ADMUX=(1<<ADLAR)|(1<<REFS1)|(1<<REFS0);  // Установить источник опорного напряжения и результат преобразования выравнивается по левой границе 
 
 //16 MHz / 2 = 8 MHz
 //16 MHz / 4 = 4 MHz
@@ -5095,12 +5141,11 @@ void setup()
 //// Настройка АЦП    
 //ADCSRA |= (1 << ADEN) // Разрешение АЦП
 //        |(1 << ADSC) // Запуск преобразования
-//        |(1 << ADFR) // Непрерывный режим работы АЦП
+//        |(1 << ADATE) // Непрерывный режим работы АЦП
 //        |(1 << ADPS2)|(1 << ADPS1) // Предделитель на 64 (частота АЦП 125kHz)
 //        |(1 << ADIE); // Разрешение прерывания от АЦП
 //ADMUX |= (1 << REFS1)|(1 << REFS0); // Внутренний ИОН 2,56V, вход ADC0
 //     
-//sei(); // Глобально разрешаем прерывания
 //
 //
 //	ADCSRA &= ~PS_128;  // remove bits set by Arduino library

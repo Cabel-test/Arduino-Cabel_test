@@ -146,6 +146,7 @@ void adcInit(metadata_t* meta);
 void adcStart();
 void adcStop();
 void logData();
+void test_ADC();
 void trigger();
 void oscilloscope();
 void buttons_right();
