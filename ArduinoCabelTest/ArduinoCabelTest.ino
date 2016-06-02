@@ -95,7 +95,7 @@ int x_osc,y_osc;
 int mode = 0;
 int dTime = 1;
 int tmode = 1;
-int mode1 = 0;                                                     //Переключение чувствительности
+int mode1 = 2;                                                     //Переключение чувствительности
 int Trigger = 0;
 int MinAnalog = 500;
 int MinAnalog0 = 500;
@@ -104,7 +104,7 @@ int MaxAnalog = 0;
 int MaxAnalog0 = 0;
 int MaxAnalog1 = 0;
 float koeff_h = 7.759*4;
-volatile int Sample_osc[254][2];
+volatile unsigned int Sample_osc[254][2];
 float StartSample = 0; 
 float EndSample = 0;
 int t_in_mode = 0;
@@ -342,8 +342,8 @@ char  txt_menu5_2[]            = " ";                                           
 char  txt_menu5_3[]            = " ";                                                                      // 
 char  txt_menu5_4[]            = " ";                                                                      // 
 char  txt_osc_menu1[]          = "Oc\xA6\x9D\xA0\xA0o\x98pa\xA5";                                          //
-char  txt_osc_menu2[]          = "";                                                                       //
-char  txt_osc_menu3[]          = "";                                                                       //
+char  txt_osc_menu2[]          = "Log data";                                                                       //
+char  txt_osc_menu3[]          = "test_ADC";                                                                       //
 char  txt_osc_menu4[]          = "";                                                                       //          
 
 const char  txt_pass_ok[]           PROGMEM  = " ";                                                                      //  
@@ -472,15 +472,15 @@ unsigned int adr_memN2_4 = 0;                       // Начальный адрес памяти та
 // Запись на ассемблере в регистры (1 sbi) или (0 cbi)
 // Необходим для работы с АЦП (изменение частоты тактирования)
 // Определяет для установки и сброса бита регистра
+
+#define FASTADC 1
+// defines for setting and clearing register bits
 #ifndef cbi
 #define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
 #endif
 #ifndef sbi
 #define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
 #endif
-
-
-
 
 
 
@@ -3355,32 +3355,20 @@ void test_all_pin()
 
 ISR(ADC_vect)  
 {  
+   PORTB = B00000000; // пин 12 переводим в состояние LOW
 
-    PORTB = B00000000; // пин 12 переводим в состояние LOW
+   // Sample_osc[i_osc][0] =  ADCH;   // Считываем  ADC; 
+  // Sample_osc[i_osc][0] =  ADC;   // Считываем  ADC; 
+	Sample_osc[i_osc][0] = (ADCL|ADCH << 8);   // Считываем  ADC; 
+    i_osc++; 
 
-  // PORTB = B01000000; // пин 12 переводим в состояние HIGH
-
-	for (int i=0;i<10;i++)
-	{
-
-	}
-	//Sample_osc[ADC_i][0] = ADC;   // Считываем  ADC; 
-	//Sample_osc[ADC_i][0] = (ADCL|ADCH << 8);   // Считываем  ADC; 
-	//Sample_osc[ADC_i][0] = 0;   // Считываем  ADC; 
-
-
-
-	//ADC_i++;
-	//if (ADC_i == 239)
-	//{
- //   	ADCSRA &= ~(1 << ADIE); //Выключить
-	//    ADC_i = 0;
-	//	ADC_end = true;
-	//}
-	PORTB = B01000000; // пин 12 переводим в состояние HIGH
-   digitalWrite(ledPin12, !digitalRead(ledPin12));       
-
-
+	 if(i_osc>=240)
+	 {
+      ADCSRA &= ~(1 << ADIE); //Выключить
+ 	  ADC_end = true;
+	  i_osc=0;
+	 }
+    PORTB = B01000000; // пин 12 переводим в состояние HIGH
 
 
 	/*
@@ -3541,36 +3529,43 @@ void fatalBlink()
   }
 }
 //==============================================================================
-//#if ADPS0 != 0 || ADPS1 != 1 || ADPS2 != 2
-//#error unexpected ADC prescaler bits
-//#endif
+#if ADPS0 != 0 || ADPS1 != 1 || ADPS2 != 2
+#error unexpected ADC prescaler bits
+#endif
 //------------------------------------------------------------------------------
 // initialize ADC and timer1
 void adcInit(metadata_t* meta) 
 {
- uint8_t adps;  // prescaler bits for ADCSRA 
+  uint8_t adps;  // prescaler bits for ADCSRA
   uint32_t ticks = F_CPU*SAMPLE_INTERVAL + 0.5;  // Sample interval cpu cycles.
 
-  if (ADC_REF & ~((1 << REFS0) | (1 << REFS1))) {
-    error("Invalid ADC reference");
+  if (ADC_REF & ~((1 << REFS0) | (1 << REFS1))) 
+  {
+    //error("Invalid ADC reference");
   }
 #ifdef ADC_PRESCALER
-  if (ADC_PRESCALER > 7 || ADC_PRESCALER < 2) {
-    error("Invalid ADC prescaler");
+  if (ADC_PRESCALER > 7 || ADC_PRESCALER < 2) 
+  {
+   // error("Invalid ADC prescaler");
   }
   adps = ADC_PRESCALER;
 #else  // ADC_PRESCALER
   // Allow extra cpu cycles to change ADC settings if more than one pin.
   int32_t adcCycles = (ticks - ISR_TIMER0)/PIN_COUNT;
-                      - (PIN_COUNT > 1 ? ISR_SETUP_ADC : 0);
-                      
-  for (adps = 7; adps > 0; adps--) {
-     if (adcCycles >= (MIN_ADC_CYCLES << adps)) break;
+  - (PIN_COUNT > 1 ? ISR_SETUP_ADC : 0);
+
+  for (adps = 7; adps > 0; adps--) 
+  {
+    if (adcCycles >= (MIN_ADC_CYCLES << adps)) 
+	{
+      break;
+    }
   }
 #endif  // ADC_PRESCALER
   meta->adcFrequency = F_CPU >> adps;
-  if (meta->adcFrequency > (RECORD_EIGHT_BITS ? 2000000 : 1000000)) {
-    error("Sample Rate Too High");
+  if (meta->adcFrequency > (RECORD_EIGHT_BITS ? 2000000 : 1000000)) 
+  {
+   // error("Sample Rate Too High");
   }
 #if ROUND_SAMPLE_INTERVAL
   // Round so interval is multiple of ADC clock.
@@ -3579,56 +3574,77 @@ void adcInit(metadata_t* meta)
   ticks <<= adps;
 #endif  // ROUND_SAMPLE_INTERVAL
 
-  if (PIN_COUNT > sizeof(meta->pinNumber)/sizeof(meta->pinNumber[0])) {
-    error("Too many pins");
+  if (PIN_COUNT > sizeof(meta->pinNumber)/sizeof(meta->pinNumber[0])) 
+  {
+   // error("Too many pins");
   }
   meta->pinCount = PIN_COUNT;
   meta->recordEightBits = RECORD_EIGHT_BITS;
-  
+
   for (int i = 0; i < PIN_COUNT; i++) 
   {
-    uint8_t pin = PIN_LIST[i];
-    if (pin >= NUM_ANALOG_INPUTS) error("Invalid Analog pin number");
-    meta->pinNumber[i] = pin;
-    
-   // Set ADC reference and low three bits of analog pin number.   
-    adcmux[i] = (pin & 7) | ADC_REF;
-    if (RECORD_EIGHT_BITS) adcmux[i] |= 1 << ADLAR;
-    
-    // If this is the first pin, trigger on timer/counter 1 compare match B.
-    adcsrb[i] = i == 0 ? (1 << ADTS2) | (1 << ADTS0) : 0;
-#ifdef MUX5
-    if (pin > 7) adcsrb[i] |= (1 << MUX5);
-#endif  // MUX5
-    adcsra[i] = (1 << ADEN) | (1 << ADIE) | adps;
-    adcsra[i] |= i == 0 ? 1 << ADATE : 1 << ADSC;
+	uint8_t pin = PIN_LIST[i];
+	if (pin >= NUM_ANALOG_INPUTS) 
+		{
+		  //error("Invalid Analog pin number");
+		}
+		meta->pinNumber[i] = pin;
+
+		// Set ADC reference and low three bits of analog pin number.
+		adcmux[i] = (pin & 7) | ADC_REF;
+		if (RECORD_EIGHT_BITS)
+		{
+		  adcmux[i] |= 1 << ADLAR;
+		}
+
+		// If this is the first pin, trigger on timer/counter 1 compare match B.
+		adcsrb[i] = i == 0 ? (1 << ADTS2) | (1 << ADTS0) : 0;
+	#ifdef MUX5
+		if (pin > 7) 
+		{
+		  adcsrb[i] |= (1 << MUX5);
+		}
+	#endif  // MUX5
+		adcsra[i] = (1 << ADEN) | (1 << ADIE) | adps;
+		adcsra[i] |= i == 0 ? 1 << ADATE : 1 << ADSC;
   }
 
   // Setup timer1
   TCCR1A = 0;
   uint8_t tshift;
-  if (ticks < 0X10000) {
+  if (ticks < 0X10000) 
+  {
     // no prescale, CTC mode
     TCCR1B = (1 << WGM13) | (1 << WGM12) | (1 << CS10);
     tshift = 0;
-  } else if (ticks < 0X10000*8) {
+  }
+  else if (ticks < 0X10000*8) 
+  {
     // prescale 8, CTC mode
     TCCR1B = (1 << WGM13) | (1 << WGM12) | (1 << CS11);
     tshift = 3;
-  } else if (ticks < 0X10000*64) {
+  } 
+  else if (ticks < 0X10000*64) 
+  {
     // prescale 64, CTC mode
     TCCR1B = (1 << WGM13) | (1 << WGM12) | (1 << CS11) | (1 << CS10);
     tshift = 6;
-  } else if (ticks < 0X10000*256) {
+  }
+  else if (ticks < 0X10000*256) 
+  {
     // prescale 256, CTC mode
     TCCR1B = (1 << WGM13) | (1 << WGM12) | (1 << CS12);
     tshift = 8;
-  } else if (ticks < 0X10000*1024) {
+  } 
+  else if (ticks < 0X10000*1024) 
+  {
     // prescale 1024, CTC mode
     TCCR1B = (1 << WGM13) | (1 << WGM12) | (1 << CS12) | (1 << CS10);
     tshift = 10;
-  } else {
-    error("Sample Rate Too Slow");
+  }
+  else 
+  {
+   // error("Sample Rate Too Slow");
   }
   // divide by prescaler
   ticks >>= tshift;
@@ -3636,41 +3652,42 @@ void adcInit(metadata_t* meta)
   ICR1 = ticks - 1;
   // compare for ADC start
   OCR1B = 0;
-  
+
   // multiply by prescaler
   ticks <<= tshift;
-  
+
   // Sample interval in CPU clock ticks.
   meta->sampleInterval = ticks;
   meta->cpuFrequency = F_CPU;
   float sampleRate = (float)meta->cpuFrequency/meta->sampleInterval;
   Serial.print(F("Sample pins:"));
-  for (int i = 0; i < meta->pinCount; i++) {
+  for (int i = 0; i < meta->pinCount; i++) 
+  {
     Serial.print(' ');
     Serial.print(meta->pinNumber[i], DEC);
   }
-  Serial.println(); 
+  Serial.println();
   Serial.print(F("ADC bits: "));
   Serial.println(meta->recordEightBits ? 8 : 10);
   Serial.print(F("ADC clock kHz: "));
   Serial.println(meta->adcFrequency/1000);
   Serial.print(F("Sample Rate: "));
-  Serial.println(sampleRate);  
+  Serial.println(sampleRate);
   Serial.print(F("Sample interval usec: "));
-  Serial.println(1000000.0/sampleRate, 4); 
+  Serial.println(1000000.0/sampleRate, 4);
 }
 //------------------------------------------------------------------------------
 // enable ADC and timer1 interrupts
 void adcStart() 
 {
-  // initialize ISR
+ // initialize ISR
   isrBufNeeded = true;
   isrOver = 0;
   adcindex = 1;
 
   // Clear any pending interrupt.
   ADCSRA |= 1 << ADIF;
-  
+
   // Setup for first pin.
   ADMUX = adcmux[0];
   ADCSRB = adcsrb[0];
@@ -3696,241 +3713,360 @@ void adcStop()
 uint32_t const ERASE_SIZE = 262144L;
 void logData() 
 {
+	myGLCD.clrScr();
+	myGLCD.setBackColor( 0, 0, 0);
+	delay(500);
+	myGLCD.clrScr();
+	buttons_right();
+	buttons_channel();
+	myGLCD.setBackColor( 0, 0, 0);
+	myGLCD.setFont( BigFont);
+	myGLCD.setColor(VGA_LIME);
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[15]))); 
+	myGLCD.print(buffer,LEFT, 180);                                  // txt_info29
+	mode1 = 2;
+	int x_dTime;
+	int xpos;
+	int ypos1;
+	int ypos2;
 
- uint32_t bgnBlock, endBlock;
-  
-  // Allocate extra buffer space.
-  block_t block[BUFFER_BLOCK_COUNT];
-  
-  Serial.println();
-  
-  // Initialize ADC and timer1.
-  adcInit((metadata_t*) &block[0]);
+	int ypos_osc1_0;
+	int ypos_osc1_1;
+	int ypos_osc1_2;
+	int ypos_osc1_3;
 
-  // Get the address of the file on the SD.
-  //if (!binFile.contiguousRange(&bgnBlock, &endBlock)) {
-  //  error("contiguousRange failed");
-  //}
-  // Use SdFat's internal buffer.
-   uint8_t* cache = (uint8_t*) 256;
- /* uint8_t* cache = (uint8_t*)sd.vol()->cacheClear();
-  if (cache == 0) error("cacheClear failed"); 
- */
-  // Flash erase all data in the file.
-  Serial.println(F("Erasing all data"));
-  uint32_t bgnErase = bgnBlock;
-  uint32_t endErase;
- 
-  //// Start a multiple block write.
-  //if (!sd.card()->writeStart(bgnBlock, FILE_BLOCK_COUNT)) {
-  //  error("writeBegin failed");
-  //}
-  //// Write metadata.
-  //if (!sd.card()->writeData((uint8_t*)&block[0])) {
-  //  error("Write metadata failed");
-  //} 
-  // Initialize queues.
-  emptyHead = emptyTail = 0;
-  fullHead = fullTail = 0;
-  
-  // Use SdFat buffer for one block.
-  emptyQueue[emptyHead] = (block_t*)cache;
-  emptyHead = queueNext(emptyHead);
-  
-  // Put rest of buffers in the empty queue.
-  for (uint8_t i = 0; i < BUFFER_BLOCK_COUNT; i++) {
-    emptyQueue[emptyHead] = &block[i];
-    emptyHead = queueNext(emptyHead);
-  }
-  // Give SD time to prepare for big write.
-  delay(1000);
-  Serial.println(F("Logging - type any character to stop"));
-  // Wait for Serial Idle.
-  Serial.flush();
-  delay(10);
-  uint32_t bn = 1;
-  uint32_t t0 = millis();
-  uint32_t t1 = t0;
-  uint32_t overruns = 0;
-  uint32_t count = 0;
-  uint32_t maxLatency = 0;
+	int ypos_osc2_0;
+	int ypos_osc2_1;
+	int ypos_osc2_2;
+	int ypos_osc2_3;
 
-  // Start logging interrupts.
-  adcStart();
-  while (1) {
-    if (fullHead != fullTail) {
-      // Get address of block to write.
-      block_t* pBlock = fullQueue[fullTail];
-      
-      // Write block to SD.
-      uint32_t usec = micros();
-	 // Serial.println((uint16_t*)pBlock->data[0]);
-	
+	ADC_end = false;
 
- /*     if (!sd.card()->writeData((uint8_t*)pBlock)) {
-        error("write data failed");
-      }*/
-      usec = micros() - usec;
-      t1 = millis();
-      if (usec > maxLatency) maxLatency = usec;
-      count += pBlock->count;
-      
-      // Add overruns and possibly light LED. 
-      if (pBlock->overrun) {
-        overruns += pBlock->overrun;
-        if (ERROR_LED_PIN >= 0) {
-          digitalWrite(ERROR_LED_PIN, HIGH);
-        }
-      }
-      // Move block to empty queue.
-      emptyQueue[emptyHead] = pBlock;
-      emptyHead = queueNext(emptyHead);
-      fullTail = queueNext(fullTail);
-      bn++;
-      if (bn == FILE_BLOCK_COUNT) {
-        // File full so stop ISR calls.
-        adcStop();
-        break;
-      }
-    }
-    if (timerError) {
-      error("Missed timer event - rate too high");
-    }
-    if (Serial.available()) 
-	{
-      // Stop ISR calls.
-      adcStop();
-      if (isrBuf != 0 && isrBuf->count >= PIN_COUNT) 
-	  {
-        // Truncate to last complete sample.
-        isrBuf->count = PIN_COUNT*(isrBuf->count/PIN_COUNT);
-        // Put buffer in full queue.
-        fullQueue[fullHead] = isrBuf;
-        fullHead = queueNext(fullHead);
-        isrBuf = 0;
-      }
-      if (fullHead == fullTail) break;
-    }
-  }
- /* if (!sd.card()->writeStop()) {
-    error("writeStop failed");
-  }*/
-  // Truncate file if recording stopped early.
-  //if (bn != FILE_BLOCK_COUNT) {    
-  //  Serial.println(F("Truncating file"));
-  //  if (!binFile.truncate(512L * bn)) {
-  //    error("Can't truncate file");
-  //  }
-  //}
-  //if (!binFile.rename(sd.vwd(), binName)) {
-  //   error("Can't rename file");
-  // }
+	ADCSRA = (1 << ADEN)         // Разрешение АЦП
+	            |(1 << ADATE)    // Непрерывный режим работы АЦП
+	            |(1 << ADPS2)|(0 << ADPS1)|(0 << ADPS0); // Предделитель на 
 
-  Serial.print(F("Max block write usec: "));
-  Serial.println(maxLatency);
-  Serial.print(F("Record time sec: "));
-  Serial.println(0.001*(t1 - t0), 3);
-  Serial.print(F("Sample count: "));
-  Serial.println(count/PIN_COUNT);
-  Serial.print(F("Samples/sec: "));
-  Serial.println((1000.0/PIN_COUNT)*count/(t1-t0));
-  Serial.print(F("Overruns: "));
-  Serial.println(overruns);
-  Serial.println(F("Done"));
+    ADMUX  =(0<<ADLAR)
+		   |(0<<REFS1)|(1<<REFS0)
+		   |(0 << MUX4) |(0 << MUX3) | (1 << MUX2) | (1 << MUX1) | (0 << MUX0) ;       // Установить источник опорного напряжения и результат преобразования выравнивается по левой границе 
+    ADCSRB|= (1 << MUX5);
 
+	for( xpos = 0; xpos < 239;	xpos ++) // Стереть старые данные
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // 	  Serial.println(pBlock->data[0]);
-
-  /*
-     if (myTouch.dataAvailable()) 
-	{
-      // Stop ISR calls.
-
-	delay(10);
-	myTouch.read();
-	x_osc=myTouch.getX();
-	y_osc=myTouch.getY();
-
-	if ((x_osc>=2) && (x_osc<=240))  //  Область экрана
 		{
-			if ((y_osc>=1) && (y_osc<=160))  // Delay row
-			{
-							
-					adcStop();
-					if (isrBuf != 0 && isrBuf->count >= PIN_COUNT) 
-					{
-					// Truncate to last complete sample.
-					isrBuf->count = PIN_COUNT*(isrBuf->count/PIN_COUNT);
-					// Put buffer in full queue.
-					fullQueue[fullHead] = isrBuf;
-					fullHead = queueNext(fullHead);
-					isrBuf = 0;
-					}
-					if (fullHead == fullTail) break;
-				break;
-			} 
+			OldSample_osc[xpos][0] = 0;
+			OldSample_osc[xpos][1] = 0;
 		}
-     }
-	 */
+
+	while(1) 
+	{
+		 DrawGrid();
+		 if (myTouch.dataAvailable())
+			{
+				delay(10);
+				myTouch.read();
+				x_osc=myTouch.getX();
+				y_osc=myTouch.getY();
+
+				if ((x_osc>=2) && (x_osc<=240))  //  Область экрана
+					{
+						if ((y_osc>=1) && (y_osc<=160))  // Delay row
+						{
+							break;
+						} 
+					}
+
+				myGLCD.setBackColor( 0, 0, 255);
+				myGLCD.setFont( SmallFont);
+				myGLCD.setColor (255, 255,255);
+				myGLCD.drawRoundRect (250, 1, 318, 40);
+				myGLCD.drawRoundRect (250, 45, 318, 85);
+				myGLCD.drawRoundRect (250, 90, 318, 130);
+				myGLCD.drawRoundRect (250, 135, 318, 175);
+
+			if ((x_osc>=250) && (x_osc<=284))  // Боковые кнопки
+			  {
+				  if ((y_osc>=1) && (y_osc<=40))  // Первая  период
+				  {
+					waitForIt(250, 1, 318, 40);
+					mode -- ;
+					if (mode < 0) mode = 0;   
+					// Select delay times you can change values to suite your needs
+					if (mode == 0) {dTime = 1;    x_dTime = 282;}
+					if (mode == 1) {dTime = 10;   x_dTime = 278;}
+					if (mode == 2) {dTime = 20;   x_dTime = 278;}
+					if (mode == 3) {dTime = 50;   x_dTime = 278;}
+					if (mode == 4) {dTime = 100;  x_dTime = 274;}
+					if (mode == 5) {dTime = 200;  x_dTime = 274;}
+					if (mode == 6) {dTime = 300;  x_dTime = 274;}
+					if (mode == 7) {dTime = 500;  x_dTime = 274;}
+					if (mode == 8) {dTime = 1000; x_dTime = 270;}
+					if (mode == 9) {dTime = 5000; x_dTime = 270;}
+					myGLCD.print("    ", 270, 22);
+					myGLCD.printNumI(dTime, x_dTime, 22);
+				  }
+
+			 if ((y_osc>=45) && (y_osc<=85))  // Вторая - триггер
+				 {
+					waitForIt(250, 45, 318, 85);
+					tmode --;
+					if (tmode < 0)tmode = 0;
+					if (tmode == 1){ Trigger = MinAnalog+10; myGLCD.print(" 0%  ", 268, 65);}
+					if (tmode == 2){ Trigger = MaxAnalog/2;  myGLCD.print(" 50% ", 266, 65);}
+					if (tmode == 3){ Trigger = MaxAnalog-10; myGLCD.print("100%", 270, 65);}
+					if (tmode == 0)myGLCD.print(" Off ", 268, 65);
+
+				 }
+			 if ((y_osc>=90) && (y_osc<=130))  // Третья - делитель
+				 {
+					waitForIt(250, 90, 318, 130);
+					mode1 -- ;
+					myGLCD.setColor( 0, 0, 0);
+					myGLCD.fillRoundRect (1, 1,239, 159);
+					myGLCD.setColor (255, 255, 255);
+					myGLCD.setBackColor( 0, 0, 255);
+					myGLCD.setFont( SmallFont);
+					if (mode1 < 0) mode1 = 0;   
+					if (mode1 == 0){ koeff_h = 7.759*4; myGLCD.print(" 1  ", 275, 110);}
+					if (mode1 == 1){ koeff_h = 3.879*4; myGLCD.print("0.5 ", 275, 110);}
+					if (mode1 == 2){ koeff_h = 1.939*4; myGLCD.print("0.25", 275, 110);}
+					if (mode1 == 3){ koeff_h = 0.969*4; myGLCD.print("0.1 ", 275, 110);}
+				 }
+			 if ((y_osc>=135) && (y_osc<=175))  // Четвертая разрешение
+				 {
+
+				 }
+		   }
+		
+			if ((x_osc>=284) && (x_osc<=318))  // Боковые кнопки
+			  {
+				  if ((y_osc>=1) && (y_osc<=40))  // Первая  период
+				  {
+					waitForIt(250, 1, 318, 40);
+					mode ++ ;
+					if (mode > 9) mode = 9;   
+					if (mode == 0) {dTime = 1;    x_dTime = 282;}
+					if (mode == 1) {dTime = 10;   x_dTime = 278;}
+					if (mode == 2) {dTime = 20;   x_dTime = 278;}
+					if (mode == 3) {dTime = 50;   x_dTime = 278;}
+					if (mode == 4) {dTime = 100;  x_dTime = 274;}
+					if (mode == 5) {dTime = 200;  x_dTime = 274;}
+					if (mode == 6) {dTime = 300;  x_dTime = 274;}
+					if (mode == 7) {dTime = 500;  x_dTime = 274;}
+					if (mode == 8) {dTime = 1000; x_dTime = 270;}
+					if (mode == 9) {dTime = 5000; x_dTime = 270;}
+					myGLCD.print("    ", 270, 22);
+					myGLCD.printNumI(dTime, x_dTime, 22);
+				  }
+
+			 if ((y_osc>=45) && (y_osc<=85))  // Вторая - триггер
+				 {
+					waitForIt(250, 45, 318, 85);
+					tmode ++;
+					if (tmode > 3)tmode = 3;
+					if (tmode == 1){ Trigger = MinAnalog+10; myGLCD.print(" 0%  ", 268, 65);}
+					if (tmode == 2){ Trigger = MaxAnalog/2;  myGLCD.print(" 50% ", 266, 65);}
+					if (tmode == 3){ Trigger = MaxAnalog-10; myGLCD.print("100%", 270, 65);}
+					if (tmode == 0)myGLCD.print(" Off ", 268, 65);
+				 }
+			 if ((y_osc>=90) && (y_osc<=130))  // Третья - делитель
+				 {
+					waitForIt(250, 90, 318, 130);
+					mode1 ++ ;
+					myGLCD.setColor( 0, 0, 0);
+					myGLCD.fillRoundRect (1, 1,239, 159);
+					myGLCD.setColor (255, 255, 255);
+					myGLCD.setBackColor( 0, 0, 255);
+					myGLCD.setFont( SmallFont);
+					if (mode1 > 3) mode1 = 3;   
+					if (mode1 == 0){ koeff_h = 7.759*4; myGLCD.print(" 1  ", 275, 110);}
+					if (mode1 == 1){ koeff_h = 3.879*4; myGLCD.print("0.5 ", 275, 110);}
+					if (mode1 == 2){ koeff_h = 1.939*4; myGLCD.print("0.25", 275, 110);}
+					if (mode1 == 3){ koeff_h = 0.969*4; myGLCD.print("0.1 ", 275, 110);}
+				 }
+			 if ((y_osc>=135) && (y_osc<=175))  // Четвертая разрешение
+				 {
+					waitForIt(250, 135, 318, 175);
+				 }
+
+		   }
+
+		if ((x_osc>=250) && (x_osc<=318))  
+
+			{
+			if ((y_osc>=200) && (y_osc<=239))  //   Нижние кнопки  
+				{
+					waitForIt(250, 200, 318, 238);
+					Channel_trig = 0;
+					t_in_mode ++;
+						if (t_in_mode > 3)
+							{
+								t_in_mode = 0;
+							}
+						switch_trig(t_in_mode);
+						myGLCD.setBackColor( 0, 0, 255);
+						myGLCD.setColor (255, 255,255);
+						myGLCD.printNumI(t_in_mode, 282, 214);
+				}
+		  }
+
+			 if ((y_osc>=205) && (y_osc<=239))  // Нижние кнопки переключения входов
+					{
+						 touch_osc();
+					}
+		}
 
 
+		// trig_min_max(t_in_mode);
+		// if (tmode>0) trigger();
+		    trigger();
 
- /* if (!sd.card()->writeStop()) 
-  {
-    error("writeStop failed");
-  }*/
-  // Truncate file if recording stopped early.
- /* if (bn != FILE_BLOCK_COUNT) 
-  {    
-    Serial.println(F("Truncating file"));
-    if (!binFile.truncate(512L * bn)) {
-      error("Can't truncate file");
-    }
-  }*/
- /* if (!binFile.rename(sd.vwd(), binName)) 
-   {
-     error("Can't rename file");
-   }*/
+		    ADCSRA  |=(1 << ADSC)   // ADC Start Conversion
+	        |(1 << ADIE);   // Включить прерывание  Разрешение прерывания от АЦП
+			while(ADC_end){}
+			ADC_end = false;
+		// Записать аналоговый сигнал в блок памяти
+		StartSample = micros();
 
+
+		EndSample = micros();
+		DrawGrid();
+ 
+		for( int xpos = 0; xpos < 238;	xpos ++)
+			{
+				//  Стереть предыдущий экран
+				myGLCD.setColor( 0, 0, 0);
+			
+				if (Channel0 | osc_line_off0)
+					{
+						ypos_osc1_0 = 255-(OldSample_osc[ xpos + 1][0]/koeff_h) - hpos; 
+						ypos_osc2_0 = 255-(OldSample_osc[ xpos + 2][0]/koeff_h) - hpos;
+						if(ypos_osc1_0 < 0) ypos_osc1_0 = 0;
+						if(ypos_osc2_0 < 0) ypos_osc2_0 = 0;
+						if(ypos_osc1_0 > 220) ypos_osc1_0 = 220;
+						if(ypos_osc2_0 > 220) ypos_osc2_0 = 220;
+						myGLCD.drawLine (xpos + 1, ypos_osc1_0, xpos + 2, ypos_osc2_0);
+						myGLCD.drawLine (xpos + 2, ypos_osc1_0+1, xpos + 3, ypos_osc2_0+1);
+
+						if (xpos > 237 & Channel0 == false )
+							{
+								osc_line_off0 = false;
+							}
+					}
+			
+				if (Channel1|osc_line_off1)
+					{
+						ypos_osc1_1 = 255-(OldSample_osc[ xpos + 1][1]/koeff_h) - hpos; 
+						ypos_osc2_1 = 255-(OldSample_osc[ xpos + 2][1]/koeff_h) - hpos;
+						if(ypos_osc1_1 < 0) ypos_osc1_1 = 0;
+						if(ypos_osc2_1 < 0) ypos_osc2_1 = 0;
+						if(ypos_osc1_1 > 220) ypos_osc1_1 = 220;
+						if(ypos_osc2_1 > 220) ypos_osc2_1 = 220;
+						myGLCD.drawLine (xpos + 1, ypos_osc1_1, xpos + 2, ypos_osc2_1);
+						myGLCD.drawLine (xpos + 2, ypos_osc1_1+1, xpos + 3, ypos_osc2_1+1);
+						if (xpos > 237 & Channel1 == false )
+							{
+								osc_line_off1 = false;
+							}
+					}
+
+					if (xpos == 0)
+						{
+							myGLCD.drawLine (xpos + 1, 1, xpos + 1, 220);
+							myGLCD.drawLine (xpos + 2, 1, xpos + 2, 220);
+						}
+					
+				if (Channel0)
+					{
+						myGLCD.setColor( 255, 255, 255);
+						ypos_osc1_0 = 255-(Sample_osc[ xpos][0]/koeff_h) - hpos;
+						ypos_osc2_0 = 255-(Sample_osc[ xpos + 1][0]/koeff_h)- hpos;
+						if(ypos_osc1_0 < 0) ypos_osc1_0 = 0;
+						if(ypos_osc2_0 < 0) ypos_osc2_0 = 0;
+						if(ypos_osc1_0 > 220) ypos_osc1_0  = 220;
+						if(ypos_osc2_0 > 220) ypos_osc2_0 = 220;
+						myGLCD.drawLine (xpos, ypos_osc1_0, xpos + 1, ypos_osc2_0);
+						myGLCD.drawLine (xpos+1, ypos_osc1_0+1, xpos + 2, ypos_osc2_0+1);
+					}
+
+				if (Channel1)
+					{
+						myGLCD.setColor( VGA_YELLOW);
+						ypos_osc1_1 = 255-(Sample_osc[ xpos][1]/koeff_h) - hpos;
+						ypos_osc2_1 = 255-(Sample_osc[ xpos + 1][1]/koeff_h)- hpos;
+						if(ypos_osc1_1 < 0) ypos_osc1_1 = 0;
+						if(ypos_osc2_1 < 0) ypos_osc2_1 = 0;
+						if(ypos_osc1_1 > 220) ypos_osc1_1  = 220;
+						if(ypos_osc2_1 > 220) ypos_osc2_1 = 220;
+						myGLCD.drawLine (xpos, ypos_osc1_1, xpos + 1, ypos_osc2_1);
+						myGLCD.drawLine (xpos+1, ypos_osc1_1+1, xpos + 2, ypos_osc2_1+1);
+					}
+
+					OldSample_osc[xpos][0] = Sample_osc[xpos][0];
+					OldSample_osc[xpos][1] = Sample_osc[xpos][1];
+			}
+
+		    ADC_end = false;
+	}
+koeff_h = 7.759*4;
+mode1 = 2;
+Trigger = 0;
+StartSample = millis();
+myGLCD.setFont( BigFont);
+while (myTouch.dataAvailable()){}
 }
 //------------------------------------------------------------------------------
 void test_ADC()
 {
-	ADCSRA=(1<<ADEN)|(1<<ADIE)|(1<<ADSC)|(1<<ADATE)|(1<<ADPS2)|(1<<ADPS1)|(1<<ADPS0);     //ADC Control and Status Register A 
-    ADMUX=(1<<ADLAR)|(1<<REFS1)|(1<<REFS0);       // Установить источник опорного напряжения и результат преобразования выравнивается по левой границе 
-	//ADCSRA |= (1 << ADIE); // Включить прерывание
+	ADC_end = false;
+
+	ADCSRA = (1 << ADEN)   // Разрешение АЦП
+	            |(1 << ADATE)  // Непрерывный режим работы АЦП
+	            |(1 << ADPS2)|(0 << ADPS1)|(0 << ADPS0); // Предделитель на 64 (частота АЦП 125kHz)
+
+    ADMUX  =(0<<ADLAR)
+		   |(0<<REFS1)|(1<<REFS0)
+		   |(0 << MUX4) |(0 << MUX3) | (1 << MUX2) | (1 << MUX1) | (0 << MUX0) ;       // Установить источник опорного напряжения и результат преобразования выравнивается по левой границе 
+    ADCSRB|= (1 << MUX5);
+	i_osc=0;
+
+	ADCSRA  |=(1 << ADSC)   // ADC Start Conversion
+	         |(1 << ADIE);  // Включить прерывание  Разрешение прерывания от АЦП
+
+	while (ADC_end){};
+
+	Serial.print("i_osc - ");
+	Serial.println(i_osc);
+	i_osc = 0;
+	for(int i = 0;i<239;i++)
+	{
+      // Serial.println(analogRead(14));
+	   Serial.println(Sample_osc[i][0]);
+	}
+	ADC_end = false;
 	//adcStart() ;
-	delay(4000);
+	//delay(4000);
 
-	adcStop();
-	//ADCSRA &= ~(1 << ADIE); //Выключить
+ //   ADCSRA &= ~(1 << ADIE); //Выключить
 }
-
-
-
-
-
-
-
-
 
 void trigger()
 {
+	int Input = 10;
+		Serial.println("trig");
+	for(int tr = 0; tr < 1000; tr++)
+	{
+		Input = analogRead(14);
+		 if (Input< 250) break;
+	}
+	Serial.println("min");
+		for(int tr = 0; tr < 1000; tr++)
+	{
+		Input = analogRead(14);
+		if (Input>650) break;
+	}
+	Serial.println("max");
+
 	/*
 	 ADC_CHER = Channel_trig;
 
@@ -4011,43 +4147,18 @@ void oscilloscope()  // просмотр в реальном времени на большой скорости
 	int ypos_osc2_2;
 	int ypos_osc2_3;
 
+	ADC_end = false;
 
+	ADCSRA = (1 << ADEN)         // Разрешение АЦП
+	            |(1 << ADATE)    // Непрерывный режим работы АЦП
+	            |(1 << ADPS2)|(0 << ADPS1)|(0 << ADPS0); // Предделитель на 
 
+    ADMUX  =(0<<ADLAR)
+		   |(0<<REFS1)|(1<<REFS0)
+		   |(0 << MUX4) |(0 << MUX3) | (1 << MUX2) | (1 << MUX1) | (0 << MUX0) ;       // Установить источник опорного напряжения и результат преобразования выравнивается по левой границе 
+    ADCSRB|= (1 << MUX5);
 
-
-
-	//ADCSRA |= (1 << ADEN) // Разрешение АЦП
-	//	  // |(1 << ADATE)  // Непрерывный режим работы АЦП
-	//	   |(1 << ADPS2)|(1 << ADPS1)|(1 << ADPS0) // Предделитель на 64 (частота АЦП 125kHz)
-	//	   |(1 << ADIE);  // Разрешение прерывания от АЦП
-
-	//ADMUX |= (1 << ADLAR)//;MUX0
-	// 	  |(0 << MUX0) 
-	//	  |(1 << MUX1) 
-	//	  |(1 << MUX2); 
-
- //   ADCSRB|= (1 << MUX5);
-
-/*
-
-	  // Set ADC reference and low three bits of analog pin number.   
-    adcmux[i] = (pin & 7) | ADC_REF;
-    if (RECORD_EIGHT_BITS) adcmux[i] |= 1 << ADLAR;
-    
-    // If this is the first pin, trigger on timer/counter 1 compare match B.
-    adcsrb[i] = i == 0 ? (1 << ADTS2) | (1 << ADTS0) : 0;
-#ifdef MUX5
-    if (pin > 7) adcsrb[i] |= (1 << MUX5);
-#endif  // MUX5
-    adcsra[i] = (1 << ADEN) | (1 << ADIE) | adps;
-    adcsra[i] |= i == 0 ? 1 << ADATE : 1 << ADSC;
-  }
-
-
-*/
-
- adcInit((metadata_t*) &block[0]);
-
+	i_osc=0;
 
 
 	for( xpos = 0; xpos < 239;	xpos ++) // Стереть старые данные
@@ -4056,8 +4167,7 @@ void oscilloscope()  // просмотр в реальном времени на большой скорости
 			OldSample_osc[xpos][0] = 0;
 			OldSample_osc[xpos][1] = 0;
 		}
-  adcStart();
-  //  ADCSRA |= (1 << ADIE); // Включить прерывание
+
 	while(1) 
 	{
 		 DrawGrid();
@@ -4216,94 +4326,19 @@ void oscilloscope()  // просмотр в реальном времени на большой скорости
 					}
 		}
 		 trig_min_max(t_in_mode);
-		 if (tmode>0) trigger();
+		// if (tmode>0) trigger();
 	
+		    ADCSRA  |=(1 << ADSC)   // ADC Start Conversion
+	        |(1 << ADIE);   // Включить прерывание  Разрешение прерывания от АЦП
+
+			while(ADC_end){}
 		// Записать аналоговый сигнал в блок памяти
 		StartSample = micros();
 
-	//	ADCSRA |= (1 << ADSC);  // Запуск преобразования
-
-
-			//ADC_CHER = Channel_x;    // this is (1<<7) | (1<<6) for adc 7= A0, 6=A1 , 5=A2, 4 = A3    
-
-		// Запуск преобразования АЦП
-
-		// 
-
-//		TIMSK |= (1 << TOIE2); // Разрешение прерывания по таймеру2
-//TCCR2 |= (1 << CS21);  // Предделитель на 8 
-// Настройка АЦП    
-//ADCSRA |= (1 << ADEN) // Разрешение АЦП
-//       |(1 << ADSC) // Запуск преобразования
-//       |(1 << ADATE) // Непрерывный режим работы АЦП
-//       |(1 << ADPS2)|(1 << ADPS1)|(1 << ADPS0) // Предделитель на 64 (частота АЦП 125kHz)
-//       |(1 << ADIE); // Разрешение прерывания от АЦП
-//ADMUX |= (1 << REFS1)|(1 << REFS0); // Внутренний ИОН 2,56V, вход ADC0
-
-//#define ADEN    7   /* ADC Enable */
-//#define ADSC    6   /* ADC Start Conversion */
-//#define ADATE   5   /* ADC Auto Trigger Enable */
-//#define ADIF    4   /* ADC Interrupt Flag */
-//#define ADIE    3   /* ADC Interrupt Enable */
-//#define ADPS2   2   /* ADC Prescaler Select bit2 */
-//#define ADPS1   1   /* ADC Prescaler Select bit1 */
-//#define ADPS0   0   /* ADC Prescaler Select bit0 */
-
-
-
-
-
-
-
-
-		while (ADC_end){};
-
-		//for( xpos = 0;	xpos < 240; xpos ++) 
-		//	{
-
-			//	ADCSRA |= (1 << ADSC) ; // Запуск преобразования
-
-				/*
-			//	ADC_CHER = Channel_x;    // this is (1<<7) | (1<<6) for adc 7= A0, 6=A1 , 5=A2, 4 = A3    
-			   
-
-				ADC_CR = ADC_START ; 	 // Запустить преобразование
-				 while (!(ADC_ISR_DRDY));
-				 */
-				//	while (ADC_end){};
-				// while (!(ADC_ISR_DRDY));
-//					ADC_CR = ADC_START ; 	 // Запустить преобразование
-			//	Sample_osc[xpos][0] = (ADCL|ADCH << 8);      // Считываем  ADC; 
-
-				//Sample_osc[xpos][0] = analogRead(14);
-				//if (Channel0)
-				//	{
-				//		Sample_osc[xpos][0] = MyBuff[xpos];
-				//	}
-				//if (Channel1)
-				//   {
-				//		Sample_osc[xpos][1] = analogRead(14);
-				//   }
-				//if (Channel2)
-				//	{
-				//		Sample_osc[xpos][2] = analogRead(14);
-				//	}
-				//if (Channel3)
-				//	{
-				//		Sample_osc[xpos][3] = analogRead(14);
-				//	}
-				//delayMicroseconds(dTime); //dTime
-				//
-			//}
-
-		// ADC_end = false;
 
 		EndSample = micros();
 		DrawGrid();
-  
-		//test_ADC();
-
-		// 
+ 
 		for( int xpos = 0; xpos < 239;	xpos ++)
 			{
 				//  Стереть предыдущий экран
@@ -4378,11 +4413,15 @@ void oscilloscope()  // просмотр в реальном времени на большой скорости
 					OldSample_osc[xpos][1] = Sample_osc[xpos][1];
 				
 			}
+
 		  ADC_end = false;
-		   ADCSRA |= (1 << ADIE); // Включить прерывание
+		  
+    //ADCSRA  |=(1 << ADSC)   // ADC Start Conversion
+	   //     |(1 << ADIE);   // Включить прерывание  Разрешение прерывания от АЦП
+		//  ADCSRA |= (1 << ADIE);  // Включить прерывание
 	}
 koeff_h = 7.759*4;
-mode1 = 0;
+mode1 = 2;
 Trigger = 0;
 StartSample = millis();
 myGLCD.setFont( BigFont);
@@ -5077,7 +5116,7 @@ void setup()
 	//myTouch.setPrecision(PREC_EXTREME);
 	myButtons.setTextFont(BigFont);
 	myButtons.setSymbolFont(Dingbats1_XL);
-	Serial.begin(9600);                                    // Подключение к USB ПК
+	Serial.begin(115200);                                    // Подключение к USB ПК
 	Serial1.begin(115200);                                 // Подключение к 
 	slave.setSerial(3,57600);                              // Подключение к протоколу MODBUS компьютера Serial3 
 	Serial2.begin(115200);                                 // Подключение к 
@@ -5113,8 +5152,13 @@ void setup()
 	// ++++++++++++++++++ Настройка АЦП +++++++++++++++++++++++++++++++++++++++++++++++++++
 	// set up the ADC
 	 
+
+
   // Read the first sample pin to init the ADC.
-  analogRead(PIN_LIST[0]);
+ // analogRead(PIN_LIST[0]);
+
+   
+
   
   Serial.print(F("FreeRam: "));
   Serial.println(FreeRam());
@@ -5126,7 +5170,7 @@ void setup()
  //ADCSRA=(1<<ADEN)|(1<<ADIE)|(1<<ADPS2)|(1<<ADPS1)|(1<<ADPS0);     //ADC Control and Status Register A 
 
 //ADCSRA=(1<<ADEN)|(1<<ADIE)|(1<<ADSC)|(1<<ADATE)|(1<<ADPS2)|(1<<ADPS1)|(1<<ADPS0);     //ADC Control and Status Register A 
-    ADMUX=(1<<ADLAR)|(1<<REFS1)|(1<<REFS0);  // Установить источник опорного напряжения и результат преобразования выравнивается по левой границе 
+//    ADMUX=(1<<ADLAR)|(1<<REFS1)|(1<<REFS0);  // Установить источник опорного напряжения и результат преобразования выравнивается по левой границе 
 
 //16 MHz / 2 = 8 MHz
 //16 MHz / 4 = 4 MHz
@@ -5157,6 +5201,7 @@ void setup()
 //	sei(); // Глобально разрешаем прерывания
 
 	//draw_Glav_Menu();
+
 	wait_time_Old =  millis();
 	digitalWrite(ledPin13, HIGH);                          // 
 	digitalWrite(ledPin12, LOW);                           // 

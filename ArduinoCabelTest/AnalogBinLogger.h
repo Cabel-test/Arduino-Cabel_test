@@ -22,8 +22,8 @@ struct block8_t {
 // Data block for 10-bit ADC mode.
 const size_t DATA_DIM16 = 254;
 struct block16_t {
-  unsigned short count;    // count of data values
-  unsigned short overrun;  // count of overruns since last block
+  unsigned short count;    // Количество значений данных
+  unsigned short overrun;  // кол-во перерасхода с момента последнего блока
   unsigned short data[DATA_DIM16];
 };
 //------------------------------------------------------------------------------
