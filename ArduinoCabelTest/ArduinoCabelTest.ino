@@ -3355,11 +3355,13 @@ void test_all_pin()
 
 ISR(ADC_vect)  
 {  
-   PORTB = B00000000; // пин 12 переводим в состояние LOW
+  // PORTB = B00000000; // пин 12 переводим в состояние LOW
+ // PORTB = B01000000; // пин 12 переводим в состояние HIGH
 
-   // Sample_osc[i_osc][0] =  ADCH;   // Считываем  ADC; 
-  // Sample_osc[i_osc][0] =  ADC;   // Считываем  ADC; 
-	Sample_osc[i_osc][0] = (ADCL|ADCH << 8);   // Считываем  ADC; 
+   unsigned int	 analogValue = ADCL; // сохраняем младший байт результата АЦП
+    analogValue += ADCH << 8; // сохраняем старший байт АЦП
+	Sample_osc[i_osc][0] =  analogValue;
+//	Sample_osc[i_osc][0] = (ADCL|ADCH << 8);   // Считываем  ADC; 
     i_osc++; 
 
 	 if(i_osc>=240)
@@ -3368,7 +3370,7 @@ ISR(ADC_vect)
  	  ADC_end = true;
 	  i_osc=0;
 	 }
-    PORTB = B01000000; // пин 12 переводим в состояние HIGH
+   // PORTB = B01000000; // пин 12 переводим в состояние HIGH
 
 
 	/*
@@ -3742,14 +3744,18 @@ void logData()
 
 	ADC_end = false;
 
-	ADCSRA = (1 << ADEN)         // Разрешение АЦП
-	            |(1 << ADATE)    // Непрерывный режим работы АЦП
-	            |(1 << ADPS2)|(0 << ADPS1)|(0 << ADPS0); // Предделитель на 
+			ADCSRA |=(1 << ADEN);                                // Разрешение АЦП
+			ADCSRA |=(1 << ADATE);                               // Непрерывный режим работы АЦП З
+	//		ADCSRA |=(1 << ADIE);                                // Разрешение прерывания от АЦП
+	//		ADCSRA |=(0 << ADIF);                                // Флаг прерывания в "0"
+			ADCSRA |=(1 << ADPS2)|(0 << ADPS1)|(0 << ADPS0);     // Предделитель на 
+			ADCSRA |=(0 << ADSC) ;                               // ADC Start Conversion запрещаем
 
-    ADMUX  =(0<<ADLAR)
-		   |(0<<REFS1)|(1<<REFS0)
-		   |(0 << MUX4) |(0 << MUX3) | (1 << MUX2) | (1 << MUX1) | (0 << MUX0) ;       // Установить источник опорного напряжения и результат преобразования выравнивается по левой границе 
-    ADCSRB|= (1 << MUX5);
+			ADMUX   =(0<<ADLAR)                                 // результат преобразования выравнивается по правой границе 
+					|(0<<REFS1)|(1<<REFS0)                      // Установить источник опорного напряжения  5в.   
+					|(0 << MUX4) |(0 << MUX3) | (1 << MUX2) | (1 << MUX1) | (0 << MUX0) ; //  Установлен вход А14
+			ADCSRB|= (1 << MUX5);                               //  Установлен вход А14
+
 
 	for( xpos = 0; xpos < 239;	xpos ++) // Стереть старые данные
 
@@ -3815,7 +3821,6 @@ void logData()
 					if (tmode == 2){ Trigger = MaxAnalog/2;  myGLCD.print(" 50% ", 266, 65);}
 					if (tmode == 3){ Trigger = MaxAnalog-10; myGLCD.print("100%", 270, 65);}
 					if (tmode == 0)myGLCD.print(" Off ", 268, 65);
-
 				 }
 			 if ((y_osc>=90) && (y_osc<=130))  // Третья - делитель
 				 {
@@ -3888,7 +3893,6 @@ void logData()
 				 {
 					waitForIt(250, 135, 318, 175);
 				 }
-
 		   }
 
 		if ((x_osc>=250) && (x_osc<=318))  
@@ -3916,14 +3920,31 @@ void logData()
 					}
 		}
 
-
 		// trig_min_max(t_in_mode);
 		// if (tmode>0) trigger();
-		    trigger();
+		//    trigger();
+			//ADCSRA |=(1 << ADEN);                                // Разрешение АЦП
+			//ADCSRA |=(1 << ADATE);                               // Непрерывный режим работы АЦП
+			ADCSRA |=(1 << ADIE);                                  // Разрешение прерывания от АЦП
+		//	ADCSRA |=(0 << ADIF);                                  // Флаг прерывания в "0"
+		//    PORTB = B00000000; // пин 12 переводим в состояние LOW
+ // PORTB = B01000000; // пин 12 переводим в состояние HIGH
 
-		    ADCSRA  |=(1 << ADSC)   // ADC Start Conversion
-	        |(1 << ADIE);   // Включить прерывание  Разрешение прерывания от АЦП
+			//ADCSRA |=(1 << ADPS2)|(0 << ADPS1)|(0 << ADPS0);     // Предделитель на 
+			//ADCSRA  |=(1 << ADSC) ;                              // ADC Start Conversion
+
+			//ADMUX   =(0<<ADLAR)                                 // результат преобразования выравнивается по правой границе 
+			//		|(0<<REFS1)|(1<<REFS0)                      // Установить источник опорного напряжения  5в.   
+			//		|(0 << MUX4) |(0 << MUX3) | (1 << MUX2) | (1 << MUX1) | (0 << MUX0) ; //  Установлен вход А14
+			//ADCSRB|= (1 << MUX5);                               //  Установлен вход А14
+
+
+		    ADCSRA  |=(1 << ADSC) ;  // ADC Start Conversion
+
+		//	while(!ADIF){}
+			//if (ADIF) PORTB = B01000000; // пин 12 переводим в состояние HIGH
 			while(ADC_end){}
+	
 			ADC_end = false;
 		// Записать аналоговый сигнал в блок памяти
 		StartSample = micros();
@@ -4052,20 +4073,23 @@ void test_ADC()
 
 void trigger()
 {
-	int Input = 10;
-		Serial.println("trig");
-	for(int tr = 0; tr < 1000; tr++)
+	int tr = 0;
+
+	int Input = 0;
+	//Serial.println("trig");
+	for(tr = 0; tr < 1000; tr++)
 	{
 		Input = analogRead(14);
-		 if (Input< 250) break;
+		if (Input< 100) break;
 	}
-	Serial.println("min");
-		for(int tr = 0; tr < 1000; tr++)
+	//Serial.println("min");
+		for(tr = 0; tr < 1000; tr++)
 	{
 		Input = analogRead(14);
-		if (Input>650) break;
+		if (Input>500) break;
 	}
-	Serial.println("max");
+    Serial.println(tr);
+	Serial.println(Input);
 
 	/*
 	 ADC_CHER = Channel_trig;
@@ -4917,8 +4941,8 @@ void set_adr_EEPROM()
  //adr_memN2_2 = adr_memN1_1+sizeof(connektN1_default)+1;                       // Начальный адрес памяти таблицы соответствия контактов разъемов №2А, №2В
  //adr_memN2_3 = adr_memN1_1+sizeof(connektN1_default)+1;                       // Начальный адрес памяти таблицы соответствия контактов разъемов №3А, №3В
  //adr_memN2_4 = adr_memN1_1+sizeof(connektN1_default)+1;                       // Начальный адрес памяти таблицы соответствия контактов разъемов №4А, №4В
-
-}
+ //
+ }
 void setup_pin()
 {
 	pinMode(ledPin12, OUTPUT);   
