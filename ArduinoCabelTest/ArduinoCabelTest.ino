@@ -20,9 +20,10 @@
 #include <Arduino.h>
 #include "AnalogBinLogger.h"
 
-#define led_Green 13
-#define led_Red   12
-
+#define led_Green 13                                     // Светодиод на передней панели зеленый
+#define led_Red   12                                     // Светодиод на передней панели красный
+#define led_disp  9                                      // Светодиод на передней панели диспетчера
+#define led_instr 10                                     // Светодиод на передней панели инструктора
 
 MCP23017 mcp_Out1;                                       // Назначение портов расширения MCP23017  4 A - Out, B - Out
 MCP23017 mcp_Out2;                                       // Назначение портов расширения MCP23017  6 A - Out, B - Out
@@ -383,6 +384,36 @@ const char  txt__connect2[]         PROGMEM  = "O""\x96\xA2""apy""\x9B""e""\xA2"
 const char  txt__connect3[]         PROGMEM  = "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N3";    // Обнаружен кабель N3
 const char  txt__connect4[]         PROGMEM  = "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N4";    // Обнаружен кабель N4
 const char  txt__test_end[]         PROGMEM  = "TECT ""\x85""A""KOH""\x8D""EH";                                          // ТЕСТ ЗАКОНЧЕН
+const char  txt__panel[]            PROGMEM  = "Tec""\xA4"" c""\x97""e""\xA4""o""\x99\x9D""o""\x99""o""\x97";            // Тест светодиодов
+const char  txt__panel0[]           PROGMEM  = "                       ";                                                // 
+const char  txt__disp[]             PROGMEM  = "Tec""\xA4"" MT""\x81"" ""\x99\x9D""c""\xA3""e""\xA4\xA7""epa";           // Тест МТГ диспетчера
+const char  txt__instr[]            PROGMEM  = "Tec""\xA4"" MT""\x81"" ""\x9D\xA2""c""\xA4""py""\x9F\xA4""opa";          // Тест МТГ инструктора  
+const char  txt__MTT[]              PROGMEM  = "Tec""\xA4"" MTT";                                                        // Тест МТТ
+const char  txt__disp_connect[]     PROGMEM  = "Ka""\x96""e""\xA0\xAC"" ""\x99\x9D""c""\xA3"". ""\xA3""o""\x99\x9F\xA0"".";// Кабель дисп. подкл.
+const char  txt__disp_disconnect[]  PROGMEM  = "Ka""\x96""e""\xA0\xAC"" ""\x99\x9D""c""\xA3"". o""\xA4\x9F\xA0"".";        // Кабель дисп.откл.
+const char  txt__instr_connect[]    PROGMEM  = "Ka""\x96""e""\xA0\xAC"" ""\x9D\xA2""c""\xA4""p.""\xA3""o""\x99\x9F\xA0"".";// Кабель инстр.подкл.
+const char  txt__instr_disconnect[] PROGMEM  = "Ka""\x96""e""\xA0\xAC"" ""\x9D\xA2""c""\xA4""p.o""\xA4\x9F\xA0"".";       // Кабель инстр.откл.
+const char  txt__clear1[]           PROGMEM  = " ";                                                                       //  
+const char  txt__cont1_connect[]    PROGMEM  = "Ko""\xA2\xA4"". N1 - O""\x9F";                                            // Конт. N1 - Ок
+const char  txt__cont2_connect[]    PROGMEM  = "Ko""\xA2\xA4"". N2 - O""\x9F";                                            // Конт. N2 - Ок
+const char  txt__cont3_connect[]    PROGMEM  = "Ko""\xA2\xA4"". N3 - O""\x9F";                                            // Конт. N3 - Ок
+const char  txt__cont4_connect[]    PROGMEM  = "Ko""\xA2\xA4"". N4 - O""\x9F";                                            // Конт. N4 - Ок
+const char  txt__cont5_connect[]    PROGMEM  = "Ko""\xA2\xA4"". N5 - O""\x9F";                                            // Конт. N5 - Ок
+const char  txt__cont6_connect[]    PROGMEM  = "Ko""\xA2\xA4"". N6 - O""\x9F";                                            // Конт. N6 - Ок
+const char  txt__cont7_connect[]    PROGMEM  = "Ko""\xA2\xA4"". N7 - O""\x9F";                                            // Конт. N7 - Ок
+const char  txt__cont8_connect[]    PROGMEM  = "Ko""\xA2\xA4"". N8 - O""\x9F";                                            // Конт. N8 - Ок
+const char  txt__cont9_connect[]    PROGMEM  = "Ko""\xA2\xA4"". N9 - O""\x9F";                                            // Конт. N9 - Ок
+const char  txt__clear2[]           PROGMEM  = " ";                                                                       //  
+const char  txt__cont1_disconnect[] PROGMEM  = "Ko""\xA2\xA4"". N1 - He""\xA4""!";                                        // Конт. N1 - Нет!
+const char  txt__cont2_disconnect[] PROGMEM  = "Ko""\xA2\xA4"". N2 - He""\xA4""!";                                        // Конт. N2 - Нет!
+const char  txt__cont3_disconnect[] PROGMEM  = "Ko""\xA2\xA4"". N3 - He""\xA4""!";                                        // Конт. N3 - Нет! 
+const char  txt__cont4_disconnect[] PROGMEM  = "Ko""\xA2\xA4"". N4 - He""\xA4""!";                                        // Конт. N4 - Нет! 
+const char  txt__cont5_disconnect[] PROGMEM  = "Ko""\xA2\xA4"". N5 - He""\xA4""!";                                        // Конт. N5 - Нет! 
+const char  txt__cont6_disconnect[] PROGMEM  = "Ko""\xA2\xA4"". N6 - He""\xA4""!";                                        // Конт. N6 - Нет! 
+const char  txt__cont7_disconnect[] PROGMEM  = "Ko""\xA2\xA4"". N7 - He""\xA4""!";                                        // Конт. N7 - Нет! 
+const char  txt__cont8_disconnect[] PROGMEM  = "Ko""\xA2\xA4"". N8 - He""\xA4""!";                                        // Конт. N8 - Нет! 
+const char  txt__cont9_disconnect[] PROGMEM  = "Ko""\xA2\xA4"". N9 - He""\xA4""!";                                        // Конт. N9 - Нет! 
+
 
 char buffer[140];  
 const char* const table_message[] PROGMEM = 
@@ -417,7 +448,37 @@ const char* const table_message[] PROGMEM =
  txt__connect2,           // 27 "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N2";    // Обнаружен кабель N2
  txt__connect3,           // 28 "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N3";    // Обнаружен кабель N3
  txt__connect4,           // 29 "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N4";    // Обнаружен кабель N4
- txt__test_end            // 30 "TECT ""\x85""A""KOH""\x8D""EH";                                          // ТЕСТ ЗАКОНЧЕН
+ txt__test_end,           // 30 "TECT ""\x85""A""KOH""\x8D""EH";                                          // ТЕСТ ЗАКОНЧЕН
+ txt__panel,              // 31 "Tec""\xA4"" c""\x97""e""\xA4""o""\x99\x9D""o""\x99""o""\x97";            // Тест светодиодов
+ txt__panel0,             // 32 "                          ";                                             // 
+ txt__disp,               // 33 "Tec""\xA4"" MT""\x81"" ""\x99\x9D""c""\xA3""e""\xA4\xA7""epa";           // Тест МТГ диспетчера
+ txt__instr,              // 34 "Tec""\xA4"" MT""\x81"" ""\x9D\xA2""c""\xA4""py""\x9F\xA4""opa";          // Тест МТГ инструктора  
+ txt__MTT,                // 35 "Tec""\xA4"" MTT";                                                        // Тест МТТ
+ txt__disp_connect,       // 36 "Ka""\x96""e""\xA0\xAC"" ""\x99\x9D""c""\xA3"". ""\xA3""o""\x99\x9F\xA0"".";// Кабель дисп. подкл.
+ txt__disp_disconnect,    // 37 "Ka""\x96""e""\xA0\xAC"" ""\x99\x9D""c""\xA3"".o""\xA4\x9F\xA0"".";       // Кабель дисп.откл.
+ txt__instr_connect,      // 38 "Ka""\x96""e""\xA0\xAC"" ""\x9D\xA2""c""\xA4""p.""\xA3""o""\x99\x9F\xA0"".";// Кабель инстр.подкл.
+ txt__instr_disconnect,   // 39 "Ka""\x96""e""\xA0\xAC"" ""\x9D\xA2""c""\xA4""p.o""\xA4\x9F\xA0"".";      // Кабель инстр.откл.
+ txt__clear1,             // 40 " ";                                                                       //  
+ txt__cont1_connect,      // 41 "Ko""\xA2\xA4"". N1 - O""\x9F";                                            // Конт. N1 - Ок
+ txt__cont2_connect,      // 42 "Ko""\xA2\xA4"". N2 - O""\x9F";                                            // Конт. N2 - Ок
+ txt__cont3_connect,      // 43 "Ko""\xA2\xA4"". N3 - O""\x9F";                                            // Конт. N3 - Ок
+ txt__cont4_connect,      // 44 "Ko""\xA2\xA4"". N4 - O""\x9F";                                            // Конт. N4 - Ок
+ txt__cont5_connect,      // 45 "Ko""\xA2\xA4"". N5 - O""\x9F";                                            // Конт. N5 - Ок
+ txt__cont6_connect,      // 46 "Ko""\xA2\xA4"". N6 - O""\x9F";                                            // Конт. N6 - Ок
+ txt__cont7_connect,      // 47 "Ko""\xA2\xA4"". N7 - O""\x9F";                                            // Конт. N7 - Ок
+ txt__cont8_connect,      // 48 "Ko""\xA2\xA4"". N8 - O""\x9F";                                            // Конт. N8 - Ок
+ txt__cont9_connect,      // 49 "Ko""\xA2\xA4"". N9 - O""\x9F";                                            // Конт. N9 - Ок
+ txt__clear2,             // 50 " ";                                                                       //   
+ txt__cont1_disconnect,   // 51 "Ko""\xA2\xA4"". N1 - He""\xA4""!";                                        // Конт. N1 - Нет!
+ txt__cont2_disconnect,   // 52 "Ko""\xA2\xA4"". N2 - He""\xA4""!";                                        // Конт. N2 - Нет!
+ txt__cont3_disconnect,   // 53 "Ko""\xA2\xA4"". N3 - He""\xA4""!";                                        // Конт. N3 - Нет! 
+ txt__cont4_disconnect,   // 54 "Ko""\xA2\xA4"". N4 - He""\xA4""!";                                        // Конт. N4 - Нет! 
+ txt__cont5_disconnect,   // 55 "Ko""\xA2\xA4"". N5 - He""\xA4""!";                                        // Конт. N5 - Нет! 
+ txt__cont6_disconnect,   // 56 "Ko""\xA2\xA4"". N6 - He""\xA4""!";                                        // Конт. N6 - Нет! 
+ txt__cont7_disconnect,   // 57 "Ko""\xA2\xA4"". N7 - He""\xA4""!";                                        // Конт. N7 - Нет! 
+ txt__cont8_disconnect,   // 58 "Ko""\xA2\xA4"". N8 - He""\xA4""!";                                        // Конт. N8 - Нет! 
+ txt__cont9_disconnect    // 59 "Ko""\xA2\xA4"". N9 - He""\xA4""!";                                        // Конт. N9 - Нет! 
+
 };
 
 
@@ -1451,7 +1512,7 @@ void swichMenu() // Тексты меню в строках "txt....."
 		           if (pressed_button==but1 && m2 == 2)
 					  {
 							//Тест панели гарнитур
-						  	myGLCD.clrScr();
+						  //	myGLCD.clrScr();
 						    test_panel_N1();
 	        				myGLCD.clrScr();
 							myButtons.drawButtons();
@@ -2235,6 +2296,7 @@ int search_cabel(int sc)
 	if(n_connect ==0) Serial.println("Connector is not detected");
 	return n_connect;
 }
+
 void test_cabel_N1()
 {
 	myGLCD.clrScr();
@@ -2466,6 +2528,69 @@ void test_cabel_N4()
 	  myGLCD.setColor(255, 255, 255);  
 	  delay(3000);
 	}
+}
+void test_panel_N1()
+{
+	mcp_Out1.digitalWrite(8,  HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  1E1  U13
+	mcp_Out1.digitalWrite(9,  HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  1E2  U17
+	mcp_Out1.digitalWrite(10, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  1E3  U23
+	mcp_Out1.digitalWrite(11, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  1E4  U14
+	mcp_Out1.digitalWrite(12, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  1E5  U19 
+	mcp_Out1.digitalWrite(13, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  1E6  U21 
+
+	mcp_Out2.digitalWrite(8,  HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E1  U15
+	mcp_Out2.digitalWrite(9,  HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E2  U18 
+	mcp_Out2.digitalWrite(10, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E3  U22
+	mcp_Out2.digitalWrite(11, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E4  U16
+	mcp_Out2.digitalWrite(12, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E5  U20 
+	mcp_Out2.digitalWrite(13, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E6  U24
+
+	myGLCD.clrScr();
+	myGLCD.print(txt_menu2_1, CENTER, 1);                            // "Тест панели"
+	myGLCD.setColor(255, 255, 255);                                  // Белая окантовка
+	myGLCD.drawRoundRect (5, 200, 155, 239);
+ 	myGLCD.drawRoundRect (160, 200, 315, 239);
+	myGLCD.drawLine( 10, 60, 310, 60);
+	myGLCD.setColor(0, 0, 255);
+	myGLCD.fillRoundRect (6, 201, 154, 238);
+	myGLCD.fillRoundRect (161, 201, 314, 238);
+	myGLCD.setColor(255, 255, 255);  
+	myGLCD.setBackColor( 0, 0, 255);
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[21]))); 
+	myGLCD.print(buffer, 10, 210);                                   //txt_test_repeat  Повторить
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[20]))); 
+	myGLCD.print(buffer, 168, 210);                                  //txt_test_end Завершить
+	myGLCD.setBackColor( 0, 0, 0);                                             //  
+
+		test_panel_N1run();                                                   // Выполнить проверку
+		while (true)                                                           // Ожидание очередных комманд
+			{
+
+			if (myTouch.dataAvailable())
+				{
+				myTouch.read();
+				x=myTouch.getX();
+				y=myTouch.getY();
+		
+				if (((y>=200) && (y<=239)) && ((x>=5) && (x<=155)))           //нажата кнопка "Повторить проверку"
+					{
+						waitForIt(5, 200, 155, 239);
+						myGLCD.setFont(BigFont);
+						test_panel_N1run();                                   // Выполнить программу проверки
+					}
+				if (((y>=200) && (y<=239)) && ((x>=160) && (x<=315)))         //нажата кнопка "Завершить  проверку"
+					{
+						waitForIt(160, 200, 315, 239);
+						myGLCD.setFont(BigFont);
+						break;                                                // Выход из программы
+					}
+				}
+
+			}
+
+	delay(1000);
+
+	mcp_Out2.digitalWrite(14, LOW);                 // Отключить реле
 }
 
 void test_cabel_N1_run()
@@ -3241,52 +3366,186 @@ void test_cabel_N4_run()
 		delay(3000);
 	}
 }
-void test_panel_N1()
+void test_panel_N1run()
 {
-	mcp_Out1.digitalWrite(8,  HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  1E1  U13
-	mcp_Out1.digitalWrite(9,  HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  1E2  U17
-	mcp_Out1.digitalWrite(10, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  1E3  U23
-	mcp_Out1.digitalWrite(11, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  1E4  U14
-	mcp_Out1.digitalWrite(12, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  1E5  U19 
-	mcp_Out1.digitalWrite(13, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  1E6  U21 
+	mcp_Out1.digitalWrite(8,  HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  1E1  U13
+	mcp_Out1.digitalWrite(9,  HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  1E2  U17
+	mcp_Out1.digitalWrite(10, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  1E3  U23
+	mcp_Out1.digitalWrite(11, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  1E4  U14
+	mcp_Out1.digitalWrite(12, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  1E5  U19 
+	mcp_Out1.digitalWrite(13, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  1E6  U21 
 
-	mcp_Out2.digitalWrite(8,  HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E1  U15
-	mcp_Out2.digitalWrite(9,  HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E2  U18 
-	mcp_Out2.digitalWrite(10, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E3  U22
-	mcp_Out2.digitalWrite(11, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E4  U16
-	mcp_Out2.digitalWrite(12, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E5  U20 
-	mcp_Out2.digitalWrite(13, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E6  U24
+	mcp_Out2.digitalWrite(8,  HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  2E1  U15
+	mcp_Out2.digitalWrite(9,  HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  2E2  U18 
+	mcp_Out2.digitalWrite(10, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  2E3  U22
+	mcp_Out2.digitalWrite(11, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  2E4  U16
+	mcp_Out2.digitalWrite(12, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  2E5  U20 
+	mcp_Out2.digitalWrite(13, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  2E6  U24
+	digitalWrite(48,LOW);
+	digitalWrite(49,LOW);
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[32])));   // 
+	myGLCD.print(buffer, LEFT, 70); 
+	myGLCD.print(buffer, LEFT, 85);   
+	myGLCD.print(buffer, LEFT, 100);   
+	myGLCD.print(buffer, LEFT, 115);   
+	myGLCD.print(buffer, LEFT, 130);   
+	myGLCD.print(buffer, LEFT, 145);   
+	myGLCD.print(buffer, LEFT, 165);   
 
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[31])));   // Тест светодиодов
+	myGLCD.print(buffer, CENTER, 20);                               // Тест светодиодов
+	myGLCD.setBackColor( 0, 0, 0);                                             //  
 
-	pinMode(9, OUTPUT);                                       //  
-	pinMode(10, OUTPUT);                                      //  
+	pinMode(led_disp, OUTPUT);                                      //  
+	pinMode(led_instr, OUTPUT);                                     //  
 
-		mcp_Out2.digitalWrite(14, HIGH);                      // Включить реле. Подать +12в на вывод 2 разъема J12(b2-12)  №1А на передней панели
+		mcp_Out2.digitalWrite(14, HIGH);                            // Включить реле. Подать +12в на вывод 2 разъема J12(b2-12)  №1А на передней панели
 
-		for (int i=0;i<4;i++)
+		for (int i=0;i<4;i++)                                       // Проверка светодиодов на передней панели диспетчера/инструктора   
 		{
-			digitalWrite(9,LOW);
+			digitalWrite(led_disp,LOW);
 			delay(250);
-			digitalWrite(9,HIGH);
+			digitalWrite(led_disp,HIGH);
 			delay(250);
-			digitalWrite(10,LOW);
+			digitalWrite(led_instr,LOW);
 			delay(250);
-			digitalWrite(10,HIGH);
+			digitalWrite(led_instr,HIGH);
 			delay(250);
+		}
+	pinMode(led_disp, INPUT);                                       //  Вернуть вывода в исходное состояние
+	pinMode(led_instr, INPUT);                                      //  
+	delay(1000);
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[32])));   // Очистить
+	myGLCD.print(buffer, CENTER, 20);                               // 
+	myGLCD.setBackColor( 0, 0, 0);        
+
+	pinMode(46,INPUT);                                              // Установить выход коммутатора на ввод
+	digitalWrite(46,HIGH);                                          // Подключить резистор к входу
+
+	// Проверка МТГ диспетчера
+
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[33])));   // Тест диспетчера
+	myGLCD.print(buffer, CENTER, 20);                               // Тест диспетчера
+	myGLCD.setBackColor( 0, 0, 0);                                  //  
+
+	set_komm_mcp('A', 34,'O');                                      // Подключить коммутатор к выводу 3 разъема J40   
+	if(digitalRead(46)== LOW)                                       // Проверяем подключение разъема
+	{
+      	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[36]))); // Кабель дисп. подкл.
+		myGLCD.print(buffer, CENTER, 38);                           //RIGHT
+		//+++++++++++++++++++++++++++++++
+		set_komm_mcp('A', 44,'O');                                      // Подключить коммутатор к выводу 7 разъема J40   
+		if(digitalRead(46)== LOW)                                       // Проверяем подключение разъема
+		{
+      		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[36]))); // Кабель дисп. подкл.
+			myGLCD.print("", LEFT, 85);     //RIGHT
+		}
+		else
+		{
+      		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[37]))); // Кабель дисп. откл.
+			myGLCD.print("", LEFT, 85);      
+		}
+		//+++++++++++++++++++++++++++++
+		set_komm_mcp('A', 35,'O');                                       // Подключить коммутатор к выводу  
+		if(digitalRead(46)== HIGH)                                        // Проверяем подключение разъема
+		{
+      	//	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[36]))); // Кабель дисп. подкл.
+			myGLCD.print(buffer, LEFT, 130);     
+			set_komm_mcp('B', 6,'G');                                        // Подключить коммутатор к выводу 
+			if(digitalRead(46)== LOW)                                        // Проверяем подключение разъема
+			{
+      			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[36]))); // Кабель дисп. подкл.
+				myGLCD.print(buffer, LEFT, 130);     
+			}
+			else
+			{
+      			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[37]))); // Кабель дисп. откл.
+				myGLCD.print(buffer, LEFT, 130);      
+			}
+
+		}
+		else
+		{
+			// Вывод замыкает на общий
+      		//strcpy_P(buffer, (char*)pgm_read_word(&(table_message[37]))); // Кабель дисп. откл.
+					myGLCD.print(buffer, CENTER, 38);                           //RIGHT     
+		}
+		delay(2000);
+
+		set_komm_mcp('A', 33,'O');                                       // Подключить коммутатор к выводу  зел
+		if(digitalRead(46)== LOW)                                        // Проверяем подключение разъема
+		{
+      		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[36]))); // Кабель дисп. подкл.
+			myGLCD.print(buffer, LEFT, 145);     
+		}
+		else
+		{
+      		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[37]))); // Кабель дисп. откл.
+			myGLCD.print(buffer, LEFT, 145);      
+		}
+		delay(2000);
+		set_komm_mcp('B', 3,'G');                                        // Подключить коммутатор к выводу 
+		if(digitalRead(46)== LOW)                                        // Проверяем подключение разъема
+		{
+      		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[36]))); // Кабель дисп. подкл.
+			myGLCD.print(buffer, LEFT, 145);     
+		}
+		else
+		{
+      		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[37]))); // Кабель дисп. откл.
+			myGLCD.print(buffer, LEFT, 145);      
 		}
 
 
-/*
-	set_komm_mcp('B',1,'O');                        // Установить текущий вход коммутатора
-	digitalWrite(9,HIGH);
-	digitalWrite(10,HIGH);
-	mcp_Out2.digitalWrite(14, HIGH);                 // Включить реле. Подать +12в на вывод 2 разъема J12(b2-12)  №1А на передней панели
-	set_komm_mcp('B',10,'O');                        // Установить текущий вход коммутатора
-	digitalWrite(47,LOW);
-	delay(1000);
-	digitalWrite(47,HIGH);
-	set_komm_mcp('B',1,'O');                        // Установить текущий вход коммутатора
+
+	}
+	else  // Закончить проверку. Кабель не подключен!!
+	{
+      	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[37]))); // Кабель дисп. откл.
+		myGLCD.print(buffer, CENTER, 38);                             //RIGHT    
+	}
+
+//-----------------------------------------------------------------------
+	/*
+		// Проверка МТГ инструктора
+	set_komm_mcp('A', 39,'O');                                        // Подключить коммутатор к выводу 3 разъема J39   
+	if(digitalRead(46)== LOW)                                         // Проверяем подключение разъема
+	{
+      	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[38]))); // Кабель инстр. подкл.
+		myGLCD.print(buffer, LEFT, 85);     
+	}
+	else
+	{
+      	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[39]))); // Кабель инстр. откл.
+		myGLCD.print(buffer, LEFT, 85);      
+	}
+	set_komm_mcp('A', 41,'O');                                       // Подключить коммутатор к выводу 7 разъема J39   
+	if(digitalRead(46)== LOW)                                        // Проверяем подключение разъема
+	{
+      	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[38]))); // Кабель инстр. подкл.
+		myGLCD.print(buffer, LEFT, 115);     
+	}
+	else
+	{
+      	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[39]))); // Кабель инстр. откл.
+		myGLCD.print(buffer, LEFT, 115);      
+	}
+
+
+
 	*/
+
+
+
+
+	//delay(3000);
+	digitalWrite(48,HIGH);
+	digitalWrite(49,HIGH);
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[32])));   // 
+	//myGLCD.print(buffer, CENTER, 25);                               // 
+	myGLCD.setBackColor( 0, 0, 0);        
+
+
 	delay(1000);
 
 	mcp_Out2.digitalWrite(14, LOW);                 // Отключить реле
@@ -4961,6 +5220,8 @@ void setup_pin()
 	digitalWrite(49, HIGH);                               // Отключить оптрон включения звука U11_2
 	pinMode(46, INPUT);                                   // Выход коммутаторов блока А
 	pinMode(47, INPUT);                                   // Выход коммутаторов блока В
+	pinMode(led_disp, INPUT);                             // 
+	pinMode(led_instr, INPUT);                            //  
 }
 void setup_mcp()
 {
