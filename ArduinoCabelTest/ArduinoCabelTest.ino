@@ -20,9 +20,15 @@
 #include <Arduino.h>
 #include "AnalogBinLogger.h"
 
+#define led_Green 13
+#define led_Red   12
+
 
 MCP23017 mcp_Out1;                                       // Назначение портов расширения MCP23017  4 A - Out, B - Out
 MCP23017 mcp_Out2;                                       // Назначение портов расширения MCP23017  6 A - Out, B - Out
+
+
+
 
 
 //+++++++++++++++++++ MODBUS ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -1445,7 +1451,7 @@ void swichMenu() // Тексты меню в строках "txt....."
 		           if (pressed_button==but1 && m2 == 2)
 					  {
 							//Тест панели гарнитур
-
+						  	myGLCD.clrScr();
 						    test_panel_N1();
 	        				myGLCD.clrScr();
 							myButtons.drawButtons();
@@ -3252,10 +3258,10 @@ void test_panel_N1()
 	mcp_Out2.digitalWrite(13, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E6  U24
 
 
-	pinMode(9, OUTPUT);                                   //  
-	pinMode(10, OUTPUT);                                   //  
+	pinMode(9, OUTPUT);                                       //  
+	pinMode(10, OUTPUT);                                      //  
 
-		mcp_Out2.digitalWrite(14, HIGH);                 // Включить реле. Подать +12в на вывод 2 разъема J12(b2-12)  №1А на передней панели
+		mcp_Out2.digitalWrite(14, HIGH);                      // Включить реле. Подать +12в на вывод 2 разъема J12(b2-12)  №1А на передней панели
 
 		for (int i=0;i<4;i++)
 		{
@@ -4945,12 +4951,12 @@ void set_adr_EEPROM()
  }
 void setup_pin()
 {
-	pinMode(ledPin12, OUTPUT);   
-	pinMode(ledPin13, OUTPUT);   
-	digitalWrite(ledPin12, HIGH);                          // 
-	digitalWrite(ledPin13, LOW);                           // 
-	pinMode(48, OUTPUT);   
-	pinMode(49, OUTPUT);   
+	pinMode(led_Red, OUTPUT);                             //  
+	pinMode(led_Green, OUTPUT);                           //
+	digitalWrite(led_Red, HIGH);                          // 
+	digitalWrite(led_Green, LOW);                         // 
+	pinMode(48, OUTPUT);                                  // Отключить оптрон включения звука U11_1
+	pinMode(49, OUTPUT);                                  // Отключить оптрон включения звука U11_2
 	digitalWrite(48, HIGH);                               // Отключить оптрон включения звука U11_1
 	digitalWrite(49, HIGH);                               // Отключить оптрон включения звука U11_2
 	pinMode(46, INPUT);                                   // Выход коммутаторов блока А
@@ -5006,10 +5012,10 @@ void setup_mcp()
 }
 void setup_sound_port()
 {
-	pinMode(ledPin13, OUTPUT);   
-	pinMode(ledPin12, OUTPUT);  
-	digitalWrite(ledPin12, LOW);                   // 
-	digitalWrite(ledPin13, LOW);                   // 
+	//pinMode(ledPin13, OUTPUT);   
+	//pinMode(ledPin12, OUTPUT);  
+	//digitalWrite(ledPin12, LOW);                   // 
+	//digitalWrite(ledPin13, LOW);                   // 
 
 	pinMode(kn1Nano, OUTPUT);  
 	pinMode(kn2Nano, OUTPUT);  
