@@ -385,7 +385,7 @@ const char  txt__connect3[]         PROGMEM  = "O""\x96\xA2""apy""\x9B""e""\xA2"
 const char  txt__connect4[]         PROGMEM  = "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N4";    // Обнаружен кабель N4
 const char  txt__test_end[]         PROGMEM  = "TECT ""\x85""A""KOH""\x8D""EH";                                          // ТЕСТ ЗАКОНЧЕН
 const char  txt__panel[]            PROGMEM  = "Tec""\xA4"" c""\x97""e""\xA4""o""\x99\x9D""o""\x99""o""\x97";            // Тест светодиодов
-const char  txt__panel0[]           PROGMEM  = "                       ";                                                // 
+const char  txt__panel0[]           PROGMEM  = "                     ";                                                  // 
 const char  txt__disp[]             PROGMEM  = "Tec""\xA4"" MT""\x81"" ""\x99\x9D""c""\xA3""e""\xA4\xA7""epa";           // Тест МТГ диспетчера
 const char  txt__instr[]            PROGMEM  = "Tec""\xA4"" MT""\x81"" ""\x9D\xA2""c""\xA4""py""\x9F\xA4""opa";          // Тест МТГ инструктора  
 const char  txt__MTT[]              PROGMEM  = "Tec""\xA4"" MTT";                                                        // Тест МТТ
@@ -415,7 +415,7 @@ const char  txt__cont8_disconnect[] PROGMEM  = "Ko""\xA2\xA4"". N8 - He""\xA4""!
 const char  txt__cont9_disconnect[] PROGMEM  = "Ko""\xA2\xA4"". N9 - He""\xA4""!";                                        // Конт. N9 - Нет! 
 
 
-char buffer[140];  
+char buffer[40];  
 const char* const table_message[] PROGMEM = 
 {
  txt_pass_ok,             // 0 " ";                                                                      //  
@@ -478,7 +478,6 @@ const char* const table_message[] PROGMEM =
  txt__cont7_disconnect,   // 57 "Ko""\xA2\xA4"". N7 - He""\xA4""!";                                        // Конт. N7 - Нет! 
  txt__cont8_disconnect,   // 58 "Ko""\xA2\xA4"". N8 - He""\xA4""!";                                        // Конт. N8 - Нет! 
  txt__cont9_disconnect    // 59 "Ko""\xA2\xA4"". N9 - He""\xA4""!";                                        // Конт. N9 - Нет! 
-
 };
 
 
@@ -3383,25 +3382,28 @@ void test_panel_N1run()
 	mcp_Out2.digitalWrite(13, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  2E6  U24
 	digitalWrite(48,LOW);
 	digitalWrite(49,LOW);
+// ------------------------- Очистить экран от предыдущих сообщений ----------------------------------
 	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[32])));   // 
-	myGLCD.print(buffer, LEFT, 70); 
-	myGLCD.print(buffer, LEFT, 85);   
-	myGLCD.print(buffer, LEFT, 100);   
-	myGLCD.print(buffer, LEFT, 115);   
-	myGLCD.print(buffer, LEFT, 130);   
-	myGLCD.print(buffer, LEFT, 145);   
-	myGLCD.print(buffer, LEFT, 165);   
-
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[31])));   // Тест светодиодов
-	myGLCD.print(buffer, CENTER, 20);                               // Тест светодиодов
-	myGLCD.setBackColor( 0, 0, 0);                                             //  
-
+	myGLCD.print(buffer, LEFT, 20); 
+	myGLCD.print(buffer, LEFT, 38);   
+	myGLCD.print(buffer, LEFT, 70);                                 // Линия 1
+	myGLCD.print(buffer, LEFT, 85);                                 // Линия 2 
+	myGLCD.print(buffer, LEFT, 100);                                // Линия 3  
+	myGLCD.print(buffer, LEFT, 115);                                // Линия 4  
+	myGLCD.print(buffer, LEFT, 130);                                // Линия 5  
+	myGLCD.print(buffer, LEFT, 145);                                // Линия 6  
+	myGLCD.print(buffer, LEFT, 160);                                // Линия 7  
+	myGLCD.print(buffer, LEFT, 175);                                // Линия 8 
+//-----------------------------------------------------------------------------------------------------------
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[31])));   // Вывод сообщения "Тест светодиодов"
+	myGLCD.print(buffer, CENTER, 20);                               // Вывод сообщения "Тест светодиодов"
+	myGLCD.setBackColor( 0, 0, 0);                                  //  
 	pinMode(led_disp, OUTPUT);                                      //  
 	pinMode(led_instr, OUTPUT);                                     //  
 
 		mcp_Out2.digitalWrite(14, HIGH);                            // Включить реле. Подать +12в на вывод 2 разъема J12(b2-12)  №1А на передней панели
-
-		for (int i=0;i<4;i++)                                       // Проверка светодиодов на передней панели диспетчера/инструктора   
+//------------------------- Проверка светодиодов на передней панели диспетчера/инструктора ---------------------------------------------
+		for (int i=0;i<4;i++)                                        
 		{
 			digitalWrite(led_disp,LOW);
 			delay(250);
@@ -3412,97 +3414,142 @@ void test_panel_N1run()
 			digitalWrite(led_instr,HIGH);
 			delay(250);
 		}
-	pinMode(led_disp, INPUT);                                       //  Вернуть вывода в исходное состояние
-	pinMode(led_instr, INPUT);                                      //  
+	pinMode(led_disp, INPUT);                                              //  Вернуть вывода в исходное состояние
+	pinMode(led_instr, INPUT);                                             //  
 	delay(1000);
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[32])));   // Очистить
-	myGLCD.print(buffer, CENTER, 20);                               // 
+//------------------------------------------------------------------------------------------------------------------------------
+
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[32])));          // Очистить экран
+	myGLCD.print(buffer, CENTER, 20);                                      // 
 	myGLCD.setBackColor( 0, 0, 0);        
 
-	pinMode(46,INPUT);                                              // Установить выход коммутатора на ввод
-	digitalWrite(46,HIGH);                                          // Подключить резистор к входу
+	pinMode(46,INPUT);                                                     // Установить выход коммутатора на ввод
+	digitalWrite(46,HIGH);                                                 // Подключить резистор к входу
 
 	// Проверка МТГ диспетчера
 
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[33])));   // Тест диспетчера
-	myGLCD.print(buffer, CENTER, 20);                               // Тест диспетчера
-	myGLCD.setBackColor( 0, 0, 0);                                  //  
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[33])));          // Вывод сообщения "Тест диспетчера"
+	myGLCD.print(buffer, CENTER, 20);                                      // Вывод сообщения "Тест диспетчера"
+	myGLCD.setBackColor( 0, 0, 0);                                         //  
 
-	set_komm_mcp('A', 34,'O');                                      // Подключить коммутатор к выводу 3 разъема J40   
-	if(digitalRead(46)== LOW)                                       // Проверяем подключение разъема
+	set_komm_mcp('A', 34,'O');                                             // Подключить коммутатор к выводу 3 разъема J40   
+	delay(200);
+	if(digitalRead(46)== LOW)                                              // Проверяем подключение разъема
 	{
-      	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[36]))); // Кабель дисп. подкл.
-		myGLCD.print(buffer, CENTER, 38);                           //RIGHT
-		//+++++++++++++++++++++++++++++++
-		set_komm_mcp('A', 44,'O');                                      // Подключить коммутатор к выводу 7 разъема J40   
-		if(digitalRead(46)== LOW)                                       // Проверяем подключение разъема
+      	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[36])));      // Вывод сообщения "Кабель дисп. подкл."
+		myGLCD.print(buffer, CENTER, 38);                                  // RIGHT
+
+		//+++++++++++++++++++++ Проверяем контакт №2 линия дисп 70 +++++++++++++++++++++++++++++++++++++++++++ 
+		set_komm_mcp('A', 32,'O');                                              // Подключить коммутатор к выводу  
+		delay(200);
+		if(digitalRead(46)== HIGH)                                              // Проверяем подключение разъема
 		{
-      		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[36]))); // Кабель дисп. подкл.
-			myGLCD.print("", LEFT, 85);     //RIGHT
-		}
-		else
-		{
-      		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[37]))); // Кабель дисп. откл.
-			myGLCD.print("", LEFT, 85);      
-		}
-		//+++++++++++++++++++++++++++++
-		set_komm_mcp('A', 35,'O');                                       // Подключить коммутатор к выводу  
-		if(digitalRead(46)== HIGH)                                        // Проверяем подключение разъема
-		{
-      	//	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[36]))); // Кабель дисп. подкл.
-			myGLCD.print(buffer, LEFT, 130);     
-			set_komm_mcp('B', 6,'G');                                        // Подключить коммутатор к выводу 
-			if(digitalRead(46)== LOW)                                        // Проверяем подключение разъема
+			set_komm_mcp('B', 5,'G');                                           // Подключить коммутатор к выводу 
+			delay(200);
+			if(digitalRead(46)== LOW)                                           // Проверяем подключение разъема
 			{
-      			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[36]))); // Кабель дисп. подкл.
-				myGLCD.print(buffer, LEFT, 130);     
+      			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[42])));  // Кабель дисп. подкл.
+				myGLCD.print(buffer, LEFT, 70);     
 			}
 			else
 			{
-      			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[37]))); // Кабель дисп. откл.
-				myGLCD.print(buffer, LEFT, 130);      
+      			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[52])));  // Кабель дисп. откл.
+				myGLCD.print(buffer, LEFT, 70);      
 			}
 
 		}
 		else
 		{
 			// Вывод замыкает на общий
-      		//strcpy_P(buffer, (char*)pgm_read_word(&(table_message[37]))); // Кабель дисп. откл.
-					myGLCD.print(buffer, CENTER, 38);                           //RIGHT     
+      		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[52])));     // Кабель дисп. откл.
+			myGLCD.print(buffer, CENTER, 70);                          
 		}
-		delay(2000);
 
+		//+++++++++++++++++++++ Проверяем контакт №3 линия дисп 85 +++++++++++++++++++++++++++++++++++++++++++ 
+		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[43])));      // Вывод сообщения "Кабель дисп. подкл."
+		myGLCD.print(buffer, LEFT, 85);           
+
+		//+++++++++++++++++++++ Проверяем контакт №5 линия дисп 100 +++++++++++++++++++++++++++++++++++++++++++ 
+/*
+
+		//+++++++++++++++++++++ Проверяем контакт №6 линия дисп 115 +++++++++++++++++++++++++++++++++++++++++++ 
+		set_komm_mcp('A', 35,'O');                                              // Подключить коммутатор к выводу  
+		delay(200);
+		if(digitalRead(46)== HIGH)                                              // Проверяем подключение разъема
+		{
+			set_komm_mcp('B', 6,'G');                                           // Подключить коммутатор к выводу 
+			delay(200);
+			if(digitalRead(46)== LOW)                                           // Проверяем подключение разъема
+			{
+      			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[145])));  // Кабель дисп. подкл.
+				myGLCD.print("115", LEFT, 115);     
+			}
+			else
+			{
+      			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[155])));  // Кабель дисп. откл.
+				myGLCD.print(buffer, LEFT, 115);      
+			}
+
+		}
+		else
+		{
+			// Вывод замыкает на общий
+      		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[145])));     // Кабель дисп. откл.
+			myGLCD.print(buffer, CENTER, 115);                          
+		}
+
+
+	    //+++++++++++++++++++++ Проверяем контакт №7 линия дисп 130 +++++++++++++++++++++++++++++++++++++++++++ 
 		set_komm_mcp('A', 33,'O');                                       // Подключить коммутатор к выводу  зел
+		delay(200);
 		if(digitalRead(46)== LOW)                                        // Проверяем подключение разъема
 		{
       		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[36]))); // Кабель дисп. подкл.
-			myGLCD.print(buffer, LEFT, 145);     
+			myGLCD.print("130", LEFT, 130);     
 		}
 		else
 		{
       		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[37]))); // Кабель дисп. откл.
-			myGLCD.print(buffer, LEFT, 145);      
+			myGLCD.print(buffer, LEFT, 130);      
 		}
-		delay(2000);
-		set_komm_mcp('B', 3,'G');                                        // Подключить коммутатор к выводу 
-		if(digitalRead(46)== LOW)                                        // Проверяем подключение разъема
+	    //+++++++++++++++++++++ Проверяем контакт №8 линия дисп 145 +++++++++++++++++++++++++++++++++++++++++++ 
+	
+		
+		//+++++++++++++++++++++ Проверяем контакт №9 линия дисп 160 +++++++++++++++++++++++++++++++++++++++++++ 
+
+		set_komm_mcp('A', 44,'O');                                         // Подключить коммутатор к выводу 7 разъема J40   
+		delay(200);
+		if(digitalRead(46)== LOW)                                          // Проверяем подключение разъема
 		{
-      		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[36]))); // Кабель дисп. подкл.
-			myGLCD.print(buffer, LEFT, 145);     
+      		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[36])));  // Кабель дисп. подкл.
+			myGLCD.print("160", LEFT, 160);     //RIGHT
 		}
 		else
 		{
-      		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[37]))); // Кабель дисп. откл.
-			myGLCD.print(buffer, LEFT, 145);      
+      		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[37])));  // Кабель дисп. откл.
+			myGLCD.print("", LEFT, 160);      
 		}
+       //----------------------------------------------------------------------
 
+		//set_komm_mcp('B', 3,'G');                                        // Подключить коммутатор к выводу 
+		//if(digitalRead(46)== LOW)                                        // Проверяем подключение разъема
+		//{
+  //    		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[36]))); // Кабель дисп. подкл.
+		//	myGLCD.print(buffer, LEFT, 145);     
+		//}
+		//else
+		//{
+  //    		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[37]))); // Кабель дисп. откл.
+		//	myGLCD.print(buffer, LEFT, 145);      
+		//}
 
+		*/
 
 	}
 	else  // Закончить проверку. Кабель не подключен!!
 	{
-      	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[37]))); // Кабель дисп. откл.
-		myGLCD.print(buffer, CENTER, 38);                             //RIGHT    
+      	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[37])));         // Кабель дисп. откл.
+		myGLCD.print(buffer, CENTER, 38);                                     //
 	}
 
 //-----------------------------------------------------------------------
