@@ -2315,7 +2315,7 @@ void test_cabel_N1()
 	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[20]))); 
 	myGLCD.print(buffer, 168, 210);                                            //txt_test_end Завершить
 	myGLCD.setBackColor( 0, 0, 0);                                             //  
-
+	mcp_Out2.digitalWrite(14, LOW);                                            // Отключить реле +12v
 	if (search_cabel(40)== 1)                                                  // Найден кабель №1
 	{
 		test_cabel_N1_run();                                                   // Выполнить проверку
@@ -2373,6 +2373,7 @@ void test_cabel_N2()
 	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[20]))); 
 	myGLCD.print(buffer, 168, 210);                                            //txt_test_end Завершить
 	myGLCD.setBackColor( 0, 0, 0);
+	mcp_Out2.digitalWrite(14, LOW);                                            // Отключить реле +12v
 
 	if (search_cabel(1)== 2)
 	{
@@ -2431,6 +2432,7 @@ void test_cabel_N3()
 	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[20]))); 
 	myGLCD.print(buffer, 168, 210);                                            //txt_test_end Завершить
 	myGLCD.setBackColor( 0, 0, 0);
+	mcp_Out2.digitalWrite(14, LOW);                                            // Отключить реле +12v
 
 	if (search_cabel(39)== 3)
 	{
@@ -2488,6 +2490,7 @@ void test_cabel_N4()
 	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[20]))); 
 	myGLCD.print(buffer, 168, 210);                                            //txt_test_end Завершить
 	myGLCD.setBackColor( 0, 0, 0);
+	mcp_Out2.digitalWrite(14, LOW);                                            // Отключить реле +12v
 
 	if (search_cabel(41)== 4)
 	{
@@ -2544,6 +2547,7 @@ void test_panel_N1()
 	mcp_Out2.digitalWrite(11, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E4  U16
 	mcp_Out2.digitalWrite(12, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E5  U20 
 	mcp_Out2.digitalWrite(13, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E6  U24
+	mcp_Out2.digitalWrite(14, LOW);                           // Отключить реле +12v
 
 	myGLCD.clrScr();
 	myGLCD.print(txt_menu2_1, CENTER, 1);                            // "Тест панели"
@@ -2607,6 +2611,7 @@ void test_panel_N2()
 	mcp_Out2.digitalWrite(11, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E4  U16
 	mcp_Out2.digitalWrite(12, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E5  U20 
 	mcp_Out2.digitalWrite(13, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E6  U24
+    mcp_Out2.digitalWrite(14, LOW);                           // Отключить реле +12v
 
 	myGLCD.clrScr();
 	myGLCD.print(txt_menu2_1, CENTER, 1);                            // "Тест панели"
