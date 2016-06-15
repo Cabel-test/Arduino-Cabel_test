@@ -5487,7 +5487,7 @@ void set_adr_EEPROM()
  //adr_memN2_3 = adr_memN1_1+sizeof(connektN1_default)+1;                       // Начальный адрес памяти таблицы соответствия контактов разъемов №3А, №3В
  //adr_memN2_4 = adr_memN1_1+sizeof(connektN1_default)+1;                       // Начальный адрес памяти таблицы соответствия контактов разъемов №4А, №4В
  //
- }
+ } 
 void setup_pin()
 {
 	pinMode(led_Red, OUTPUT);                             //  
