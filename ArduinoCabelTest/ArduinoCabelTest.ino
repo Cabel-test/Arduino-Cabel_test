@@ -1,16 +1,16 @@
-//#include <avr/io.h>
-#include "Globals.h"                             // Глобальные настройки
+п»ї//#include <avr/io.h>
+#include "Globals.h"                             // Р“Р»РѕР±Р°Р»СЊРЅС‹Рµ РЅР°СЃС‚СЂРѕР№РєРё
 #include <SPI.h>
 #include <SdFat.h>
 #include <SdFatUtil.h>
-#include <Wire.h> 
+#include <Wire.h>
 #include <RTClib.h>
-#include <MsTimer2.h> 
+#include <MsTimer2.h>
 #include <modbus.h>
 #include <modbusDevice.h>
 #include <modbusRegBank.h>
 #include <modbusSlave.h>
-#include "MCP23017.h"   
+#include "MCP23017.h"
 #include <avr/pgmspace.h>
 #include <avr/wdt.h>
 #include <stdlib.h> // div, div_t
@@ -20,13 +20,13 @@
 #include <Arduino.h>
 #include "AnalogBinLogger.h"
 
-#define led_Green 13                                     // Светодиод на передней панели зеленый
-#define led_Red   12                                     // Светодиод на передней панели красный
-#define led_disp  9                                      // Светодиод на передней панели диспетчера
-#define led_instr 10                                     // Светодиод на передней панели инструктора
+#define led_Green 13                                     // РЎРІРµС‚РѕРґРёРѕРґ РЅР° РїРµСЂРµРґРЅРµР№ РїР°РЅРµР»Рё Р·РµР»РµРЅС‹Р№
+#define led_Red   12                                     // РЎРІРµС‚РѕРґРёРѕРґ РЅР° РїРµСЂРµРґРЅРµР№ РїР°РЅРµР»Рё РєСЂР°СЃРЅС‹Р№
+#define led_disp  9                                      // РЎРІРµС‚РѕРґРёРѕРґ РЅР° РїРµСЂРµРґРЅРµР№ РїР°РЅРµР»Рё РґРёСЃРїРµС‚С‡РµСЂР°
+#define led_instr 10                                     // РЎРІРµС‚РѕРґРёРѕРґ РЅР° РїРµСЂРµРґРЅРµР№ РїР°РЅРµР»Рё РёРЅСЃС‚СЂСѓРєС‚РѕСЂР°
 
-MCP23017 mcp_Out1;                                       // Назначение портов расширения MCP23017  4 A - Out, B - Out
-MCP23017 mcp_Out2;                                       // Назначение портов расширения MCP23017  6 A - Out, B - Out
+MCP23017 mcp_Out1;                                       // РќР°Р·РЅР°С‡РµРЅРёРµ РїРѕСЂС‚РѕРІ СЂР°СЃС€РёСЂРµРЅРёСЏ MCP23017  4 A - Out, B - Out
+MCP23017 mcp_Out2;                                       // РќР°Р·РЅР°С‡РµРЅРёРµ РїРѕСЂС‚РѕРІ СЂР°СЃС€РёСЂРµРЅРёСЏ MCP23017  6 A - Out, B - Out
 
 
 
@@ -37,30 +37,30 @@ MCP23017 mcp_Out2;                                       // Назначение портов ра
 modbusDevice regBank;
 modbusSlave slave;
 
-//+++++++++++++++++++++++ Настройка электронного резистора +++++++++++++++++++++++++++++++++++++
-byte resistance          = 0x00;                        // Сопротивление 0x00..0xFF - 0Ом..100кОм
+//+++++++++++++++++++++++ РќР°СЃС‚СЂРѕР№РєР° СЌР»РµРєС‚СЂРѕРЅРЅРѕРіРѕ СЂРµР·РёСЃС‚РѕСЂР° +++++++++++++++++++++++++++++++++++++
+byte resistance          = 0x00;                        // РЎРѕРїСЂРѕС‚РёРІР»РµРЅРёРµ 0x00..0xFF - 0РћРј..100РєРћРј
 
-//+++++++++++++++++++++++++++++ Внешняя память +++++++++++++++++++++++++++++++++++++++
-int deviceaddress        = 80;                          // Адрес микросхемы памяти
-unsigned int eeaddress   =  0;                          // Адрес ячейки памяти
-byte hi;                                                // Старший байт для преобразования числа
-byte low;                                               // Младший байт для преобразования числа
+//+++++++++++++++++++++++++++++ Р’РЅРµС€РЅСЏСЏ РїР°РјСЏС‚СЊ +++++++++++++++++++++++++++++++++++++++
+int deviceaddress        = 80;                          // РђРґСЂРµСЃ РјРёРєСЂРѕСЃС…РµРјС‹ РїР°РјСЏС‚Рё
+unsigned int eeaddress   =  0;                          // РђРґСЂРµСЃ СЏС‡РµР№РєРё РїР°РјСЏС‚Рё
+byte hi;                                                // РЎС‚Р°СЂС€РёР№ Р±Р°Р№С‚ РґР»СЏ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ С‡РёСЃР»Р°
+byte low;                                               // РњР»Р°РґС€РёР№ Р±Р°Р№С‚ РґР»СЏ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ С‡РёСЃР»Р°
 
-//********************* Настройка монитора ***********************************
-//UTFT        myGLCD(ITDB32S,38,39,40,41);              // Дисплей 3.2"
-UTFT          myGLCD(ITDB24E_8,38,39,40,41);            // Дисплей 2.4" !! Внимание! Изменены настройки UTouchCD.h
-UTouch        myTouch(6,5,4,3,2);                       // Standard Arduino Mega/Due shield            : 6,5,4,3,2
+//********************* РќР°СЃС‚СЂРѕР№РєР° РјРѕРЅРёС‚РѕСЂР° ***********************************
+//UTFT        myGLCD(ITDB32S,38,39,40,41);              // Р”РёСЃРїР»РµР№ 3.2"
+UTFT          myGLCD(ITDB24E_8, 38, 39, 40, 41);        // Р”РёСЃРїР»РµР№ 2.4" !! Р’РЅРёРјР°РЅРёРµ! РР·РјРµРЅРµРЅС‹ РЅР°СЃС‚СЂРѕР№РєРё UTouchCD.h
+UTouch        myTouch(6, 5, 4, 3, 2);                   // Standard Arduino Mega/Due shield            : 6,5,4,3,2
 UTFT_Buttons  myButtons(&myGLCD, &myTouch);             // Finally we set up UTFT_Buttons :)
 
-boolean default_colors = true;                          // 
+boolean default_colors = true;                          //
 uint8_t menu_redraw_required = 0;
-                                                        // Declare which fonts we will be using
-extern uint8_t SmallFont[];                            
+// Declare which fonts we will be using
+extern uint8_t SmallFont[];
 extern uint8_t BigFont[];
 extern uint8_t Dingbats1_XL[];
 extern uint8_t SmallSymbolFont[];
 
-//+++++++++++++++++++++++++++ Настройка часов +++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++ РќР°СЃС‚СЂРѕР№РєР° С‡Р°СЃРѕРІ +++++++++++++++++++++++++++++++
 uint8_t second = 0;                                    //Initialization time
 uint8_t minute = 10;
 uint8_t hour   = 10;
@@ -73,36 +73,36 @@ RTC_DS1307 RTC;                                       // define the Real Time Cl
 int clockCenterX               = 119;
 int clockCenterY               = 119;
 int oldsec                     = 0;
-const char* str[]              = {"MON","TUE","WED","THU","FRI","SAT","SUN"};
-const char* str1[]             = {"Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"};
-const char* str_mon[]          = {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
-unsigned long wait_time        = 0;                               // Время простоя прибора
-unsigned long wait_time_Old    = 0;                               // Время простоя прибора
-int time_minute                = 5;                               // Время простоя прибора
+const char* str[]              = {"MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"};
+const char* str1[]             = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+const char* str_mon[]          = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+unsigned long wait_time        = 0;                               // Р’СЂРµРјСЏ РїСЂРѕСЃС‚РѕСЏ РїСЂРёР±РѕСЂР°
+unsigned long wait_time_Old    = 0;                               // Р’СЂРµРјСЏ РїСЂРѕСЃС‚РѕСЏ РїСЂРёР±РѕСЂР°
+int time_minute                = 5;                               // Р’СЂРµРјСЏ РїСЂРѕСЃС‚РѕСЏ РїСЂРёР±РѕСЂР°
 //------------------------------------------------------------------------------
 
-const unsigned int adr_control_command    PROGMEM       = 40001;  // Адрес передачи комманд на выполнение 
-const unsigned int adr_reg_count_err      PROGMEM       = 40002;  // Адрес счетчика всех ошибок
+const unsigned int adr_control_command    PROGMEM       = 40001;  // РђРґСЂРµСЃ РїРµСЂРµРґР°С‡Рё РєРѕРјРјР°РЅРґ РЅР° РІС‹РїРѕР»РЅРµРЅРёРµ
+const unsigned int adr_reg_count_err      PROGMEM       = 40002;  // РђРґСЂРµСЃ СЃС‡РµС‚С‡РёРєР° РІСЃРµС… РѕС€РёР±РѕРє
 //-------------------------------------------------------------------------------------------------------
 
-//++++++++++++++++++++++++++++ Переменные для цифровой клавиатуры +++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++++ РџРµСЂРµРјРµРЅРЅС‹Рµ РґР»СЏ С†РёС„СЂРѕРІРѕР№ РєР»Р°РІРёР°С‚СѓСЂС‹ +++++++++++++++++++++++++++++
 int x, y, z;
-char stCurrent[20]    ="";                                        // Переменная хранения введенной строки 
-int stCurrentLen      =0;                                         // Переменная хранения длины введенной строки 
-int stCurrentLen1     =0;                                         // Переменная временного хранения длины введенной строки  
-char stLast[20]       ="";                                        // Данные в введенной строке строке.
-int ret               = 0;                                        // Признак прерывания операции
+char stCurrent[20]    = "";                                       // РџРµСЂРµРјРµРЅРЅР°СЏ С…СЂР°РЅРµРЅРёСЏ РІРІРµРґРµРЅРЅРѕР№ СЃС‚СЂРѕРєРё
+int stCurrentLen      = 0;                                        // РџРµСЂРµРјРµРЅРЅР°СЏ С…СЂР°РЅРµРЅРёСЏ РґР»РёРЅС‹ РІРІРµРґРµРЅРЅРѕР№ СЃС‚СЂРѕРєРё
+int stCurrentLen1     = 0;                                        // РџРµСЂРµРјРµРЅРЅР°СЏ РІСЂРµРјРµРЅРЅРѕРіРѕ С…СЂР°РЅРµРЅРёСЏ РґР»РёРЅС‹ РІРІРµРґРµРЅРЅРѕР№ СЃС‚СЂРѕРєРё
+char stLast[20]       = "";                                       // Р”Р°РЅРЅС‹Рµ РІ РІРІРµРґРµРЅРЅРѕР№ СЃС‚СЂРѕРєРµ СЃС‚СЂРѕРєРµ.
+int ret               = 0;                                        // РџСЂРёР·РЅР°Рє РїСЂРµСЂС‹РІР°РЅРёСЏ РѕРїРµСЂР°С†РёРё
 //-------------------------------------------------------------------------------------------------
 
-//++++++++++++++++++++++++++ Настройки осциллографа  +++++++++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++ РќР°СЃС‚СЂРѕР№РєРё РѕСЃС†РёР»Р»РѕРіСЂР°С„Р°  +++++++++++++++++++++++++++++++++++++++++++++++++++
 
 int dgvh;
 int OldSample_osc[254][2];
-int x_osc,y_osc;
+int x_osc, y_osc;
 int mode = 0;
 int dTime = 1;
 int tmode = 1;
-int mode1 = 2;                                                     //Переключение чувствительности
+int mode1 = 2;                                                     //РџРµСЂРµРєР»СЋС‡РµРЅРёРµ С‡СѓРІСЃС‚РІРёС‚РµР»СЊРЅРѕСЃС‚Рё
 int Trigger = 0;
 int MinAnalog = 500;
 int MinAnalog0 = 500;
@@ -110,9 +110,9 @@ int MinAnalog1 = 500;
 int MaxAnalog = 0;
 int MaxAnalog0 = 0;
 int MaxAnalog1 = 0;
-float koeff_h = 7.759*4;
+float koeff_h = 7.759 * 4;
 volatile unsigned int Sample_osc[254][2];
-float StartSample = 0; 
+float StartSample = 0;
 float EndSample = 0;
 int t_in_mode = 0;
 bool strob_start = true;
@@ -138,8 +138,8 @@ int16_t count_repeat = 0;
 volatile bool ADC_end = false;
 volatile int ADC_i = 0;
 
-volatile uint16_t MyBuff[254];  
-volatile uint16_t i_osc=0; 
+volatile uint16_t MyBuff[254];
+volatile uint16_t i_osc = 0;
 
 
 //------------------------------------------------------------------------------
@@ -156,7 +156,7 @@ const float SAMPLE_RATE = 5000;  // Must be 0.25 or greater.
 // constant instead of being calculated from SAMPLE_RATE.  SAMPLE_RATE is not
 // used in the code below.  For example, setting SAMPLE_INTERVAL = 2.0e-4
 // will result in a 200 microsecond sample interval.
-const float SAMPLE_INTERVAL = 1.0/SAMPLE_RATE;
+const float SAMPLE_INTERVAL = 1.0 / SAMPLE_RATE;
 
 // Setting ROUND_SAMPLE_INTERVAL non-zero will cause the sample interval to
 // be rounded to a a multiple of the ADC clock period and will reduce sample
@@ -170,7 +170,7 @@ const float SAMPLE_INTERVAL = 1.0/SAMPLE_RATE;
 //
 // You can select an ADC clock rate by defining the symbol ADC_PRESCALER to
 // one of these values.  You must choose an appropriate ADC clock rate for
-// your sample interval. 
+// your sample interval.
 // #define ADC_PRESCALER 7 // F_CPU/128 125 kHz on an Uno
 // #define ADC_PRESCALER 6 // F_CPU/64  250 kHz on an Uno
 // #define ADC_PRESCALER 5 // F_CPU/32  500 kHz on an Uno
@@ -209,7 +209,7 @@ const uint8_t SD_CS_PIN = SS;
 //------------------------------------------------------------------------------
 // Buffer definitions.
 //
-// The logger will use SdFat's buffer plus BUFFER_BLOCK_COUNT additional 
+// The logger will use SdFat's buffer plus BUFFER_BLOCK_COUNT additional
 // buffers.  QUEUE_DIM must be a power of two larger than
 //(BUFFER_BLOCK_COUNT + 1).
 //
@@ -250,7 +250,7 @@ const uint8_t QUEUE_DIM = 32;  // Must be a power of two!
 //const uint8_t BASE_NAME_SIZE = sizeof(FILE_BASE_NAME) - 1;
 
 // Number of analog pins to log.
-const uint8_t PIN_COUNT = sizeof(PIN_LIST)/sizeof(PIN_LIST[0]);
+const uint8_t PIN_COUNT = sizeof(PIN_LIST) / sizeof(PIN_LIST[0]);
 
 // Minimum ADC clock cycles per sample interval
 const uint16_t MIN_ADC_CYCLES = 15;
@@ -268,10 +268,10 @@ const uint16_t ISR_TIMER0 = 160;
 //char binName[13] = FILE_BASE_NAME "00.BIN";
 
 #if RECORD_EIGHT_BITS
-const size_t SAMPLES_PER_BLOCK = DATA_DIM8/PIN_COUNT;
+const size_t SAMPLES_PER_BLOCK = DATA_DIM8 / PIN_COUNT;
 typedef block8_t block_t;
 #else  // RECORD_EIGHT_BITS
-const size_t SAMPLES_PER_BLOCK = DATA_DIM16/PIN_COUNT;
+const size_t SAMPLES_PER_BLOCK = DATA_DIM16 / PIN_COUNT;
 typedef block16_t block_t;
 #endif // RECORD_EIGHT_BITS
 
@@ -284,7 +284,9 @@ volatile uint8_t fullHead;  // volatile insures non-interrupt code sees changes.
 uint8_t fullTail;
 
 // queueNext assumes QUEUE_DIM is a power of two
-inline uint8_t queueNext(uint8_t ht) {return (ht + 1) & (QUEUE_DIM -1);}
+inline uint8_t queueNext(uint8_t ht) {
+  return (ht + 1) & (QUEUE_DIM - 1);
+}
 //==============================================================================
 // Interrupt Service Routines
 
@@ -319,238 +321,237 @@ volatile bool timerFlag = false;
 
 
 //-------------------------------------------------------------------------------------------------------
-//Назначение переменных для хранения № опций меню (клавиш)
+//РќР°Р·РЅР°С‡РµРЅРёРµ РїРµСЂРµРјРµРЅРЅС‹С… РґР»СЏ С…СЂР°РЅРµРЅРёСЏ в„– РѕРїС†РёР№ РјРµРЅСЋ (РєР»Р°РІРёС€)
 int but1, but2, but3, but4, but5, but6, but7, but8, but9, but10, butX, butY, butA, butB, butC, butD, but_m1, but_m2, but_m3, but_m4, but_m5, pressed_button;
- //int kbut1, kbut2, kbut3, kbut4, kbut5, kbut6, kbut7, kbut8, kbut9, kbut0, kbut_save,kbut_clear, kbut_exit;
- //int kbutA, kbutB, kbutC, kbutD, kbutE, kbutF;
- int m2 = 1; // Переменная номера меню
+//int kbut1, kbut2, kbut3, kbut4, kbut5, kbut6, kbut7, kbut8, kbut9, kbut0, kbut_save,kbut_clear, kbut_exit;
+//int kbutA, kbutB, kbutC, kbutD, kbutE, kbutF;
+int m2 = 1; // РџРµСЂРµРјРµРЅРЅР°СЏ РЅРѕРјРµСЂР° РјРµРЅСЋ
 
- //------------------------------------------------------------------------------------------------------------------
- // Назначение переменных для хранения текстов
+//------------------------------------------------------------------------------------------------------------------
+// РќР°Р·РЅР°С‡РµРЅРёРµ РїРµСЂРµРјРµРЅРЅС‹С… РґР»СЏ С…СЂР°РЅРµРЅРёСЏ С‚РµРєСЃС‚РѕРІ
 
-char  txt_menu1_1[]            = "Tec\xA4 ""\x9F""a\x96""e\xA0\xAF N1";                                    // Тест кабель N 1
-char  txt_menu1_2[]            = "Tec\xA4 ""\x9F""a\x96""e\xA0\xAF N2";                                    // Тест кабель N 2
-char  txt_menu1_3[]            = "Tec\xA4 ""\x9F""a\x96""e\xA0\xAF N3";                                    // Тест кабель N 3
-char  txt_menu1_4[]            = "Tec\xA4 ""\x9F""a\x96""e\xA0\xAF N4";                                    // Тест кабель N 4
-char  txt_menu2_1[]            = "\x89""a""\xA2""e""\xA0\xAC"" ""\x98""ap""\xA2\x9D\xA4""yp";              // Панель гарнитур                                                // 
+char  txt_menu1_1[]            = "Tec\xA4 ""\x9F""a\x96""e\xA0\xAF N1";                                    // РўРµСЃС‚ РєР°Р±РµР»СЊ N 1
+char  txt_menu1_2[]            = "Tec\xA4 ""\x9F""a\x96""e\xA0\xAF N2";                                    // РўРµСЃС‚ РєР°Р±РµР»СЊ N 2
+char  txt_menu1_3[]            = "Tec\xA4 ""\x9F""a\x96""e\xA0\xAF N3";                                    // РўРµСЃС‚ РєР°Р±РµР»СЊ N 3
+char  txt_menu1_4[]            = "Tec\xA4 ""\x9F""a\x96""e\xA0\xAF N4";                                    // РўРµСЃС‚ РєР°Р±РµР»СЊ N 4
+char  txt_menu2_1[]            = "\x89""a""\xA2""e""\xA0\xAC"" ""\x98""ap""\xA2\x9D\xA4""yp";              // РџР°РЅРµР»СЊ РіР°СЂРЅРёС‚СѓСЂ                                                //
 char  txt_menu2_2[]            = "menu2_2";                                                                //
 char  txt_menu2_3[]            = "menu2_3";                                                                //
-char  txt_menu2_4[]            = "Tec""\xA4"" pa""\x9C\xAA""e""\xA1""o""\x97";                             // Тест разъемов                                   //
-char  txt_menu3_1[]            = "Ta""\x96\xA0\x9D\xA6""a coe""\x99"".";                                   // Таблица соед.
-char  txt_menu3_2[]            = "Pe""\x99""a""\x9F\xA4"". ""\xA4""a""\x96\xA0\x9D\xA6";                   // Редакт. таблиц
-char  txt_menu3_3[]            = "\x85""a""\x98""py""\x9C"". y""\xA1""o""\xA0\xA7"".";                     // Загруз. умолч.
-char  txt_menu3_4[]            = "Bpe""\xA1\xAF"" ""\xA3""poc""\xA4""o""\xAF";                             // Время простоя
-char  txt_menu4_1[]            = "C\x9D\xA2yco\x9D\x99""a";                                                // Синусоида
-char  txt_menu4_2[]            = "\x89\x9D\xA0oo\x96pa\x9C\xA2\xAB\x9E";                                   // Пилообразный
-char  txt_menu4_3[]            = "Tpey\x98o\xA0\xAC\xA2\xAB\x9E";                                          // Треугольный
-char  txt_menu4_4[]            = "\x89p\xAF\xA1oy\x98o\xA0\xAC\xA2\xAB\x9E";                               // Прямоугольный
-char  txt_menu5_1[]            = " ";                                                                      // 
+char  txt_menu2_4[]            = "Tec""\xA4"" pa""\x9C\xAA""e""\xA1""o""\x97";                             // РўРµСЃС‚ СЂР°Р·СЉРµРјРѕРІ                                   //
+char  txt_menu3_1[]            = "Ta""\x96\xA0\x9D\xA6""a coe""\x99"".";                                   // РўР°Р±Р»РёС†Р° СЃРѕРµРґ.
+char  txt_menu3_2[]            = "Pe""\x99""a""\x9F\xA4"". ""\xA4""a""\x96\xA0\x9D\xA6";                   // Р РµРґР°РєС‚. С‚Р°Р±Р»РёС†
+char  txt_menu3_3[]            = "\x85""a""\x98""py""\x9C"". y""\xA1""o""\xA0\xA7"".";                     // Р—Р°РіСЂСѓР·. СѓРјРѕР»С‡.
+char  txt_menu3_4[]            = "Bpe""\xA1\xAF"" ""\xA3""poc""\xA4""o""\xAF";                             // Р’СЂРµРјСЏ РїСЂРѕСЃС‚РѕСЏ
+char  txt_menu4_1[]            = "C\x9D\xA2yco\x9D\x99""a";                                                // РЎРёРЅСѓСЃРѕРёРґР°
+char  txt_menu4_2[]            = "\x89\x9D\xA0oo\x96pa\x9C\xA2\xAB\x9E";                                   // РџРёР»РѕРѕР±СЂР°Р·РЅС‹Р№
+char  txt_menu4_3[]            = "Tpey\x98o\xA0\xAC\xA2\xAB\x9E";                                          // РўСЂРµСѓРіРѕР»СЊРЅС‹Р№
+char  txt_menu4_4[]            = "\x89p\xAF\xA1oy\x98o\xA0\xAC\xA2\xAB\x9E";                               // РџСЂСЏРјРѕСѓРіРѕР»СЊРЅС‹Р№
+char  txt_menu5_1[]            = " ";                                                                      //
 char  txt_menu5_2[]            = " ";                                                                      //
-char  txt_menu5_3[]            = " ";                                                                      // 
-char  txt_menu5_4[]            = " ";                                                                      // 
+char  txt_menu5_3[]            = " ";                                                                      //
+char  txt_menu5_4[]            = " ";                                                                      //
 char  txt_osc_menu1[]          = "Oc\xA6\x9D\xA0\xA0o\x98pa\xA5";                                          //
 char  txt_osc_menu2[]          = "Log data";                                                                       //
 char  txt_osc_menu3[]          = "test_ADC";                                                                       //
-char  txt_osc_menu4[]          = "";                                                                       //          
+char  txt_osc_menu4[]          = "";                                                                       //
 
-const char  txt_pass_ok[]           PROGMEM  = " ";                                                                      //  
-const char  txt_pass_no[]           PROGMEM  = " ";                                                                      //  
-const char  txt_info1[]             PROGMEM  = "Tec\xA4 ""\x9F""a\x96""e\xA0""e\x9E";                                    // Тест кабелей
-const char  txt_info2[]             PROGMEM  = "Tec\xA4 \x96\xA0o\x9F""a \x98""ap\xA2\x9D\xA4yp";                        // Тест блока гарнитур
-const char  txt_info3[]             PROGMEM  = "Hac\xA4po\x9E\x9F""a c\x9D""c\xA4""e\xA1\xAB";                           // Настройка системы
-const char  txt_info4[]             PROGMEM  = "\x81""e\xA2""epa\xA4op c\x9D\x98\xA2""a\xA0o\x97";                       // Генератор сигналов
-const char  txt_info5[]             PROGMEM  = "Oc\xA6\x9D\xA0\xA0o\x98pa\xA5";                                          // Осциллограф
-const char  txt_botton_clear[]      PROGMEM  = " ";                                                                      //  
-const char  txt_botton_otmena[]     PROGMEM  = "O""\xA4\xA1""e""\xA2""a";                                                // "Отмена" 
-const char  txt_botton_vvod[]       PROGMEM  = "B\x97o\x99 ";                                                            // Ввод
-const char  txt_botton_ret[]        PROGMEM  = "B""\xAB""x";                                                             // "Вых"
-const char  txt_system_clear3[]     PROGMEM  = " ";                                                                      //  
-const char  txt9[]                  PROGMEM  = " ";                                                                      // 
-const char  txt10[]                 PROGMEM  = " ";                                                                      //  
-const char  txt_time_wait[]         PROGMEM  = "\xA1\x9D\xA2"".""\x97""pe""\xA1\xAF"" ""\xA3""poc""\xA4""o""\xAF";       //  мин. время простоя
-const char  txt_info29[]            PROGMEM  = "Stop->PUSH Disp"; 
-const char  txt_info30[]            PROGMEM  = " "; 
-const char  txt_test_all[]          PROGMEM  = "Tec""\xA4"" ""\x97""cex pa""\x9C\xAA""e""\xA1""o""\x97";                 // Тест всех разъемов
-const char  txt_test_all_exit1[]    PROGMEM  = "\x82\xA0\xAF"" ""\x97\xAB""xo""\x99""a";                                 // Для выхода
-const char  txt_test_all_exit2[]    PROGMEM  = "\xA3""p""\x9D\x9F""oc""\xA2\x9D""c""\xAC"" ""\x9F"" ""\xAD\x9F""pa""\xA2""y";  // прикоснись к экрану
-const char  txt_test_end[]          PROGMEM  = "\x85""a""\x97""ep""\xA8\x9D\xA4\xAC";                                    // Завершить
-const char  txt_test_repeat[]       PROGMEM  = "\x89""o""\x97\xA4""op""\x9D\xA4\xAC";                                    // Повторить
-const char  txt_error_connect1[]    PROGMEM  = "O""\x8E\x86\x80""KA";                                                    // Ошибка
-const char  txt_error_connect2[]    PROGMEM  = "\xA3""o""\x99\x9F\xA0\xAE\xA7""e""\xA2\x9D\xAF"" ""\x9F""a""\x96""e""\xA0\xAF"; //подключения кабеля
-const char  txt_error_connect3[]    PROGMEM  = "O""\xA8\x9D\x96""o""\x9F"" ""\xA2""e""\xA4";                             // Ошибок нет
-const char  txt_error_connect4[]    PROGMEM  = "O""\xA8\x9D\x96""o""\x9F"" -         ";                                  // Ошибок  - 
-const char  txt__connect1[]         PROGMEM  = "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N1";    // Обнаружен кабель N1
-const char  txt__connect2[]         PROGMEM  = "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N2";    // Обнаружен кабель N2
-const char  txt__connect3[]         PROGMEM  = "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N3";    // Обнаружен кабель N3
-const char  txt__connect4[]         PROGMEM  = "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N4";    // Обнаружен кабель N4
-const char  txt__test_end[]         PROGMEM  = "TECT ""\x85""A""KOH""\x8D""EH";                                          // ТЕСТ ЗАКОНЧЕН
-const char  txt__panel[]            PROGMEM  = "Tec""\xA4"" c""\x97""e""\xA4""o""\x99\x9D""o""\x99""o""\x97";            // Тест светодиодов
-const char  txt__panel0[]           PROGMEM  = "                     ";                                                  // 
-const char  txt__disp[]             PROGMEM  = "Tec""\xA4"" MT""\x81"" ""\x99\x9D""c""\xA3""e""\xA4\xA7""epa";           // Тест МТГ диспетчера
-const char  txt__instr[]            PROGMEM  = "Tec""\xA4"" MT""\x81"" ""\x9D\xA2""c""\xA4""py""\x9F\xA4""opa";          // Тест МТГ инструктора  
-const char  txt__MTT[]              PROGMEM  = "Tec""\xA4"" MTT";                                                        // Тест МТТ
-const char  txt__disp_connect[]     PROGMEM  = "Ka""\x96""e""\xA0\xAC"" ""\x99\x9D""c""\xA3"". ""\xA3""o""\x99\x9F\xA0"".";// Кабель дисп. подкл.
-const char  txt__disp_disconnect[]  PROGMEM  = "Ka""\x96""e""\xA0\xAC"" ""\x99\x9D""c""\xA3"". o""\xA4\x9F\xA0"".";        // Кабель дисп.откл.
-const char  txt__instr_connect[]    PROGMEM  = "Ka""\x96""e""\xA0\xAC"" ""\x9D\xA2""c""\xA4""p.""\xA3""o""\x99\x9F\xA0"".";// Кабель инстр.подкл.
-const char  txt__instr_disconnect[] PROGMEM  = "Ka""\x96""e""\xA0\xAC"" ""\x9D\xA2""c""\xA4""p.o""\xA4\x9F\xA0"".";       // Кабель инстр.откл.
-const char  txt__clear1[]           PROGMEM  = " ";                                                                       //  
-const char  txt__cont1_connect[]    PROGMEM  = "Ko""\xA2\xA4"". N1 - O""\x9F";                                            // Конт. N1 - Ок
-const char  txt__cont2_connect[]    PROGMEM  = "Ko""\xA2\xA4"". N2 - O""\x9F";                                            // Конт. N2 - Ок
-const char  txt__cont3_connect[]    PROGMEM  = "Ko""\xA2\xA4"". N3 - O""\x9F";                                            // Конт. N3 - Ок
-const char  txt__cont4_connect[]    PROGMEM  = "Ko""\xA2\xA4"". N4 - O""\x9F";                                            // Конт. N4 - Ок
-const char  txt__cont5_connect[]    PROGMEM  = "Ko""\xA2\xA4"". N5 - O""\x9F";                                            // Конт. N5 - Ок
-const char  txt__cont6_connect[]    PROGMEM  = "Ko""\xA2\xA4"". N6 - O""\x9F";                                            // Конт. N6 - Ок
-const char  txt__cont7_connect[]    PROGMEM  = "Ko""\xA2\xA4"". N7 - O""\x9F";                                            // Конт. N7 - Ок
-const char  txt__cont8_connect[]    PROGMEM  = "Ko""\xA2\xA4"". N8 - O""\x9F";                                            // Конт. N8 - Ок
-const char  txt__cont9_connect[]    PROGMEM  = "Ko""\xA2\xA4"". N9 - O""\x9F";                                            // Конт. N9 - Ок
-const char  txt__clear2[]           PROGMEM  = " ";                                                                       //  
-const char  txt__cont1_disconnect[] PROGMEM  = "Ko""\xA2\xA4"". N1 - He""\xA4""!";                                        // Конт. N1 - Нет!
-const char  txt__cont2_disconnect[] PROGMEM  = "Ko""\xA2\xA4"". N2 - He""\xA4""!";                                        // Конт. N2 - Нет!
-const char  txt__cont3_disconnect[] PROGMEM  = "Ko""\xA2\xA4"". N3 - He""\xA4""!";                                        // Конт. N3 - Нет! 
-const char  txt__cont4_disconnect[] PROGMEM  = "Ko""\xA2\xA4"". N4 - He""\xA4""!";                                        // Конт. N4 - Нет! 
-const char  txt__cont5_disconnect[] PROGMEM  = "Ko""\xA2\xA4"". N5 - He""\xA4""!";                                        // Конт. N5 - Нет! 
-const char  txt__cont6_disconnect[] PROGMEM  = "Ko""\xA2\xA4"". N6 - He""\xA4""!";                                        // Конт. N6 - Нет! 
-const char  txt__cont7_disconnect[] PROGMEM  = "Ko""\xA2\xA4"". N7 - He""\xA4""!";                                        // Конт. N7 - Нет! 
-const char  txt__cont8_disconnect[] PROGMEM  = "Ko""\xA2\xA4"". N8 - He""\xA4""!";                                        // Конт. N8 - Нет! 
-const char  txt__cont9_disconnect[] PROGMEM  = "Ko""\xA2\xA4"". N9 - He""\xA4""!";                                        // Конт. N9 - Нет! 
+const char  txt_pass_ok[]           PROGMEM  = " ";                                                                      //
+const char  txt_pass_no[]           PROGMEM  = " ";                                                                      //
+const char  txt_info1[]             PROGMEM  = "Tec\xA4 ""\x9F""a\x96""e\xA0""e\x9E";                                    // РўРµСЃС‚ РєР°Р±РµР»РµР№
+const char  txt_info2[]             PROGMEM  = "Tec\xA4 \x96\xA0o\x9F""a \x98""ap\xA2\x9D\xA4yp";                        // РўРµСЃС‚ Р±Р»РѕРєР° РіР°СЂРЅРёС‚СѓСЂ
+const char  txt_info3[]             PROGMEM  = "Hac\xA4po\x9E\x9F""a c\x9D""c\xA4""e\xA1\xAB";                           // РќР°СЃС‚СЂРѕР№РєР° СЃРёСЃС‚РµРјС‹
+const char  txt_info4[]             PROGMEM  = "\x81""e\xA2""epa\xA4op c\x9D\x98\xA2""a\xA0o\x97";                       // Р“РµРЅРµСЂР°С‚РѕСЂ СЃРёРіРЅР°Р»РѕРІ
+const char  txt_info5[]             PROGMEM  = "Oc\xA6\x9D\xA0\xA0o\x98pa\xA5";                                          // РћСЃС†РёР»Р»РѕРіСЂР°С„
+const char  txt_botton_clear[]      PROGMEM  = " ";                                                                      //
+const char  txt_botton_otmena[]     PROGMEM  = "O""\xA4\xA1""e""\xA2""a";                                                // "РћС‚РјРµРЅР°"
+const char  txt_botton_vvod[]       PROGMEM  = "B\x97o\x99 ";                                                            // Р’РІРѕРґ
+const char  txt_botton_ret[]        PROGMEM  = "B""\xAB""x";                                                             // "Р’С‹С…"
+const char  txt_system_clear3[]     PROGMEM  = " ";                                                                      //
+const char  txt9[]                  PROGMEM  = " ";                                                                      //
+const char  txt10[]                 PROGMEM  = " ";                                                                      //
+const char  txt_time_wait[]         PROGMEM  = "\xA1\x9D\xA2"".""\x97""pe""\xA1\xAF"" ""\xA3""poc""\xA4""o""\xAF";       //  РјРёРЅ. РІСЂРµРјСЏ РїСЂРѕСЃС‚РѕСЏ
+const char  txt_info29[]            PROGMEM  = "Stop->PUSH Disp";
+const char  txt_info30[]            PROGMEM  = " ";
+const char  txt_test_all[]          PROGMEM  = "Tec""\xA4"" ""\x97""cex pa""\x9C\xAA""e""\xA1""o""\x97";                 // РўРµСЃС‚ РІСЃРµС… СЂР°Р·СЉРµРјРѕРІ
+const char  txt_test_all_exit1[]    PROGMEM  = "\x82\xA0\xAF"" ""\x97\xAB""xo""\x99""a";                                 // Р”Р»СЏ РІС‹С…РѕРґР°
+const char  txt_test_all_exit2[]    PROGMEM  = "\xA3""p""\x9D\x9F""oc""\xA2\x9D""c""\xAC"" ""\x9F"" ""\xAD\x9F""pa""\xA2""y";  // РїСЂРёРєРѕСЃРЅРёСЃСЊ Рє СЌРєСЂР°РЅСѓ
+const char  txt_test_end[]          PROGMEM  = "\x85""a""\x97""ep""\xA8\x9D\xA4\xAC";                                    // Р—Р°РІРµСЂС€РёС‚СЊ
+const char  txt_test_repeat[]       PROGMEM  = "\x89""o""\x97\xA4""op""\x9D\xA4\xAC";                                    // РџРѕРІС‚РѕСЂРёС‚СЊ
+const char  txt_error_connect1[]    PROGMEM  = "O""\x8E\x86\x80""KA";                                                    // РћС€РёР±РєР°
+const char  txt_error_connect2[]    PROGMEM  = "\xA3""o""\x99\x9F\xA0\xAE\xA7""e""\xA2\x9D\xAF"" ""\x9F""a""\x96""e""\xA0\xAF"; //РїРѕРґРєР»СЋС‡РµРЅРёСЏ РєР°Р±РµР»СЏ
+const char  txt_error_connect3[]    PROGMEM  = "O""\xA8\x9D\x96""o""\x9F"" ""\xA2""e""\xA4";                             // РћС€РёР±РѕРє РЅРµС‚
+const char  txt_error_connect4[]    PROGMEM  = "O""\xA8\x9D\x96""o""\x9F"" -         ";                                  // РћС€РёР±РѕРє  -
+const char  txt__connect1[]         PROGMEM  = "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N1";    // РћР±РЅР°СЂСѓР¶РµРЅ РєР°Р±РµР»СЊ N1
+const char  txt__connect2[]         PROGMEM  = "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N2";    // РћР±РЅР°СЂСѓР¶РµРЅ РєР°Р±РµР»СЊ N2
+const char  txt__connect3[]         PROGMEM  = "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N3";    // РћР±РЅР°СЂСѓР¶РµРЅ РєР°Р±РµР»СЊ N3
+const char  txt__connect4[]         PROGMEM  = "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N4";    // РћР±РЅР°СЂСѓР¶РµРЅ РєР°Р±РµР»СЊ N4
+const char  txt__test_end[]         PROGMEM  = "TECT ""\x85""A""KOH""\x8D""EH";                                          // РўР•РЎРў Р—РђРљРћРќР§Р•Рќ
+const char  txt__panel[]            PROGMEM  = "Tec""\xA4"" c""\x97""e""\xA4""o""\x99\x9D""o""\x99""o""\x97";            // РўРµСЃС‚ СЃРІРµС‚РѕРґРёРѕРґРѕРІ
+const char  txt__panel0[]           PROGMEM  = "                     ";                                                  //
+const char  txt__disp[]             PROGMEM  = "Tec""\xA4"" MT""\x81"" ""\x99\x9D""c""\xA3""e""\xA4\xA7""epa";           // РўРµСЃС‚ РњРўР“ РґРёСЃРїРµС‚С‡РµСЂР°
+const char  txt__instr[]            PROGMEM  = "Tec""\xA4"" MT""\x81"" ""\x9D\xA2""c""\xA4""py""\x9F\xA4""opa";          // РўРµСЃС‚ РњРўР“ РёРЅСЃС‚СЂСѓРєС‚РѕСЂР°
+const char  txt__MTT[]              PROGMEM  = "Tec""\xA4"" MTT";                                                        // РўРµСЃС‚ РњРўРў
+const char  txt__disp_connect[]     PROGMEM  = "Ka""\x96""e""\xA0\xAC"" ""\x99\x9D""c""\xA3"". ""\xA3""o""\x99\x9F\xA0"".";// РљР°Р±РµР»СЊ РґРёСЃРї. РїРѕРґРєР».
+const char  txt__disp_disconnect[]  PROGMEM  = "Ka""\x96""e""\xA0\xAC"" ""\x99\x9D""c""\xA3"". o""\xA4\x9F\xA0"".";        // РљР°Р±РµР»СЊ РґРёСЃРї.РѕС‚РєР».
+const char  txt__instr_connect[]    PROGMEM  = "Ka""\x96""e""\xA0\xAC"" ""\x9D\xA2""c""\xA4""p.""\xA3""o""\x99\x9F\xA0"".";// РљР°Р±РµР»СЊ РёРЅСЃС‚СЂ.РїРѕРґРєР».
+const char  txt__instr_disconnect[] PROGMEM  = "Ka""\x96""e""\xA0\xAC"" ""\x9D\xA2""c""\xA4""p.o""\xA4\x9F\xA0"".";       // РљР°Р±РµР»СЊ РёРЅСЃС‚СЂ.РѕС‚РєР».
+const char  txt__clear1[]           PROGMEM  = " ";                                                                       //
+const char  txt__cont1_connect[]    PROGMEM  = "Ko""\xA2\xA4"". N1 - O""\x9F";                                            // РљРѕРЅС‚. N1 - РћРє
+const char  txt__cont2_connect[]    PROGMEM  = "Ko""\xA2\xA4"". N2 - O""\x9F";                                            // РљРѕРЅС‚. N2 - РћРє
+const char  txt__cont3_connect[]    PROGMEM  = "Ko""\xA2\xA4"". N3 - O""\x9F";                                            // РљРѕРЅС‚. N3 - РћРє
+const char  txt__cont4_connect[]    PROGMEM  = "Ko""\xA2\xA4"". N4 - O""\x9F";                                            // РљРѕРЅС‚. N4 - РћРє
+const char  txt__cont5_connect[]    PROGMEM  = "Ko""\xA2\xA4"". N5 - O""\x9F";                                            // РљРѕРЅС‚. N5 - РћРє
+const char  txt__cont6_connect[]    PROGMEM  = "Ko""\xA2\xA4"". N6 - O""\x9F";                                            // РљРѕРЅС‚. N6 - РћРє
+const char  txt__cont7_connect[]    PROGMEM  = "Ko""\xA2\xA4"". N7 - O""\x9F";                                            // РљРѕРЅС‚. N7 - РћРє
+const char  txt__cont8_connect[]    PROGMEM  = "Ko""\xA2\xA4"". N8 - O""\x9F";                                            // РљРѕРЅС‚. N8 - РћРє
+const char  txt__cont9_connect[]    PROGMEM  = "Ko""\xA2\xA4"". N9 - O""\x9F";                                            // РљРѕРЅС‚. N9 - РћРє
+const char  txt__clear2[]           PROGMEM  = " ";                                                                       //
+const char  txt__cont1_disconnect[] PROGMEM  = "Ko""\xA2\xA4"". N1 - He""\xA4""!";                                        // РљРѕРЅС‚. N1 - РќРµС‚!
+const char  txt__cont2_disconnect[] PROGMEM  = "Ko""\xA2\xA4"". N2 - He""\xA4""!";                                        // РљРѕРЅС‚. N2 - РќРµС‚!
+const char  txt__cont3_disconnect[] PROGMEM  = "Ko""\xA2\xA4"". N3 - He""\xA4""!";                                        // РљРѕРЅС‚. N3 - РќРµС‚!
+const char  txt__cont4_disconnect[] PROGMEM  = "Ko""\xA2\xA4"". N4 - He""\xA4""!";                                        // РљРѕРЅС‚. N4 - РќРµС‚!
+const char  txt__cont5_disconnect[] PROGMEM  = "Ko""\xA2\xA4"". N5 - He""\xA4""!";                                        // РљРѕРЅС‚. N5 - РќРµС‚!
+const char  txt__cont6_disconnect[] PROGMEM  = "Ko""\xA2\xA4"". N6 - He""\xA4""!";                                        // РљРѕРЅС‚. N6 - РќРµС‚!
+const char  txt__cont7_disconnect[] PROGMEM  = "Ko""\xA2\xA4"". N7 - He""\xA4""!";                                        // РљРѕРЅС‚. N7 - РќРµС‚!
+const char  txt__cont8_disconnect[] PROGMEM  = "Ko""\xA2\xA4"". N8 - He""\xA4""!";                                        // РљРѕРЅС‚. N8 - РќРµС‚!
+const char  txt__cont9_disconnect[] PROGMEM  = "Ko""\xA2\xA4"". N9 - He""\xA4""!";                                        // РљРѕРЅС‚. N9 - РќРµС‚!
 
 
-char buffer[40];  
-const char* const table_message[] PROGMEM = 
+char buffer[40];
+const char* const table_message[] PROGMEM =
 {
- txt_pass_ok,             // 0 " ";                                                                      //  
- txt_pass_no,             // 1 " ";                                                                      //  
- txt_info1,               // 2 "Tec\xA4 ""\x9F""a\x96""e\xA0""e\x9E";                                    // Тест кабелей
- txt_info2,               // 3 "Tec\xA4 \x96\xA0o\x9F""a \x98""ap\xA2\x9D\xA4yp";                        // Тест блока гарнитур
- txt_info3,               // 4 "Hac\xA4po\x9E\x9F""a c\x9D""c\xA4""e\xA1\xAB";                           // Настройка системы
- txt_info4,               // 5 "\x81""e\xA2""epa\xA4op c\x9D\x98\xA2""a\xA0o\x97";                       // Генератор сигналов
- txt_info5,               // 6 "Oc\xA6\x9D\xA0\xA0o\x98pa\xA5";                                          // Осциллограф
- txt_botton_clear,        // 7 " ";                                                                      //  
- txt_botton_otmena,       // 8 " ";                                                                      //  
- txt_botton_vvod,         // 9 " ";                                                                      //  
- txt_botton_ret,          // 10 ""B""\xAB""x" ";                                                         //  Вых
- txt_system_clear3,       // 11 " ";                                                                     // 
- txt9,                    // 12 "B\x97o\x99";                                                             // Ввод
- txt10,                   // 13 "O""\xA4\xA1""e""\xA2""a";                                                // "Отмена"
- txt_time_wait,           // 14 "\xA1\x9D\xA2"".""\x97""pe""\xA1\xAF"" ""\xA3""poc""\xA4""o""\xAF";       //  мин. время простоя
- txt_info29,              // 15 "Stop->PUSH Disp"; 
- txt_info30,              // 16 " "; 
- txt_test_all,            // 17 "Tec""\xA4"" ""\x97""cex pa""\x9C\xAA""e""\xA1""o""\x97";                 // Тест всех разъемов
- txt_test_all_exit1,      // 18 "\x82\xA0\xAF"" ""\x97\xAB""xo""\x99""a";                                 // Для выхода
- txt_test_all_exit2,      // 19 "\xA3""p""\x9D\x9F""oc""\xA2\x9D""c""\xAC"" ""\x9F"" ""\xAD\x9F""pa""\xA2""y";  // прикоснись к экрану
- txt_test_end,            // 20 "\x85""a""\x97""ep""\xA8\x9D\xA4\xAC";                                    // Завершить
- txt_test_repeat,         // 21 "\x89""o""\x97\xA4""op""\x9D\xA4\xAC";                                    // Повторить
- txt_error_connect1,      // 22 "O""\x8E\x86\x80""KA";                                                    // Ошибка
- txt_error_connect2,      // 23 "\xA3""o""\x99\x9F\xA0\xAE\xA7""e""\xA2\x9D\xAF"" ""\x9F""a""\x96""e""\xA0\xAF"; //подключения кабеля
- txt_error_connect3,      // 24 "O""\xA8\x9D\x96""o""\x9F"" ""\xA2""e""\xA4";                             // Ошибок нет
- txt_error_connect4,      // 25 "O""\xA8\x9D\x96""o""\x9F"" -         ";                                  // Ошибок  - 
- txt__connect1,           // 26 "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N1";    // Обнаружен кабель N1
- txt__connect2,           // 27 "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N2";    // Обнаружен кабель N2
- txt__connect3,           // 28 "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N3";    // Обнаружен кабель N3
- txt__connect4,           // 29 "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N4";    // Обнаружен кабель N4
- txt__test_end,           // 30 "TECT ""\x85""A""KOH""\x8D""EH";                                          // ТЕСТ ЗАКОНЧЕН
- txt__panel,              // 31 "Tec""\xA4"" c""\x97""e""\xA4""o""\x99\x9D""o""\x99""o""\x97";            // Тест светодиодов
- txt__panel0,             // 32 "                          ";                                             // 
- txt__disp,               // 33 "Tec""\xA4"" MT""\x81"" ""\x99\x9D""c""\xA3""e""\xA4\xA7""epa";           // Тест МТГ диспетчера
- txt__instr,              // 34 "Tec""\xA4"" MT""\x81"" ""\x9D\xA2""c""\xA4""py""\x9F\xA4""opa";          // Тест МТГ инструктора  
- txt__MTT,                // 35 "Tec""\xA4"" MTT";                                                        // Тест МТТ
- txt__disp_connect,       // 36 "Ka""\x96""e""\xA0\xAC"" ""\x99\x9D""c""\xA3"". ""\xA3""o""\x99\x9F\xA0"".";// Кабель дисп. подкл.
- txt__disp_disconnect,    // 37 "Ka""\x96""e""\xA0\xAC"" ""\x99\x9D""c""\xA3"".o""\xA4\x9F\xA0"".";       // Кабель дисп.откл.
- txt__instr_connect,      // 38 "Ka""\x96""e""\xA0\xAC"" ""\x9D\xA2""c""\xA4""p.""\xA3""o""\x99\x9F\xA0"".";// Кабель инстр.подкл.
- txt__instr_disconnect,   // 39 "Ka""\x96""e""\xA0\xAC"" ""\x9D\xA2""c""\xA4""p.o""\xA4\x9F\xA0"".";      // Кабель инстр.откл.
- txt__clear1,             // 40 " ";                                                                       //  
- txt__cont1_connect,      // 41 "Ko""\xA2\xA4"". N1 - O""\x9F";                                            // Конт. N1 - Ок
- txt__cont2_connect,      // 42 "Ko""\xA2\xA4"". N2 - O""\x9F";                                            // Конт. N2 - Ок
- txt__cont3_connect,      // 43 "Ko""\xA2\xA4"". N3 - O""\x9F";                                            // Конт. N3 - Ок
- txt__cont4_connect,      // 44 "Ko""\xA2\xA4"". N4 - O""\x9F";                                            // Конт. N4 - Ок
- txt__cont5_connect,      // 45 "Ko""\xA2\xA4"". N5 - O""\x9F";                                            // Конт. N5 - Ок
- txt__cont6_connect,      // 46 "Ko""\xA2\xA4"". N6 - O""\x9F";                                            // Конт. N6 - Ок
- txt__cont7_connect,      // 47 "Ko""\xA2\xA4"". N7 - O""\x9F";                                            // Конт. N7 - Ок
- txt__cont8_connect,      // 48 "Ko""\xA2\xA4"". N8 - O""\x9F";                                            // Конт. N8 - Ок
- txt__cont9_connect,      // 49 "Ko""\xA2\xA4"". N9 - O""\x9F";                                            // Конт. N9 - Ок
- txt__clear2,             // 50 " ";                                                                       //   
- txt__cont1_disconnect,   // 51 "Ko""\xA2\xA4"". N1 - He""\xA4""!";                                        // Конт. N1 - Нет!
- txt__cont2_disconnect,   // 52 "Ko""\xA2\xA4"". N2 - He""\xA4""!";                                        // Конт. N2 - Нет!
- txt__cont3_disconnect,   // 53 "Ko""\xA2\xA4"". N3 - He""\xA4""!";                                        // Конт. N3 - Нет! 
- txt__cont4_disconnect,   // 54 "Ko""\xA2\xA4"". N4 - He""\xA4""!";                                        // Конт. N4 - Нет! 
- txt__cont5_disconnect,   // 55 "Ko""\xA2\xA4"". N5 - He""\xA4""!";                                        // Конт. N5 - Нет! 
- txt__cont6_disconnect,   // 56 "Ko""\xA2\xA4"". N6 - He""\xA4""!";                                        // Конт. N6 - Нет! 
- txt__cont7_disconnect,   // 57 "Ko""\xA2\xA4"". N7 - He""\xA4""!";                                        // Конт. N7 - Нет! 
- txt__cont8_disconnect,   // 58 "Ko""\xA2\xA4"". N8 - He""\xA4""!";                                        // Конт. N8 - Нет! 
- txt__cont9_disconnect    // 59 "Ko""\xA2\xA4"". N9 - He""\xA4""!";                                        // Конт. N9 - Нет! 
+  txt_pass_ok,             // 0 " ";                                                                      //
+  txt_pass_no,             // 1 " ";                                                                      //
+  txt_info1,               // 2 "Tec\xA4 ""\x9F""a\x96""e\xA0""e\x9E";                                    // РўРµСЃС‚ РєР°Р±РµР»РµР№
+  txt_info2,               // 3 "Tec\xA4 \x96\xA0o\x9F""a \x98""ap\xA2\x9D\xA4yp";                        // РўРµСЃС‚ Р±Р»РѕРєР° РіР°СЂРЅРёС‚СѓСЂ
+  txt_info3,               // 4 "Hac\xA4po\x9E\x9F""a c\x9D""c\xA4""e\xA1\xAB";                           // РќР°СЃС‚СЂРѕР№РєР° СЃРёСЃС‚РµРјС‹
+  txt_info4,               // 5 "\x81""e\xA2""epa\xA4op c\x9D\x98\xA2""a\xA0o\x97";                       // Р“РµРЅРµСЂР°С‚РѕСЂ СЃРёРіРЅР°Р»РѕРІ
+  txt_info5,               // 6 "Oc\xA6\x9D\xA0\xA0o\x98pa\xA5";                                          // РћСЃС†РёР»Р»РѕРіСЂР°С„
+  txt_botton_clear,        // 7 " ";                                                                      //
+  txt_botton_otmena,       // 8 " ";                                                                      //
+  txt_botton_vvod,         // 9 " ";                                                                      //
+  txt_botton_ret,          // 10 ""B""\xAB""x" ";                                                         //  Р’С‹С…
+  txt_system_clear3,       // 11 " ";                                                                     //
+  txt9,                    // 12 "B\x97o\x99";                                                             // Р’РІРѕРґ
+  txt10,                   // 13 "O""\xA4\xA1""e""\xA2""a";                                                // "РћС‚РјРµРЅР°"
+  txt_time_wait,           // 14 "\xA1\x9D\xA2"".""\x97""pe""\xA1\xAF"" ""\xA3""poc""\xA4""o""\xAF";       //  РјРёРЅ. РІСЂРµРјСЏ РїСЂРѕСЃС‚РѕСЏ
+  txt_info29,              // 15 "Stop->PUSH Disp";
+  txt_info30,              // 16 " ";
+  txt_test_all,            // 17 "Tec""\xA4"" ""\x97""cex pa""\x9C\xAA""e""\xA1""o""\x97";                 // РўРµСЃС‚ РІСЃРµС… СЂР°Р·СЉРµРјРѕРІ
+  txt_test_all_exit1,      // 18 "\x82\xA0\xAF"" ""\x97\xAB""xo""\x99""a";                                 // Р”Р»СЏ РІС‹С…РѕРґР°
+  txt_test_all_exit2,      // 19 "\xA3""p""\x9D\x9F""oc""\xA2\x9D""c""\xAC"" ""\x9F"" ""\xAD\x9F""pa""\xA2""y";  // РїСЂРёРєРѕСЃРЅРёСЃСЊ Рє СЌРєСЂР°РЅСѓ
+  txt_test_end,            // 20 "\x85""a""\x97""ep""\xA8\x9D\xA4\xAC";                                    // Р—Р°РІРµСЂС€РёС‚СЊ
+  txt_test_repeat,         // 21 "\x89""o""\x97\xA4""op""\x9D\xA4\xAC";                                    // РџРѕРІС‚РѕСЂРёС‚СЊ
+  txt_error_connect1,      // 22 "O""\x8E\x86\x80""KA";                                                    // РћС€РёР±РєР°
+  txt_error_connect2,      // 23 "\xA3""o""\x99\x9F\xA0\xAE\xA7""e""\xA2\x9D\xAF"" ""\x9F""a""\x96""e""\xA0\xAF"; //РїРѕРґРєР»СЋС‡РµРЅРёСЏ РєР°Р±РµР»СЏ
+  txt_error_connect3,      // 24 "O""\xA8\x9D\x96""o""\x9F"" ""\xA2""e""\xA4";                             // РћС€РёР±РѕРє РЅРµС‚
+  txt_error_connect4,      // 25 "O""\xA8\x9D\x96""o""\x9F"" -         ";                                  // РћС€РёР±РѕРє  -
+  txt__connect1,           // 26 "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N1";    // РћР±РЅР°СЂСѓР¶РµРЅ РєР°Р±РµР»СЊ N1
+  txt__connect2,           // 27 "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N2";    // РћР±РЅР°СЂСѓР¶РµРЅ РєР°Р±РµР»СЊ N2
+  txt__connect3,           // 28 "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N3";    // РћР±РЅР°СЂСѓР¶РµРЅ РєР°Р±РµР»СЊ N3
+  txt__connect4,           // 29 "O""\x96\xA2""apy""\x9B""e""\xA2"" ""\x9F""a""\x96""e""\xA0\xAC"" N4";    // РћР±РЅР°СЂСѓР¶РµРЅ РєР°Р±РµР»СЊ N4
+  txt__test_end,           // 30 "TECT ""\x85""A""KOH""\x8D""EH";                                          // РўР•РЎРў Р—РђРљРћРќР§Р•Рќ
+  txt__panel,              // 31 "Tec""\xA4"" c""\x97""e""\xA4""o""\x99\x9D""o""\x99""o""\x97";            // РўРµСЃС‚ СЃРІРµС‚РѕРґРёРѕРґРѕРІ
+  txt__panel0,             // 32 "                          ";                                             //
+  txt__disp,               // 33 "Tec""\xA4"" MT""\x81"" ""\x99\x9D""c""\xA3""e""\xA4\xA7""epa";           // РўРµСЃС‚ РњРўР“ РґРёСЃРїРµС‚С‡РµСЂР°
+  txt__instr,              // 34 "Tec""\xA4"" MT""\x81"" ""\x9D\xA2""c""\xA4""py""\x9F\xA4""opa";          // РўРµСЃС‚ РњРўР“ РёРЅСЃС‚СЂСѓРєС‚РѕСЂР°
+  txt__MTT,                // 35 "Tec""\xA4"" MTT";                                                        // РўРµСЃС‚ РњРўРў
+  txt__disp_connect,       // 36 "Ka""\x96""e""\xA0\xAC"" ""\x99\x9D""c""\xA3"". ""\xA3""o""\x99\x9F\xA0"".";// РљР°Р±РµР»СЊ РґРёСЃРї. РїРѕРґРєР».
+  txt__disp_disconnect,    // 37 "Ka""\x96""e""\xA0\xAC"" ""\x99\x9D""c""\xA3"".o""\xA4\x9F\xA0"".";       // РљР°Р±РµР»СЊ РґРёСЃРї.РѕС‚РєР».
+  txt__instr_connect,      // 38 "Ka""\x96""e""\xA0\xAC"" ""\x9D\xA2""c""\xA4""p.""\xA3""o""\x99\x9F\xA0"".";// РљР°Р±РµР»СЊ РёРЅСЃС‚СЂ.РїРѕРґРєР».
+  txt__instr_disconnect,   // 39 "Ka""\x96""e""\xA0\xAC"" ""\x9D\xA2""c""\xA4""p.o""\xA4\x9F\xA0"".";      // РљР°Р±РµР»СЊ РёРЅСЃС‚СЂ.РѕС‚РєР».
+  txt__clear1,             // 40 " ";                                                                       //
+  txt__cont1_connect,      // 41 "Ko""\xA2\xA4"". N1 - O""\x9F";                                            // РљРѕРЅС‚. N1 - РћРє
+  txt__cont2_connect,      // 42 "Ko""\xA2\xA4"". N2 - O""\x9F";                                            // РљРѕРЅС‚. N2 - РћРє
+  txt__cont3_connect,      // 43 "Ko""\xA2\xA4"". N3 - O""\x9F";                                            // РљРѕРЅС‚. N3 - РћРє
+  txt__cont4_connect,      // 44 "Ko""\xA2\xA4"". N4 - O""\x9F";                                            // РљРѕРЅС‚. N4 - РћРє
+  txt__cont5_connect,      // 45 "Ko""\xA2\xA4"". N5 - O""\x9F";                                            // РљРѕРЅС‚. N5 - РћРє
+  txt__cont6_connect,      // 46 "Ko""\xA2\xA4"". N6 - O""\x9F";                                            // РљРѕРЅС‚. N6 - РћРє
+  txt__cont7_connect,      // 47 "Ko""\xA2\xA4"". N7 - O""\x9F";                                            // РљРѕРЅС‚. N7 - РћРє
+  txt__cont8_connect,      // 48 "Ko""\xA2\xA4"". N8 - O""\x9F";                                            // РљРѕРЅС‚. N8 - РћРє
+  txt__cont9_connect,      // 49 "Ko""\xA2\xA4"". N9 - O""\x9F";                                            // РљРѕРЅС‚. N9 - РћРє
+  txt__clear2,             // 50 " ";                                                                       //
+  txt__cont1_disconnect,   // 51 "Ko""\xA2\xA4"". N1 - He""\xA4""!";                                        // РљРѕРЅС‚. N1 - РќРµС‚!
+  txt__cont2_disconnect,   // 52 "Ko""\xA2\xA4"". N2 - He""\xA4""!";                                        // РљРѕРЅС‚. N2 - РќРµС‚!
+  txt__cont3_disconnect,   // 53 "Ko""\xA2\xA4"". N3 - He""\xA4""!";                                        // РљРѕРЅС‚. N3 - РќРµС‚!
+  txt__cont4_disconnect,   // 54 "Ko""\xA2\xA4"". N4 - He""\xA4""!";                                        // РљРѕРЅС‚. N4 - РќРµС‚!
+  txt__cont5_disconnect,   // 55 "Ko""\xA2\xA4"". N5 - He""\xA4""!";                                        // РљРѕРЅС‚. N5 - РќРµС‚!
+  txt__cont6_disconnect,   // 56 "Ko""\xA2\xA4"". N6 - He""\xA4""!";                                        // РљРѕРЅС‚. N6 - РќРµС‚!
+  txt__cont7_disconnect,   // 57 "Ko""\xA2\xA4"". N7 - He""\xA4""!";                                        // РљРѕРЅС‚. N7 - РќРµС‚!
+  txt__cont8_disconnect,   // 58 "Ko""\xA2\xA4"". N8 - He""\xA4""!";                                        // РљРѕРЅС‚. N8 - РќРµС‚!
+  txt__cont9_disconnect    // 59 "Ko""\xA2\xA4"". N9 - He""\xA4""!";                                        // РљРѕРЅС‚. N9 - РќРµС‚!
 };
 
 
 
 
- byte   temp_buffer[40] ;                                                                                                // Буфер хранения временной информации
- 
- const byte connektN1_default[]    PROGMEM  = { 20,
-      1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,20,                                                        // Разъем А
-	  1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,20,
-	  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,                                                        // Разъем B
-	  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1                                                         // 1- соединение есть, 0- соединения нет 
- }; // 20 x 5 ячеек
- const byte connektN2_default[]    PROGMEM  = { 26,
-       1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,                                     // Разъем А
-	   1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,                                     // Разъем B
-	   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	   1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1                                      // 1- соединение есть, 0- соединения нет 
- }; // 26 x 5 ячеек
- const byte connektN3_default[]    PROGMEM  = { 37,
-        1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,   // Разъем А
-	   19,18,17,16,15,14,13,12,11,10, 9, 8, 7, 6, 5, 4, 3, 2, 1,37,36,35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,   // Разъем B
- 	    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1    // 1- соединение есть, 0- соединения нет 
- }; // 37 x 5 ячеек
- const byte connektN4_default[]    PROGMEM  = { 32,
-       1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,                    // Разъем А
-	   1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,                    // Разъем B
- 	   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1                     // 1- соединение есть, 0- соединения нет 
- }; // 32 x 2 ячеек
+byte   temp_buffer[40] ;                                                                                                // Р‘СѓС„РµСЂ С…СЂР°РЅРµРЅРёСЏ РІСЂРµРјРµРЅРЅРѕР№ РёРЅС„РѕСЂРјР°С†РёРё
+
+const byte connektN1_default[]    PROGMEM  = { 20,
+                                               1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,                                             // Р Р°Р·СЉРµРј Рђ
+                                               1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,                                                        // Р Р°Р·СЉРµРј B
+                                               1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1                                                         // 1- СЃРѕРµРґРёРЅРµРЅРёРµ РµСЃС‚СЊ, 0- СЃРѕРµРґРёРЅРµРЅРёСЏ РЅРµС‚
+                                             }; // 20 x 5 СЏС‡РµРµРє
+const byte connektN2_default[]    PROGMEM  = { 26,
+                                               1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,                    // Р Р°Р·СЉРµРј Рђ
+                                               1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,                    // Р Р°Р·СЉРµРј B
+                                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                               1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1                                      // 1- СЃРѕРµРґРёРЅРµРЅРёРµ РµСЃС‚СЊ, 0- СЃРѕРµРґРёРЅРµРЅРёСЏ РЅРµС‚
+                                             }; // 26 x 5 СЏС‡РµРµРє
+const byte connektN3_default[]    PROGMEM  = { 37,
+                                               1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, // Р Р°Р·СЉРµРј Рђ
+                                               19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, // Р Р°Р·СЉРµРј B
+                                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                               1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1    // 1- СЃРѕРµРґРёРЅРµРЅРёРµ РµСЃС‚СЊ, 0- СЃРѕРµРґРёРЅРµРЅРёСЏ РЅРµС‚
+                                             }; // 37 x 5 СЏС‡РµРµРє
+const byte connektN4_default[]    PROGMEM  = { 32,
+                                               1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, // Р Р°Р·СЉРµРј Рђ
+                                               1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, // Р Р°Р·СЉРµРј B
+                                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                               1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1                     // 1- СЃРѕРµРґРёРЅРµРЅРёРµ РµСЃС‚СЊ, 0- СЃРѕРµРґРёРЅРµРЅРёСЏ РЅРµС‚
+                                             }; // 32 x 2 СЏС‡РµРµРє
 
 
 
 
 
 
- //++++++++++++++++++ Вариант № 1 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- // Определение адреса производится в программе  set_adr_EEPROM()
-unsigned int adr_memN1_1 = 0;                       // Начальный адрес памяти таблицы соответствия контактов разъемов №1А, №1В
-unsigned int adr_memN1_2 = 0;                       // Начальный адрес памяти таблицы соответствия контактов разъемов №2А, №2В
-unsigned int adr_memN1_3 = 0;                       // Начальный адрес памяти таблицы соответствия контактов разъемов №3А, №3В
-unsigned int adr_memN1_4 = 0;                       // Начальный адрес памяти таблицы соответствия контактов разъемов №4А, №4В
- //++++++++++++++++++ Вариант № 2 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-unsigned int adr_memN2_1 = 0;                       // Начальный адрес памяти таблицы соответствия контактов разъемов №1А, №1В
-unsigned int adr_memN2_2 = 0;                       // Начальный адрес памяти таблицы соответствия контактов разъемов №2А, №2В
-unsigned int adr_memN2_3 = 0;                       // Начальный адрес памяти таблицы соответствия контактов разъемов №3А, №3В
-unsigned int adr_memN2_4 = 0;                       // Начальный адрес памяти таблицы соответствия контактов разъемов №4А, №4В
+//++++++++++++++++++ Р’Р°СЂРёР°РЅС‚ в„– 1 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// РћРїСЂРµРґРµР»РµРЅРёРµ Р°РґСЂРµСЃР° РїСЂРѕРёР·РІРѕРґРёС‚СЃСЏ РІ РїСЂРѕРіСЂР°РјРјРµ  set_adr_EEPROM()
+unsigned int adr_memN1_1 = 0;                       // РќР°С‡Р°Р»СЊРЅС‹Р№ Р°РґСЂРµСЃ РїР°РјСЏС‚Рё С‚Р°Р±Р»РёС†С‹ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёСЏ РєРѕРЅС‚Р°РєС‚РѕРІ СЂР°Р·СЉРµРјРѕРІ в„–1Рђ, в„–1Р’
+unsigned int adr_memN1_2 = 0;                       // РќР°С‡Р°Р»СЊРЅС‹Р№ Р°РґСЂРµСЃ РїР°РјСЏС‚Рё С‚Р°Р±Р»РёС†С‹ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёСЏ РєРѕРЅС‚Р°РєС‚РѕРІ СЂР°Р·СЉРµРјРѕРІ в„–2Рђ, в„–2Р’
+unsigned int adr_memN1_3 = 0;                       // РќР°С‡Р°Р»СЊРЅС‹Р№ Р°РґСЂРµСЃ РїР°РјСЏС‚Рё С‚Р°Р±Р»РёС†С‹ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёСЏ РєРѕРЅС‚Р°РєС‚РѕРІ СЂР°Р·СЉРµРјРѕРІ в„–3Рђ, в„–3Р’
+unsigned int adr_memN1_4 = 0;                       // РќР°С‡Р°Р»СЊРЅС‹Р№ Р°РґСЂРµСЃ РїР°РјСЏС‚Рё С‚Р°Р±Р»РёС†С‹ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёСЏ РєРѕРЅС‚Р°РєС‚РѕРІ СЂР°Р·СЉРµРјРѕРІ в„–4Рђ, в„–4Р’
+//++++++++++++++++++ Р’Р°СЂРёР°РЅС‚ в„– 2 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+unsigned int adr_memN2_1 = 0;                       // РќР°С‡Р°Р»СЊРЅС‹Р№ Р°РґСЂРµСЃ РїР°РјСЏС‚Рё С‚Р°Р±Р»РёС†С‹ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёСЏ РєРѕРЅС‚Р°РєС‚РѕРІ СЂР°Р·СЉРµРјРѕРІ в„–1Рђ, в„–1Р’
+unsigned int adr_memN2_2 = 0;                       // РќР°С‡Р°Р»СЊРЅС‹Р№ Р°РґСЂРµСЃ РїР°РјСЏС‚Рё С‚Р°Р±Р»РёС†С‹ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёСЏ РєРѕРЅС‚Р°РєС‚РѕРІ СЂР°Р·СЉРµРјРѕРІ в„–2Рђ, в„–2Р’
+unsigned int adr_memN2_3 = 0;                       // РќР°С‡Р°Р»СЊРЅС‹Р№ Р°РґСЂРµСЃ РїР°РјСЏС‚Рё С‚Р°Р±Р»РёС†С‹ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёСЏ РєРѕРЅС‚Р°РєС‚РѕРІ СЂР°Р·СЉРµРјРѕРІ в„–3Рђ, в„–3Р’
+unsigned int adr_memN2_4 = 0;                       // РќР°С‡Р°Р»СЊРЅС‹Р№ Р°РґСЂРµСЃ РїР°РјСЏС‚Рё С‚Р°Р±Р»РёС†С‹ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёСЏ РєРѕРЅС‚Р°РєС‚РѕРІ СЂР°Р·СЉРµРјРѕРІ в„–4Рђ, в„–4Р’
 
 //==========================================================================================================================
 
 
 
-// Запись на ассемблере в регистры (1 sbi) или (0 cbi)
-// Необходим для работы с АЦП (изменение частоты тактирования)
-// Определяет для установки и сброса бита регистра
+// Р—Р°РїРёСЃСЊ РЅР° Р°СЃСЃРµРјР±Р»РµСЂРµ РІ СЂРµРіРёСЃС‚СЂС‹ (1 sbi) РёР»Рё (0 cbi)
+// РќРµРѕР±С…РѕРґРёРј РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РђР¦Рџ (РёР·РјРµРЅРµРЅРёРµ С‡Р°СЃС‚РѕС‚С‹ С‚Р°РєС‚РёСЂРѕРІР°РЅРёСЏ)
+// РћРїСЂРµРґРµР»СЏРµС‚ РґР»СЏ СѓСЃС‚Р°РЅРѕРІРєРё Рё СЃР±СЂРѕСЃР° Р±РёС‚Р° СЂРµРіРёСЃС‚СЂР°
 
 #define FASTADC 1
 // defines for setting and clearing register bits
 #ifndef cbi
 #define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
 #endif
+
 #ifndef sbi
 #define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
 #endif
 
-
-
-void dateTime(uint16_t* date, uint16_t* time)                                    // Программа записи времени и даты файла
+void dateTime(uint16_t* date, uint16_t* time)                                    // РџСЂРѕРіСЂР°РјРјР° Р·Р°РїРёСЃРё РІСЂРµРјРµРЅРё Рё РґР°С‚С‹ С„Р°Р№Р»Р°
 {
   DateTime now = RTC.now();
 
@@ -561,138 +562,138 @@ void dateTime(uint16_t* date, uint16_t* time)                                   
   *time = FAT_TIME(now.hour(), now.minute(), now.second());
 }
 
-void serial_print_date()                           // Печать даты и времени    
+void serial_print_date()                           // РџРµС‡Р°С‚СЊ РґР°С‚С‹ Рё РІСЂРµРјРµРЅРё
 {
-	  DateTime now = RTC.now();
-	  Serial.print(now.day(), DEC);
-	  Serial.print('/');
-	  Serial.print(now.month(), DEC);
-	  Serial.print('/');
-	  Serial.print(now.year(), DEC); 
-	  Serial.print(' ');
-	  Serial.print(now.hour(), DEC);
-	  Serial.print(':');
-	  Serial.print(now.minute(), DEC);
-	  Serial.print(':');
-	  Serial.print(now.second(), DEC);
-	  Serial.print("  ");
-	  Serial.println(str1[now.dayOfWeek()-1]);
+  DateTime now = RTC.now();
+  Serial.print(now.day(), DEC);
+  Serial.print('/');
+  Serial.print(now.month(), DEC);
+  Serial.print('/');
+  Serial.print(now.year(), DEC);
+  Serial.print(' ');
+  Serial.print(now.hour(), DEC);
+  Serial.print(':');
+  Serial.print(now.minute(), DEC);
+  Serial.print(':');
+  Serial.print(now.second(), DEC);
+  Serial.print("  ");
+  Serial.println(str1[now.dayOfWeek() - 1]);
 }
 void clock_read()
 {
-	DateTime now = RTC.now();
-	second = now.second();       
-	minute = now.minute();
-	hour   = now.hour();
-	dow    = now.dayOfWeek();
-	day    = now.day();
-	month  = now.month();
-	year   = now.year();
+  DateTime now = RTC.now();
+  second = now.second();
+  minute = now.minute();
+  hour   = now.hour();
+  dow    = now.dayOfWeek();
+  day    = now.day();
+  month  = now.month();
+  year   = now.year();
 }
 
 void set_time()
 {
-	RTC.adjust(DateTime(__DATE__, __TIME__));
-	DateTime now = RTC.now();
-	second = now.second();       //Initialization time
-	minute = now.minute();
-	hour   = now.hour();
-	day    = now.day();
-	day++;
-	if(day > 31)day = 1;
-	month  = now.month();
-	year   = now.year();
-	DateTime set_time = DateTime(year, month, day, hour, minute, second); // Занести данные о времени в строку "set_time"
-	RTC.adjust(set_time);             
+  RTC.adjust(DateTime(__DATE__, __TIME__));
+  DateTime now = RTC.now();
+  second = now.second();       //Initialization time
+  minute = now.minute();
+  hour   = now.hour();
+  day    = now.day();
+  day++;
+  if (day > 31)day = 1;
+  month  = now.month();
+  year   = now.year();
+  DateTime set_time = DateTime(year, month, day, hour, minute, second); // Р—Р°РЅРµСЃС‚Рё РґР°РЅРЅС‹Рµ Рѕ РІСЂРµРјРµРЅРё РІ СЃС‚СЂРѕРєСѓ "set_time"
+  RTC.adjust(set_time);
 }
 void i2c_eeprom_write_byte( int deviceaddress, unsigned int eeaddress, byte data )
 {
-	int rdata = data;
-	Wire.beginTransmission(deviceaddress);
-	Wire.write((int)(eeaddress >> 8)); // MSB
-	Wire.write((int)(eeaddress & 0xFF)); // LSB
-	Wire.write(rdata);
-	Wire.endTransmission();
-	delay(10);
+  int rdata = data;
+  Wire.beginTransmission(deviceaddress);
+  Wire.write((int)(eeaddress >> 8)); // MSB
+  Wire.write((int)(eeaddress & 0xFF)); // LSB
+  Wire.write(rdata);
+  Wire.endTransmission();
+  delay(10);
 }
 byte i2c_eeprom_read_byte( int deviceaddress, unsigned int eeaddress ) {
-	byte rdata = 0xFF;
-	Wire.beginTransmission(deviceaddress);
-	Wire.write((int)(eeaddress >> 8)); // MSB
-	Wire.write((int)(eeaddress & 0xFF)); // LSB
-	Wire.endTransmission();
-	Wire.requestFrom(deviceaddress,1);
-	if (Wire.available()) rdata = Wire.read();
-	return rdata;
+  byte rdata = 0xFF;
+  Wire.beginTransmission(deviceaddress);
+  Wire.write((int)(eeaddress >> 8)); // MSB
+  Wire.write((int)(eeaddress & 0xFF)); // LSB
+  Wire.endTransmission();
+  Wire.requestFrom(deviceaddress, 1);
+  if (Wire.available()) rdata = Wire.read();
+  return rdata;
 }
 void i2c_eeprom_read_buffer( int deviceaddress, unsigned int eeaddress, byte *buffer, int length )
 {
-	
-	Wire.beginTransmission(deviceaddress);
-	Wire.write((int)(eeaddress >> 8)); // MSB
-	Wire.write((int)(eeaddress & 0xFF)); // LSB
-	Wire.endTransmission();
-	Wire.requestFrom(deviceaddress,length);
-	int c = 0;
-	for ( c = 0; c < length; c++ )
-	if (Wire.available()) buffer[c] = Wire.read();
-	
+
+  Wire.beginTransmission(deviceaddress);
+  Wire.write((int)(eeaddress >> 8)); // MSB
+  Wire.write((int)(eeaddress & 0xFF)); // LSB
+  Wire.endTransmission();
+  Wire.requestFrom(deviceaddress, length);
+  int c = 0;
+  for ( c = 0; c < length; c++ )
+    if (Wire.available()) buffer[c] = Wire.read();
+
 }
-void i2c_eeprom_write_page( int deviceaddress, unsigned int eeaddresspage, byte* data, byte length ) 
+void i2c_eeprom_write_page( int deviceaddress, unsigned int eeaddresspage, byte* data, byte length )
 {
-	
-	Wire.beginTransmission(deviceaddress);
-	Wire.write((int)(eeaddresspage >> 8)); // MSB
-	Wire.write((int)(eeaddresspage & 0xFF)); // LSB
-	byte c;
-	for ( c = 0; c < length; c++)
-	Wire.write(data[c]);
-	Wire.endTransmission();
-	
+
+  Wire.beginTransmission(deviceaddress);
+  Wire.write((int)(eeaddresspage >> 8)); // MSB
+  Wire.write((int)(eeaddresspage & 0xFF)); // LSB
+  byte c;
+  for ( c = 0; c < length; c++)
+    Wire.write(data[c]);
+  Wire.endTransmission();
+
 }
 
 void drawDisplay()
 {
   // Clear screen
   myGLCD.clrScr();
-  
+
   // Draw Clockface
   myGLCD.setColor(0, 0, 255);
   myGLCD.setBackColor(0, 0, 0);
-  for (int i=0; i<5; i++)
+  for (int i = 0; i < 5; i++)
   {
-	myGLCD.drawCircle(clockCenterX, clockCenterY, 119-i);
+    myGLCD.drawCircle(clockCenterX, clockCenterY, 119 - i);
   }
-  for (int i=0; i<5; i++)
+  for (int i = 0; i < 5; i++)
   {
-	myGLCD.drawCircle(clockCenterX, clockCenterY, i);
+    myGLCD.drawCircle(clockCenterX, clockCenterY, i);
   }
-  
+
   myGLCD.setColor(192, 192, 255);
-  myGLCD.print("3", clockCenterX+92, clockCenterY-8);
-  myGLCD.print("6", clockCenterX-8, clockCenterY+95);
-  myGLCD.print("9", clockCenterX-109, clockCenterY-8);
-  myGLCD.print("12", clockCenterX-16, clockCenterY-109);
-  for (int i=0; i<12; i++)
+  myGLCD.print("3", clockCenterX + 92, clockCenterY - 8);
+  myGLCD.print("6", clockCenterX - 8, clockCenterY + 95);
+  myGLCD.print("9", clockCenterX - 109, clockCenterY - 8);
+  myGLCD.print("12", clockCenterX - 16, clockCenterY - 109);
+  for (int i = 0; i < 12; i++)
   {
-	if ((i % 3)!=0)
-	  drawMark(i);
-  }  
+    if ((i % 3) != 0)
+      drawMark(i);
+  }
   clock_read();
   drawMin(minute);
   drawHour(hour, minute);
   drawSec(second);
-  oldsec=second;
+  oldsec = second;
 
   // Draw calendar
   myGLCD.setColor(255, 255, 255);
   myGLCD.fillRoundRect(240, 0, 319, 85);
   myGLCD.setColor(0, 0, 0);
-  for (int i=0; i<7; i++)
+  for (int i = 0; i < 7; i++)
   {
-	myGLCD.drawLine(249+(i*10), 0, 248+(i*10), 3);
-	myGLCD.drawLine(250+(i*10), 0, 249+(i*10), 3);
-	myGLCD.drawLine(251+(i*10), 0, 250+(i*10), 3);
+    myGLCD.drawLine(249 + (i * 10), 0, 248 + (i * 10), 3);
+    myGLCD.drawLine(250 + (i * 10), 0, 249 + (i * 10), 3);
+    myGLCD.drawLine(251 + (i * 10), 0, 250 + (i * 10), 3);
   }
 
   // Draw SET button
@@ -703,149 +704,149 @@ void drawDisplay()
   myGLCD.setBackColor(64, 64, 128);
   myGLCD.print("SET", 266, 212);
   myGLCD.setBackColor(0, 0, 0);
-  
- /* myGLCD.setColor(64, 64, 128);
-  myGLCD.fillRoundRect(260, 140, 319, 180);
-  myGLCD.setColor(255, 255, 255);
-  myGLCD.drawRoundRect(260, 140, 319, 180);
-  myGLCD.setBackColor(64, 64, 128);
-  myGLCD.print("RET", 266, 150);
-  myGLCD.setBackColor(0, 0, 0);*/
+
+  /* myGLCD.setColor(64, 64, 128);
+    myGLCD.fillRoundRect(260, 140, 319, 180);
+    myGLCD.setColor(255, 255, 255);
+    myGLCD.drawRoundRect(260, 140, 319, 180);
+    myGLCD.setBackColor(64, 64, 128);
+    myGLCD.print("RET", 266, 150);
+    myGLCD.setBackColor(0, 0, 0);*/
 
 }
 void drawMark(int h)
 {
   float x1, y1, x2, y2;
-  
-  h=h*30;
-  h=h+270;
-  
-  x1=110*cos(h*0.0175);
-  y1=110*sin(h*0.0175);
-  x2=100*cos(h*0.0175);
-  y2=100*sin(h*0.0175);
-  
-  myGLCD.drawLine(x1+clockCenterX, y1+clockCenterY, x2+clockCenterX, y2+clockCenterY);
+
+  h = h * 30;
+  h = h + 270;
+
+  x1 = 110 * cos(h * 0.0175);
+  y1 = 110 * sin(h * 0.0175);
+  x2 = 100 * cos(h * 0.0175);
+  y2 = 100 * sin(h * 0.0175);
+
+  myGLCD.drawLine(x1 + clockCenterX, y1 + clockCenterY, x2 + clockCenterX, y2 + clockCenterY);
 }
 void drawSec(int s)
 {
   float x1, y1, x2, y2;
-  int ps = s-1;
-  
+  int ps = s - 1;
+
   myGLCD.setColor(0, 0, 0);
-  if (ps==-1)
-  ps=59;
-  ps=ps*6;
-  ps=ps+270;
-  
-  x1=95*cos(ps*0.0175);
-  y1=95*sin(ps*0.0175);
-  x2=80*cos(ps*0.0175);
-  y2=80*sin(ps*0.0175);
-  
-  myGLCD.drawLine(x1+clockCenterX, y1+clockCenterY, x2+clockCenterX, y2+clockCenterY);
+  if (ps == -1)
+    ps = 59;
+  ps = ps * 6;
+  ps = ps + 270;
+
+  x1 = 95 * cos(ps * 0.0175);
+  y1 = 95 * sin(ps * 0.0175);
+  x2 = 80 * cos(ps * 0.0175);
+  y2 = 80 * sin(ps * 0.0175);
+
+  myGLCD.drawLine(x1 + clockCenterX, y1 + clockCenterY, x2 + clockCenterX, y2 + clockCenterY);
 
   myGLCD.setColor(255, 0, 0);
-  s=s*6;
-  s=s+270;
-  
-  x1=95*cos(s*0.0175);
-  y1=95*sin(s*0.0175);
-  x2=80*cos(s*0.0175);
-  y2=80*sin(s*0.0175);
-  
-  myGLCD.drawLine(x1+clockCenterX, y1+clockCenterY, x2+clockCenterX, y2+clockCenterY);
+  s = s * 6;
+  s = s + 270;
+
+  x1 = 95 * cos(s * 0.0175);
+  y1 = 95 * sin(s * 0.0175);
+  x2 = 80 * cos(s * 0.0175);
+  y2 = 80 * sin(s * 0.0175);
+
+  myGLCD.drawLine(x1 + clockCenterX, y1 + clockCenterY, x2 + clockCenterX, y2 + clockCenterY);
 }
 void drawMin(int m)
 {
   float x1, y1, x2, y2, x3, y3, x4, y4;
-  int pm = m-1;
-  
+  int pm = m - 1;
+
   myGLCD.setColor(0, 0, 0);
-  if (pm==-1)
-  pm=59;
-  pm=pm*6;
-  pm=pm+270;
-  
-  x1=80*cos(pm*0.0175);
-  y1=80*sin(pm*0.0175);
-  x2=5*cos(pm*0.0175);
-  y2=5*sin(pm*0.0175);
-  x3=30*cos((pm+4)*0.0175);
-  y3=30*sin((pm+4)*0.0175);
-  x4=30*cos((pm-4)*0.0175);
-  y4=30*sin((pm-4)*0.0175);
-  
-  myGLCD.drawLine(x1+clockCenterX, y1+clockCenterY, x3+clockCenterX, y3+clockCenterY);
-  myGLCD.drawLine(x3+clockCenterX, y3+clockCenterY, x2+clockCenterX, y2+clockCenterY);
-  myGLCD.drawLine(x2+clockCenterX, y2+clockCenterY, x4+clockCenterX, y4+clockCenterY);
-  myGLCD.drawLine(x4+clockCenterX, y4+clockCenterY, x1+clockCenterX, y1+clockCenterY);
+  if (pm == -1)
+    pm = 59;
+  pm = pm * 6;
+  pm = pm + 270;
+
+  x1 = 80 * cos(pm * 0.0175);
+  y1 = 80 * sin(pm * 0.0175);
+  x2 = 5 * cos(pm * 0.0175);
+  y2 = 5 * sin(pm * 0.0175);
+  x3 = 30 * cos((pm + 4) * 0.0175);
+  y3 = 30 * sin((pm + 4) * 0.0175);
+  x4 = 30 * cos((pm - 4) * 0.0175);
+  y4 = 30 * sin((pm - 4) * 0.0175);
+
+  myGLCD.drawLine(x1 + clockCenterX, y1 + clockCenterY, x3 + clockCenterX, y3 + clockCenterY);
+  myGLCD.drawLine(x3 + clockCenterX, y3 + clockCenterY, x2 + clockCenterX, y2 + clockCenterY);
+  myGLCD.drawLine(x2 + clockCenterX, y2 + clockCenterY, x4 + clockCenterX, y4 + clockCenterY);
+  myGLCD.drawLine(x4 + clockCenterX, y4 + clockCenterY, x1 + clockCenterX, y1 + clockCenterY);
 
   myGLCD.setColor(0, 255, 0);
-  m=m*6;
-  m=m+270;
-  
-  x1=80*cos(m*0.0175);
-  y1=80*sin(m*0.0175);
-  x2=5*cos(m*0.0175);
-  y2=5*sin(m*0.0175);
-  x3=30*cos((m+4)*0.0175);
-  y3=30*sin((m+4)*0.0175);
-  x4=30*cos((m-4)*0.0175);
-  y4=30*sin((m-4)*0.0175);
-  
-  myGLCD.drawLine(x1+clockCenterX, y1+clockCenterY, x3+clockCenterX, y3+clockCenterY);
-  myGLCD.drawLine(x3+clockCenterX, y3+clockCenterY, x2+clockCenterX, y2+clockCenterY);
-  myGLCD.drawLine(x2+clockCenterX, y2+clockCenterY, x4+clockCenterX, y4+clockCenterY);
-  myGLCD.drawLine(x4+clockCenterX, y4+clockCenterY, x1+clockCenterX, y1+clockCenterY);
+  m = m * 6;
+  m = m + 270;
+
+  x1 = 80 * cos(m * 0.0175);
+  y1 = 80 * sin(m * 0.0175);
+  x2 = 5 * cos(m * 0.0175);
+  y2 = 5 * sin(m * 0.0175);
+  x3 = 30 * cos((m + 4) * 0.0175);
+  y3 = 30 * sin((m + 4) * 0.0175);
+  x4 = 30 * cos((m - 4) * 0.0175);
+  y4 = 30 * sin((m - 4) * 0.0175);
+
+  myGLCD.drawLine(x1 + clockCenterX, y1 + clockCenterY, x3 + clockCenterX, y3 + clockCenterY);
+  myGLCD.drawLine(x3 + clockCenterX, y3 + clockCenterY, x2 + clockCenterX, y2 + clockCenterY);
+  myGLCD.drawLine(x2 + clockCenterX, y2 + clockCenterY, x4 + clockCenterX, y4 + clockCenterY);
+  myGLCD.drawLine(x4 + clockCenterX, y4 + clockCenterY, x1 + clockCenterX, y1 + clockCenterY);
 }
 void drawHour(int h, int m)
 {
   float x1, y1, x2, y2, x3, y3, x4, y4;
   int ph = h;
-  
+
   myGLCD.setColor(0, 0, 0);
-  if (m==0)
+  if (m == 0)
   {
-	ph=((ph-1)*30)+((m+59)/2);
+    ph = ((ph - 1) * 30) + ((m + 59) / 2);
   }
   else
   {
-	ph=(ph*30)+((m-1)/2);
+    ph = (ph * 30) + ((m - 1) / 2);
   }
-  ph=ph+270;
-  
-  x1=60*cos(ph*0.0175);
-  y1=60*sin(ph*0.0175);
-  x2=5*cos(ph*0.0175);
-  y2=5*sin(ph*0.0175);
-  x3=20*cos((ph+5)*0.0175);
-  y3=20*sin((ph+5)*0.0175);
-  x4=20*cos((ph-5)*0.0175);
-  y4=20*sin((ph-5)*0.0175);
-  
-  myGLCD.drawLine(x1+clockCenterX, y1+clockCenterY, x3+clockCenterX, y3+clockCenterY);
-  myGLCD.drawLine(x3+clockCenterX, y3+clockCenterY, x2+clockCenterX, y2+clockCenterY);
-  myGLCD.drawLine(x2+clockCenterX, y2+clockCenterY, x4+clockCenterX, y4+clockCenterY);
-  myGLCD.drawLine(x4+clockCenterX, y4+clockCenterY, x1+clockCenterX, y1+clockCenterY);
+  ph = ph + 270;
+
+  x1 = 60 * cos(ph * 0.0175);
+  y1 = 60 * sin(ph * 0.0175);
+  x2 = 5 * cos(ph * 0.0175);
+  y2 = 5 * sin(ph * 0.0175);
+  x3 = 20 * cos((ph + 5) * 0.0175);
+  y3 = 20 * sin((ph + 5) * 0.0175);
+  x4 = 20 * cos((ph - 5) * 0.0175);
+  y4 = 20 * sin((ph - 5) * 0.0175);
+
+  myGLCD.drawLine(x1 + clockCenterX, y1 + clockCenterY, x3 + clockCenterX, y3 + clockCenterY);
+  myGLCD.drawLine(x3 + clockCenterX, y3 + clockCenterY, x2 + clockCenterX, y2 + clockCenterY);
+  myGLCD.drawLine(x2 + clockCenterX, y2 + clockCenterY, x4 + clockCenterX, y4 + clockCenterY);
+  myGLCD.drawLine(x4 + clockCenterX, y4 + clockCenterY, x1 + clockCenterX, y1 + clockCenterY);
 
   myGLCD.setColor(255, 255, 0);
-  h=(h*30)+(m/2);
-  h=h+270;
-  
-  x1=60*cos(h*0.0175);
-  y1=60*sin(h*0.0175);
-  x2=5*cos(h*0.0175);
-  y2=5*sin(h*0.0175);
-  x3=20*cos((h+5)*0.0175);
-  y3=20*sin((h+5)*0.0175);
-  x4=20*cos((h-5)*0.0175);
-  y4=20*sin((h-5)*0.0175);
-  
-  myGLCD.drawLine(x1+clockCenterX, y1+clockCenterY, x3+clockCenterX, y3+clockCenterY);
-  myGLCD.drawLine(x3+clockCenterX, y3+clockCenterY, x2+clockCenterX, y2+clockCenterY);
-  myGLCD.drawLine(x2+clockCenterX, y2+clockCenterY, x4+clockCenterX, y4+clockCenterY);
-  myGLCD.drawLine(x4+clockCenterX, y4+clockCenterY, x1+clockCenterX, y1+clockCenterY);
+  h = (h * 30) + (m / 2);
+  h = h + 270;
+
+  x1 = 60 * cos(h * 0.0175);
+  y1 = 60 * sin(h * 0.0175);
+  x2 = 5 * cos(h * 0.0175);
+  y2 = 5 * sin(h * 0.0175);
+  x3 = 20 * cos((h + 5) * 0.0175);
+  y3 = 20 * sin((h + 5) * 0.0175);
+  x4 = 20 * cos((h - 5) * 0.0175);
+  y4 = 20 * sin((h - 5) * 0.0175);
+
+  myGLCD.drawLine(x1 + clockCenterX, y1 + clockCenterY, x3 + clockCenterX, y3 + clockCenterY);
+  myGLCD.drawLine(x3 + clockCenterX, y3 + clockCenterY, x2 + clockCenterX, y2 + clockCenterY);
+  myGLCD.drawLine(x2 + clockCenterX, y2 + clockCenterY, x4 + clockCenterX, y4 + clockCenterY);
+  myGLCD.drawLine(x4 + clockCenterX, y4 + clockCenterY, x1 + clockCenterX, y1 + clockCenterY);
 }
 void printDate()
 {
@@ -853,14 +854,14 @@ void printDate()
   myGLCD.setFont(BigFont);
   myGLCD.setColor(0, 0, 0);
   myGLCD.setBackColor(255, 255, 255);
-	
-  myGLCD.print(str[dow-1], 256, 8);
-  if (day<10)
-	myGLCD.printNumI(day, 272, 28);
-  else
-	myGLCD.printNumI(day, 264, 28);
 
-  myGLCD.print(str_mon[month-1], 256, 48);
+  myGLCD.print(str[dow - 1], 256, 8);
+  if (day < 10)
+    myGLCD.printNumI(day, 272, 28);
+  else
+    myGLCD.printNumI(day, 264, 28);
+
+  myGLCD.print(str_mon[month - 1], 256, 48);
   myGLCD.printNumI(year, 248, 65);
 }
 void clearDate()
@@ -870,281 +871,281 @@ void clearDate()
 }
 void AnalogClock()
 {
-	int x, y;
-	drawDisplay();
-	printDate();
-	while (true)
-	  {
-		if (oldsec != second)
-		{
-		  if ((second == 0) and (minute == 0) and (hour == 0))
-		  {
-			clearDate();
-			printDate();
-		  }
-		  if (second==0)
-		  {
-			drawMin(minute);
-			drawHour(hour, minute);
-		  }
-		  drawSec(second);
-		  oldsec = second;
-		  wait_time_Old =  millis();
-		}
+  int x, y;
+  drawDisplay();
+  printDate();
+  while (true)
+  {
+    if (oldsec != second)
+    {
+      if ((second == 0) and (minute == 0) and (hour == 0))
+      {
+        clearDate();
+        printDate();
+      }
+      if (second == 0)
+      {
+        drawMin(minute);
+        drawHour(hour, minute);
+      }
+      drawSec(second);
+      oldsec = second;
+      wait_time_Old =  millis();
+    }
 
-		if (myTouch.dataAvailable())
-		{
-		  myTouch.read();
-		  x=myTouch.getX();
-		  y=myTouch.getY();
-		  if (((y>=200) && (y<=239)) && ((x>=260) && (x<=319))) //установка часов
-		  {
-			myGLCD.setColor (255, 0, 0);
-			myGLCD.drawRoundRect(260, 200, 319, 239);
-			setClock();
-		  }
+    if (myTouch.dataAvailable())
+    {
+      myTouch.read();
+      x = myTouch.getX();
+      y = myTouch.getY();
+      if (((y >= 200) && (y <= 239)) && ((x >= 260) && (x <= 319))) //СѓСЃС‚Р°РЅРѕРІРєР° С‡Р°СЃРѕРІ
+      {
+        myGLCD.setColor (255, 0, 0);
+        myGLCD.drawRoundRect(260, 200, 319, 239);
+        setClock();
+      }
 
-		  if (((y>=1) && (y<=239)) && ((x>=1) && (x<=260))) //Возврат
-		  {
-			myGLCD.clrScr();
-			myGLCD.setFont(BigFont);
-			break;
-		  }
-		 if (((y>=1) && (y<=180)) && ((x>=260) && (x<=319))) //Возврат
-		  {
-			myGLCD.clrScr();
-			myGLCD.setFont(BigFont);
-			break;
-		  }
-		}
-		delay(10);
-		clock_read();
-	  }
+      if (((y >= 1) && (y <= 239)) && ((x >= 1) && (x <= 260))) //Р’РѕР·РІСЂР°С‚
+      {
+        myGLCD.clrScr();
+        myGLCD.setFont(BigFont);
+        break;
+      }
+      if (((y >= 1) && (y <= 180)) && ((x >= 260) && (x <= 319))) //Р’РѕР·РІСЂР°С‚
+      {
+        myGLCD.clrScr();
+        myGLCD.setFont(BigFont);
+        break;
+      }
+    }
+    delay(10);
+    clock_read();
+  }
 }
 
-void flash_time()                                              // Программа обработчик прерывания 
-{ 
-	// PORTB = B00000000; // пин 12 переводим в состояние LOW
-	slave.run();
-	// PORTB = B01000000; // пин 12 переводим в состояние HIGH
+void flash_time()                                              // РџСЂРѕРіСЂР°РјРјР° РѕР±СЂР°Р±РѕС‚С‡РёРє РїСЂРµСЂС‹РІР°РЅРёСЏ
+{
+  // PORTB = B00000000; // РїРёРЅ 12 РїРµСЂРµРІРѕРґРёРј РІ СЃРѕСЃС‚РѕСЏРЅРёРµ LOW
+  slave.run();
+  // PORTB = B01000000; // РїРёРЅ 12 РїРµСЂРµРІРѕРґРёРј РІ СЃРѕСЃС‚РѕСЏРЅРёРµ HIGH
 }
 void serialEvent3()
 {
-	control_command();
+  control_command();
 }
 
 void reset_klav()
 {
-		myGLCD.clrScr();
-		myButtons.deleteAllButtons();
-		but1 = myButtons.addButton( 10,  20, 250,  35, txt_menu5_1);
-		but2 = myButtons.addButton( 10,  65, 250,  35, txt_menu5_2);
-		but3 = myButtons.addButton( 10, 110, 250,  35, txt_menu5_3);
-		but4 = myButtons.addButton( 10, 155, 250,  35, txt_menu5_4);
-		butX = myButtons.addButton(279, 199,  40,  40, "W", BUTTON_SYMBOL); // кнопка Часы 
-		but_m1 = myButtons.addButton(  10, 199, 45,  40, "1");
-		but_m2 = myButtons.addButton(  61, 199, 45,  40, "2");
-		but_m3 = myButtons.addButton(  112, 199, 45,  40, "3");
-		but_m4 = myButtons.addButton(  163, 199, 45,  40, "4");
-		but_m5 = myButtons.addButton(  214, 199, 45,  40, "5");
+  myGLCD.clrScr();
+  myButtons.deleteAllButtons();
+  but1 = myButtons.addButton( 10,  20, 250,  35, txt_menu5_1);
+  but2 = myButtons.addButton( 10,  65, 250,  35, txt_menu5_2);
+  but3 = myButtons.addButton( 10, 110, 250,  35, txt_menu5_3);
+  but4 = myButtons.addButton( 10, 155, 250,  35, txt_menu5_4);
+  butX = myButtons.addButton(279, 199,  40,  40, "W", BUTTON_SYMBOL); // РєРЅРѕРїРєР° Р§Р°СЃС‹
+  but_m1 = myButtons.addButton(  10, 199, 45,  40, "1");
+  but_m2 = myButtons.addButton(  61, 199, 45,  40, "2");
+  but_m3 = myButtons.addButton(  112, 199, 45,  40, "3");
+  but_m4 = myButtons.addButton(  163, 199, 45,  40, "4");
+  but_m5 = myButtons.addButton(  214, 199, 45,  40, "5");
 
 }
 
-void klav123() // ввод данных с цифровой клавиатуры
+void klav123() // РІРІРѕРґ РґР°РЅРЅС‹С… СЃ С†РёС„СЂРѕРІРѕР№ РєР»Р°РІРёР°С‚СѓСЂС‹
 {
-	ret = 0;
+  ret = 0;
 
-	while (true)
-	  {
-		if (myTouch.dataAvailable())
-		{
-			  myTouch.read();
-			  x=myTouch.getX();
-			  y=myTouch.getY();
-	  
-		if ((y>=10) && (y<=60))  // Upper row
-		  {
-			if ((x>=10) && (x<=60))  // Button: 1
-			  {
-				  waitForIt(10, 10, 60, 60);
-				  updateStr('1');
-			  }
-			if ((x>=70) && (x<=120))  // Button: 2
-			  {
-				  waitForIt(70, 10, 120, 60);
-				  updateStr('2');
-			  }
-			if ((x>=130) && (x<=180))  // Button: 3
-			  {
-				  waitForIt(130, 10, 180, 60);
-				  updateStr('3');
-			  }
-			if ((x>=190) && (x<=240))  // Button: 4
-			  {
-				  waitForIt(190, 10, 240, 60);
-				  updateStr('4');
-			  }
-			if ((x>=250) && (x<=300))  // Button: 5
-			  {
-				  waitForIt(250, 10, 300, 60);
-				  updateStr('5');
-			  }
-		  }
-
-		 if ((y>=70) && (y<=120))  // Center row
-		   {
-			 if ((x>=10) && (x<=60))  // Button: 6
-				{
-				  waitForIt(10, 70, 60, 120);
-				  updateStr('6');
-				}
-			 if ((x>=70) && (x<=120))  // Button: 7
-				{
-				  waitForIt(70, 70, 120, 120);
-				  updateStr('7');
-				}
-			 if ((x>=130) && (x<=180))  // Button: 8
-				{
-				  waitForIt(130, 70, 180, 120);
-				  updateStr('8');
-				}
-			 if ((x>=190) && (x<=240))  // Button: 9
-				{
-				  waitForIt(190, 70, 240, 120);
-				  updateStr('9');
-				}
-			 if ((x>=250) && (x<=300))  // Button: 0
-				{
-				  waitForIt(250, 70, 300, 120);
-				  updateStr('0');
-				}
-			}
-		  if ((y>=130) && (y<=180))  // Upper row
-			 {
-			 if ((x>=10) && (x<=130))  // Button: Clear
-				{
-				  waitForIt(10, 130, 120, 180);
-				  stCurrent[0]='\0';
-				  stCurrentLen=0;
-				  myGLCD.setColor(0, 0, 0);
-				  myGLCD.fillRect(0, 224, 319, 239);
-				}
-			 if ((x>=250) && (x<=300))  // Button: Exit
-				{
-				  waitForIt(250, 130, 300, 180);
-				  myGLCD.clrScr();
-				  myGLCD.setBackColor(VGA_BLACK);
-				  ret = 1;
-				  stCurrent[0]='\0';
-				  stCurrentLen=0;
-				  break;
-				}
-			 if ((x>=130) && (x<=240))  // Button: Enter
-				{
-				  waitForIt(130, 130, 240, 180);
-				 if (stCurrentLen>0)
-				   {
-				   for (x=0; x<stCurrentLen+1; x++)
-					 {
-						stLast[x]=stCurrent[x];
-					 }
-						stCurrent[0]='\0';
-						stLast[stCurrentLen+1]='\0';
-						//i2c_eeprom_write_byte(deviceaddress,adr_stCurrentLen1,stCurrentLen);
-						stCurrentLen1 = stCurrentLen;
-						stCurrentLen=0;
-						myGLCD.setColor(0, 0, 0);
-						myGLCD.fillRect(0, 208, 319, 239);
-						myGLCD.setColor(0, 255, 0);
-						myGLCD.print(stLast, LEFT, 208);
-						break;
-					}
-				  else
-					{
-						myGLCD.setColor(255, 0, 0);
-						myGLCD.print("\x80\x8A\x8B\x8B""EP \x89\x8A""CTO\x87!", CENTER, 192);//"БУФФЕР ПУСТОЙ!"
-						delay(500);
-						myGLCD.print("                ", CENTER, 192);
-						delay(500);
-						myGLCD.print("\x80\x8A\x8B\x8B""EP \x89\x8A""CTO\x87!", CENTER, 192);//"БУФФЕР ПУСТОЙ!"
-						delay(500);
-						myGLCD.print("                ", CENTER, 192);
-						myGLCD.setColor(0, 255, 0);
-					}
-				 }
-			  }
-		  }
-	   } 
-} 
-void drawButtons1() // Отображение цифровой клавиатуры
-{
-// Draw the upper row of buttons
-  for (x=0; x<5; x++)
+  while (true)
   {
-	myGLCD.setColor(0, 0, 255);
-	myGLCD.fillRoundRect (10+(x*60), 10, 60+(x*60), 60);
-	myGLCD.setColor(255, 255, 255);
-	myGLCD.drawRoundRect (10+(x*60), 10, 60+(x*60), 60);
-	myGLCD.printNumI(x+1, 27+(x*60), 27);
+    if (myTouch.dataAvailable())
+    {
+      myTouch.read();
+      x = myTouch.getX();
+      y = myTouch.getY();
+
+      if ((y >= 10) && (y <= 60)) // Upper row
+      {
+        if ((x >= 10) && (x <= 60)) // Button: 1
+        {
+          waitForIt(10, 10, 60, 60);
+          updateStr('1');
+        }
+        if ((x >= 70) && (x <= 120)) // Button: 2
+        {
+          waitForIt(70, 10, 120, 60);
+          updateStr('2');
+        }
+        if ((x >= 130) && (x <= 180)) // Button: 3
+        {
+          waitForIt(130, 10, 180, 60);
+          updateStr('3');
+        }
+        if ((x >= 190) && (x <= 240)) // Button: 4
+        {
+          waitForIt(190, 10, 240, 60);
+          updateStr('4');
+        }
+        if ((x >= 250) && (x <= 300)) // Button: 5
+        {
+          waitForIt(250, 10, 300, 60);
+          updateStr('5');
+        }
+      }
+
+      if ((y >= 70) && (y <= 120)) // Center row
+      {
+        if ((x >= 10) && (x <= 60)) // Button: 6
+        {
+          waitForIt(10, 70, 60, 120);
+          updateStr('6');
+        }
+        if ((x >= 70) && (x <= 120)) // Button: 7
+        {
+          waitForIt(70, 70, 120, 120);
+          updateStr('7');
+        }
+        if ((x >= 130) && (x <= 180)) // Button: 8
+        {
+          waitForIt(130, 70, 180, 120);
+          updateStr('8');
+        }
+        if ((x >= 190) && (x <= 240)) // Button: 9
+        {
+          waitForIt(190, 70, 240, 120);
+          updateStr('9');
+        }
+        if ((x >= 250) && (x <= 300)) // Button: 0
+        {
+          waitForIt(250, 70, 300, 120);
+          updateStr('0');
+        }
+      }
+      if ((y >= 130) && (y <= 180)) // Upper row
+      {
+        if ((x >= 10) && (x <= 130)) // Button: Clear
+        {
+          waitForIt(10, 130, 120, 180);
+          stCurrent[0] = '\0';
+          stCurrentLen = 0;
+          myGLCD.setColor(0, 0, 0);
+          myGLCD.fillRect(0, 224, 319, 239);
+        }
+        if ((x >= 250) && (x <= 300)) // Button: Exit
+        {
+          waitForIt(250, 130, 300, 180);
+          myGLCD.clrScr();
+          myGLCD.setBackColor(VGA_BLACK);
+          ret = 1;
+          stCurrent[0] = '\0';
+          stCurrentLen = 0;
+          break;
+        }
+        if ((x >= 130) && (x <= 240)) // Button: Enter
+        {
+          waitForIt(130, 130, 240, 180);
+          if (stCurrentLen > 0)
+          {
+            for (x = 0; x < stCurrentLen + 1; x++)
+            {
+              stLast[x] = stCurrent[x];
+            }
+            stCurrent[0] = '\0';
+            stLast[stCurrentLen + 1] = '\0';
+            //i2c_eeprom_write_byte(deviceaddress,adr_stCurrentLen1,stCurrentLen);
+            stCurrentLen1 = stCurrentLen;
+            stCurrentLen = 0;
+            myGLCD.setColor(0, 0, 0);
+            myGLCD.fillRect(0, 208, 319, 239);
+            myGLCD.setColor(0, 255, 0);
+            myGLCD.print(stLast, LEFT, 208);
+            break;
+          }
+          else
+          {
+            myGLCD.setColor(255, 0, 0);
+            myGLCD.print("\x80\x8A\x8B\x8B""EP \x89\x8A""CTO\x87!", CENTER, 192);//"Р‘РЈР¤Р¤Р•Р  РџРЈРЎРўРћР™!"
+            delay(500);
+            myGLCD.print("                ", CENTER, 192);
+            delay(500);
+            myGLCD.print("\x80\x8A\x8B\x8B""EP \x89\x8A""CTO\x87!", CENTER, 192);//"Р‘РЈР¤Р¤Р•Р  РџРЈРЎРўРћР™!"
+            delay(500);
+            myGLCD.print("                ", CENTER, 192);
+            myGLCD.setColor(0, 255, 0);
+          }
+        }
+      }
+    }
   }
-// Draw the center row of buttons
-  for (x=0; x<5; x++)
+}
+void drawButtons1() // РћС‚РѕР±СЂР°Р¶РµРЅРёРµ С†РёС„СЂРѕРІРѕР№ РєР»Р°РІРёР°С‚СѓСЂС‹
+{
+  // Draw the upper row of buttons
+  for (x = 0; x < 5; x++)
   {
-	myGLCD.setColor(0, 0, 255);
-	myGLCD.fillRoundRect (10+(x*60), 70, 60+(x*60), 120);
-	myGLCD.setColor(255, 255, 255);
-	myGLCD.drawRoundRect (10+(x*60), 70, 60+(x*60), 120);
-	if (x<4)
-	myGLCD.printNumI(x+6, 27+(x*60), 87);
+    myGLCD.setColor(0, 0, 255);
+    myGLCD.fillRoundRect (10 + (x * 60), 10, 60 + (x * 60), 60);
+    myGLCD.setColor(255, 255, 255);
+    myGLCD.drawRoundRect (10 + (x * 60), 10, 60 + (x * 60), 60);
+    myGLCD.printNumI(x + 1, 27 + (x * 60), 27);
+  }
+  // Draw the center row of buttons
+  for (x = 0; x < 5; x++)
+  {
+    myGLCD.setColor(0, 0, 255);
+    myGLCD.fillRoundRect (10 + (x * 60), 70, 60 + (x * 60), 120);
+    myGLCD.setColor(255, 255, 255);
+    myGLCD.drawRoundRect (10 + (x * 60), 70, 60 + (x * 60), 120);
+    if (x < 4)
+      myGLCD.printNumI(x + 6, 27 + (x * 60), 87);
   }
 
   myGLCD.print("0", 267, 87);
-// Draw the lower row of buttons
+  // Draw the lower row of buttons
   myGLCD.setColor(0, 0, 255);
   myGLCD.fillRoundRect (10, 130, 120, 180);
   myGLCD.setColor(255, 255, 255);
   myGLCD.drawRoundRect (10, 130, 120, 180);
-  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[8]))); 
-  myGLCD.print(buffer, 20, 147);                                   // "Отмена"
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[8])));
+  myGLCD.print(buffer, 20, 147);                                   // "РћС‚РјРµРЅР°"
 
 
   myGLCD.setColor(0, 0, 255);
   myGLCD.fillRoundRect (130, 130, 240, 180);
   myGLCD.setColor(255, 255, 255);
   myGLCD.drawRoundRect (130, 130, 240, 180);
-  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[9]))); 
-  myGLCD.print(buffer, 155, 147);                                  // "Ввод"
-  
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[9])));
+  myGLCD.print(buffer, 155, 147);                                  // "Р’РІРѕРґ"
+
 
   myGLCD.setColor(0, 0, 255);
   myGLCD.fillRoundRect (250, 130, 300, 180);
   myGLCD.setColor(255, 255, 255);
   myGLCD.drawRoundRect (250, 130, 300, 180);
-  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[10]))); 
-  myGLCD.print(buffer, 252, 147);                                  // Вых
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[10])));
+  myGLCD.print(buffer, 252, 147);                                  // Р’С‹С…
   myGLCD.setBackColor (0, 0, 0);
 }
 void updateStr(int val)
 {
-  if (stCurrentLen<20)
+  if (stCurrentLen < 20)
   {
-	stCurrent[stCurrentLen]=val;
-	stCurrent[stCurrentLen+1]='\0';
-	stCurrentLen++;
-	myGLCD.setColor(0, 255, 0);
-	myGLCD.print(stCurrent, LEFT, 224);
+    stCurrent[stCurrentLen] = val;
+    stCurrent[stCurrentLen + 1] = '\0';
+    stCurrentLen++;
+    myGLCD.setColor(0, 255, 0);
+    myGLCD.print(stCurrent, LEFT, 224);
   }
   else
-  {   // Вывод строки "ПЕРЕПОЛНЕНИЕ!"
-	myGLCD.setColor(255, 0, 0);
-	myGLCD.print("\x89""EPE""\x89O\x88HEH\x86""E!", CENTER, 224);// ПЕРЕПОЛНЕНИЕ!
-	delay(500);
-	myGLCD.print("              ", CENTER, 224);
-	delay(500);
-	myGLCD.print("\x89""EPE""\x89O\x88HEH\x86""E!", CENTER, 224);// ПЕРЕПОЛНЕНИЕ!
-	delay(500);
-	myGLCD.print("              ", CENTER, 224);
-	myGLCD.setColor(0, 255, 0);
+  { // Р’С‹РІРѕРґ СЃС‚СЂРѕРєРё "РџР•Р Р•РџРћР›РќР•РќРР•!"
+    myGLCD.setColor(255, 0, 0);
+    myGLCD.print("\x89""EPE""\x89O\x88HEH\x86""E!", CENTER, 224);// РџР•Р Р•РџРћР›РќР•РќРР•!
+    delay(500);
+    myGLCD.print("              ", CENTER, 224);
+    delay(500);
+    myGLCD.print("\x89""EPE""\x89O\x88HEH\x86""E!", CENTER, 224);// РџР•Р Р•РџРћР›РќР•РќРР•!
+    delay(500);
+    myGLCD.print("              ", CENTER, 224);
+    myGLCD.setColor(0, 255, 0);
   }
 }
 void waitForIt(int x1, int y1, int x2, int y2)
@@ -1152,158 +1153,158 @@ void waitForIt(int x1, int y1, int x2, int y2)
   myGLCD.setColor(255, 0, 0);
   myGLCD.drawRoundRect (x1, y1, x2, y2);
   while (myTouch.dataAvailable())
-  myTouch.read();
+    myTouch.read();
   myGLCD.setColor(255, 255, 255);
   myGLCD.drawRoundRect (x1, y1, x2, y2);
 }
 
 void control_command()
 {
-	/*
-	Для вызова подпрограммы проверки необходимо записать номер проверки по адресу adr_control_command (40120) 
-	Код проверки
-	0 -   Выполнение команды окончено
-	1 -   Программа проверки кабеля №1
-	2 -   Программа проверки кабеля №2
-	3 -   Программа проверки кабеля №3
-	4 -   Программа проверки кабеля №4
-	5 -   Программа проверки панели гарнитур
-	6 -   Записать таблицу проверки №1 по умолчанию
-	7 -   Записать таблицу проверки №2 по умолчанию
-	8 -   Записать таблицу проверки №3 по умолчанию
-	9 -   Записать таблицу проверки №4 по умолчанию
-	10 -  Установить уровень сигнала резистором №1
-	11 -  Установить уровень сигнала резистором №2
-	12 -  Чтение таблиц из EEPROM для передачи в ПК
-	13 -  Получить таблицу из ПK и записать в EEPROM
-	14 -  
-	15 -  
-	16 -                   
-	17 -  
-	18 -  
-	19 -  
-	20 -  
-	21 -  
-	22 -  
-	23 -  
-	24 - 
-	25 - 
-	26 - 
-	27 - 
-	28 - 
-	29 - 
-	30 - 
+  /*
+    Р”Р»СЏ РІС‹Р·РѕРІР° РїРѕРґРїСЂРѕРіСЂР°РјРјС‹ РїСЂРѕРІРµСЂРєРё РЅРµРѕР±С…РѕРґРёРјРѕ Р·Р°РїРёСЃР°С‚СЊ РЅРѕРјРµСЂ РїСЂРѕРІРµСЂРєРё РїРѕ Р°РґСЂРµСЃСѓ adr_control_command (40120)
+    РљРѕРґ РїСЂРѕРІРµСЂРєРё
+    0 -   Р’С‹РїРѕР»РЅРµРЅРёРµ РєРѕРјР°РЅРґС‹ РѕРєРѕРЅС‡РµРЅРѕ
+    1 -   РџСЂРѕРіСЂР°РјРјР° РїСЂРѕРІРµСЂРєРё РєР°Р±РµР»СЏ в„–1
+    2 -   РџСЂРѕРіСЂР°РјРјР° РїСЂРѕРІРµСЂРєРё РєР°Р±РµР»СЏ в„–2
+    3 -   РџСЂРѕРіСЂР°РјРјР° РїСЂРѕРІРµСЂРєРё РєР°Р±РµР»СЏ в„–3
+    4 -   РџСЂРѕРіСЂР°РјРјР° РїСЂРѕРІРµСЂРєРё РєР°Р±РµР»СЏ в„–4
+    5 -   РџСЂРѕРіСЂР°РјРјР° РїСЂРѕРІРµСЂРєРё РїР°РЅРµР»Рё РіР°СЂРЅРёС‚СѓСЂ
+    6 -   Р—Р°РїРёСЃР°С‚СЊ С‚Р°Р±Р»РёС†Сѓ РїСЂРѕРІРµСЂРєРё в„–1 РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
+    7 -   Р—Р°РїРёСЃР°С‚СЊ С‚Р°Р±Р»РёС†Сѓ РїСЂРѕРІРµСЂРєРё в„–2 РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
+    8 -   Р—Р°РїРёСЃР°С‚СЊ С‚Р°Р±Р»РёС†Сѓ РїСЂРѕРІРµСЂРєРё в„–3 РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
+    9 -   Р—Р°РїРёСЃР°С‚СЊ С‚Р°Р±Р»РёС†Сѓ РїСЂРѕРІРµСЂРєРё в„–4 РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
+    10 -  РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СѓСЂРѕРІРµРЅСЊ СЃРёРіРЅР°Р»Р° СЂРµР·РёСЃС‚РѕСЂРѕРј в„–1
+    11 -  РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СѓСЂРѕРІРµРЅСЊ СЃРёРіРЅР°Р»Р° СЂРµР·РёСЃС‚РѕСЂРѕРј в„–2
+    12 -  Р§С‚РµРЅРёРµ С‚Р°Р±Р»РёС† РёР· EEPROM РґР»СЏ РїРµСЂРµРґР°С‡Рё РІ РџРљ
+    13 -  РџРѕР»СѓС‡РёС‚СЊ С‚Р°Р±Р»РёС†Сѓ РёР· РџK Рё Р·Р°РїРёСЃР°С‚СЊ РІ EEPROM
+    14 -
+    15 -
+    16 -
+    17 -
+    18 -
+    19 -
+    20 -
+    21 -
+    22 -
+    23 -
+    24 -
+    25 -
+    26 -
+    27 -
+    28 -
+    29 -
+    30 -
 
-	*/
+  */
 
 
-	int test_n = regBank.get(adr_control_command);   //адрес  40000
-	if (test_n != 0)
-	{
-		if(test_n != 0) Serial.println(test_n);	
-		switch (test_n)
-		{
-			case 1:
-				 test_cabel_N1();             // Программа проверки кабеля №1
-				 break;
-			case 2:	
-				 test_cabel_N2();             // Программа проверки кабеля №2
-				 break;
-			case 3:
-				 test_cabel_N3();             // Программа проверки кабеля №3
-				 break;
-			case 4:	
-				 test_cabel_N4();             // Программа проверки кабеля №4
-				 break;
-			case 5:
-				 test_panel_N1();             // Программа проверки панели гарнитур
-				 break;
-			case 6:	
-				 save_default_pc();           // Записать таблицу проверки № по умолчанию
-				 break;
-			case 7:
-				
-				 break;
-			case 8:	
-				
-				 break;
-			case 9:
-				 
-				 break;
-			case 10:
-				 set_rezistor1();             // Установить уровень сигнала резистором №1
-				 break;
-			case 11:
-				 set_rezistor2();             // Установить уровень сигнала резистором №1
-				 break;
-			case 12:
-				 mem_byte_trans_readPC();     // Чтение таблиц из EEPROM для передачи в ПК
-				 break;
-			case 13:
-				 mem_byte_trans_savePC();     // Получить таблицу из ПK и записать в EEPROM
-				 break;
-			case 14:
-				 //
-				 break;
-			case 15:
-				 //
-				 break;
-			case 16:
-				 //                  
-				 break;
-			case 17:
-				 //
-				 break;
-			case 18:
-				 //
-				 break;
-			case 19:
-				 //
-				 break;
-			case 20:                                         //  
-				 //
-				 break;
-			case 21:                      		 		     //  
-				//
-				 break;
-			case 22:                                         //  
-				 //
-				 break;
-			case 23: 
-				 //      
-				 break;
-			case 24: 
-				 //    
-				 break;
-			case 25: 
-				 //         
-				 break;
-			case 26: 
-				 //    
-				 break;
-			case 27: 
-				 //
-				 break;
-			case 28:
-				 //
-				 break;
-			case 29:
-				 //
-				 break;
-			case 30:  
-				 //
-				 break;
+  int test_n = regBank.get(adr_control_command);   //Р°РґСЂРµСЃ  40000
+  if (test_n != 0)
+  {
+    if (test_n != 0) Serial.println(test_n);
+    switch (test_n)
+    {
+      case 1:
+        test_cabel_N1();             // РџСЂРѕРіСЂР°РјРјР° РїСЂРѕРІРµСЂРєРё РєР°Р±РµР»СЏ в„–1
+        break;
+      case 2:
+        test_cabel_N2();             // РџСЂРѕРіСЂР°РјРјР° РїСЂРѕРІРµСЂРєРё РєР°Р±РµР»СЏ в„–2
+        break;
+      case 3:
+        test_cabel_N3();             // РџСЂРѕРіСЂР°РјРјР° РїСЂРѕРІРµСЂРєРё РєР°Р±РµР»СЏ в„–3
+        break;
+      case 4:
+        test_cabel_N4();             // РџСЂРѕРіСЂР°РјРјР° РїСЂРѕРІРµСЂРєРё РєР°Р±РµР»СЏ в„–4
+        break;
+      case 5:
+        test_panel_N1();             // РџСЂРѕРіСЂР°РјРјР° РїСЂРѕРІРµСЂРєРё РїР°РЅРµР»Рё РіР°СЂРЅРёС‚СѓСЂ
+        break;
+      case 6:
+        save_default_pc();           // Р—Р°РїРёСЃР°С‚СЊ С‚Р°Р±Р»РёС†Сѓ РїСЂРѕРІРµСЂРєРё в„– РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
+        break;
+      case 7:
 
-			default:
-				 regBank.set(adr_control_command,0);        // Установить резистором №1,№2  уровень сигнала
-				 break;
-		 }
+        break;
+      case 8:
 
-	}
-	else
-	{
-	   regBank.set(adr_control_command,0);
-	}
+        break;
+      case 9:
+
+        break;
+      case 10:
+        set_rezistor1();             // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СѓСЂРѕРІРµРЅСЊ СЃРёРіРЅР°Р»Р° СЂРµР·РёСЃС‚РѕСЂРѕРј в„–1
+        break;
+      case 11:
+        set_rezistor2();             // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СѓСЂРѕРІРµРЅСЊ СЃРёРіРЅР°Р»Р° СЂРµР·РёСЃС‚РѕСЂРѕРј в„–1
+        break;
+      case 12:
+        mem_byte_trans_readPC();     // Р§С‚РµРЅРёРµ С‚Р°Р±Р»РёС† РёР· EEPROM РґР»СЏ РїРµСЂРµРґР°С‡Рё РІ РџРљ
+        break;
+      case 13:
+        mem_byte_trans_savePC();     // РџРѕР»СѓС‡РёС‚СЊ С‚Р°Р±Р»РёС†Сѓ РёР· РџK Рё Р·Р°РїРёСЃР°С‚СЊ РІ EEPROM
+        break;
+      case 14:
+        //
+        break;
+      case 15:
+        //
+        break;
+      case 16:
+        //
+        break;
+      case 17:
+        //
+        break;
+      case 18:
+        //
+        break;
+      case 19:
+        //
+        break;
+      case 20:                                         //
+        //
+        break;
+      case 21:                      		 		     //
+        //
+        break;
+      case 22:                                         //
+        //
+        break;
+      case 23:
+        //
+        break;
+      case 24:
+        //
+        break;
+      case 25:
+        //
+        break;
+      case 26:
+        //
+        break;
+      case 27:
+        //
+        break;
+      case 28:
+        //
+        break;
+      case 29:
+        //
+        break;
+      case 30:
+        //
+        break;
+
+      default:
+        regBank.set(adr_control_command, 0);       // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЂРµР·РёСЃС‚РѕСЂРѕРј в„–1,в„–2  СѓСЂРѕРІРµРЅСЊ СЃРёРіРЅР°Р»Р°
+        break;
+    }
+
+  }
+  else
+  {
+    regBank.set(adr_control_command, 0);
+  }
 }
 
 void draw_Glav_Menu()
@@ -1312,2743 +1313,2743 @@ void draw_Glav_Menu()
   but2   = myButtons.addButton( 10,  65, 250,  35, txt_menu1_2);
   but3   = myButtons.addButton( 10, 110, 250,  35, txt_menu1_3);
   but4   = myButtons.addButton( 10, 155, 250,  35, txt_menu1_4);
-  butX   = myButtons.addButton( 279, 199,  40,  40, "W", BUTTON_SYMBOL); // кнопка Часы 
+  butX   = myButtons.addButton( 279, 199,  40,  40, "W", BUTTON_SYMBOL); // РєРЅРѕРїРєР° Р§Р°СЃС‹
   but_m1 = myButtons.addButton(  10, 199, 45,  40, "1");
   but_m2 = myButtons.addButton(  61, 199, 45,  40, "2");
   but_m3 = myButtons.addButton(  112, 199, 45,  40, "3");
   but_m4 = myButtons.addButton(  163, 199, 45,  40, "4");
   but_m5 = myButtons.addButton(  214, 199, 45,  40, "5");
-  myButtons.drawButtons(); // Восстановить кнопки
+  myButtons.drawButtons(); // Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ РєРЅРѕРїРєРё
   myGLCD.setColor(VGA_BLACK);
   myGLCD.setBackColor(VGA_WHITE);
   myGLCD.setColor(0, 255, 0);
   myGLCD.setBackColor(0, 0, 0);
-  myGLCD.print("                      ", CENTER, 0); 
+  myGLCD.print("                      ", CENTER, 0);
 
-  switch (m2) 
-				   {
-					 case 1:
-						  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[2]))); 
-					      myGLCD.print(buffer, CENTER, 0);                               // txt_info1
-					      break;
-					 case 2:
-						  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[3]))); 
-                          myGLCD.print(buffer, CENTER, 0);                               // txt_info2
-					      break;
-					 case 3:
-						  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[4]))); 
-					      myGLCD.print(buffer, CENTER, 0);                               // txt_info3
-					      break;
-					 case 4:
-						  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[5]))); 
-					      myGLCD.print(buffer, CENTER, 0);                               // txt_info4
-					      break;
-					 case 5:
-						  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[6]))); 
-					      myGLCD.print(buffer, CENTER, 0);                               // txt_info5
-					      break;
-					 }
+  switch (m2)
+  {
+    case 1:
+      strcpy_P(buffer, (char*)pgm_read_word(&(table_message[2])));
+      myGLCD.print(buffer, CENTER, 0);                               // txt_info1
+      break;
+    case 2:
+      strcpy_P(buffer, (char*)pgm_read_word(&(table_message[3])));
+      myGLCD.print(buffer, CENTER, 0);                               // txt_info2
+      break;
+    case 3:
+      strcpy_P(buffer, (char*)pgm_read_word(&(table_message[4])));
+      myGLCD.print(buffer, CENTER, 0);                               // txt_info3
+      break;
+    case 4:
+      strcpy_P(buffer, (char*)pgm_read_word(&(table_message[5])));
+      myGLCD.print(buffer, CENTER, 0);                               // txt_info4
+      break;
+    case 5:
+      strcpy_P(buffer, (char*)pgm_read_word(&(table_message[6])));
+      myGLCD.print(buffer, CENTER, 0);                               // txt_info5
+      break;
+  }
 }
 
-void swichMenu() // Тексты меню в строках "txt....."
+void swichMenu() // РўРµРєСЃС‚С‹ РјРµРЅСЋ РІ СЃС‚СЂРѕРєР°С… "txt....."
 {
-	 m2=1;                                                         // Устанивить первую странице меню
-	 while(1) 
-	   {
-		  wait_time = millis();                                    // Программа вызова часов при простое 
-		  if (wait_time - wait_time_Old > 60000 * time_minute)
-		  {
-				wait_time_Old =  millis();
-				AnalogClock();
-				myGLCD.clrScr();
-				myButtons.drawButtons();                           // Восстановить кнопки
-				print_up();                                        // Восстановить верхнюю строку
-		  }
-
-		  myButtons.setTextFont(BigFont);                          // Установить Большой шрифт кнопок  
-
-			if (myTouch.dataAvailable() == true)                   // Проверить нажатие кнопок
-			  {
-			    pressed_button = myButtons.checkButtons();         // Если нажата - проверить что нажато
-				wait_time_Old =  millis();
-
-					 if (pressed_button==butX)                     // Нажата вызов часы
-					      {  
-							 AnalogClock();
-							 myGLCD.clrScr();
-							 myButtons.drawButtons();              // Восстановить кнопки
-							 print_up();                           // Восстановить верхнюю строку
-					      }
-		 
-					 if (pressed_button==but_m1)                   // Нажата 1 страница меню
-						  {
-							  myButtons.setButtonColors(VGA_WHITE, VGA_GRAY, VGA_WHITE, VGA_RED, VGA_BLUE); // Голубой фон меню
-							  myButtons.drawButtons();             // Восстановить кнопки
-							  default_colors=true;
-							  m2=1;                                // Устанивить первую странице меню
-							  myButtons.relabelButton(but1, txt_menu1_1, m2 == 1);
-							  myButtons.relabelButton(but2, txt_menu1_2, m2 == 1);
-							  myButtons.relabelButton(but3, txt_menu1_3, m2 == 1);
-							  myButtons.relabelButton(but4, txt_menu1_4, m2 == 1);
-							  myGLCD.setColor(0, 255, 0);
-							  myGLCD.setBackColor(0, 0, 0);
-							  myGLCD.print("                      ", CENTER, 0); 
-							  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[2]))); 
-							  myGLCD.print(buffer, CENTER, 0);                               // txt_info1 "Тест кабелей"
-		
-						  }
-				    if (pressed_button==but_m2)
-						  {
-							  myButtons.setButtonColors(VGA_WHITE, VGA_RED, VGA_YELLOW, VGA_BLUE, VGA_TEAL);
-							  myButtons.drawButtons();
-							  default_colors=false;
-							  m2=2;
-							  myButtons.relabelButton(but1, txt_menu2_1 , m2 == 2);
-							  myButtons.relabelButton(but2, txt_menu2_2 , m2 == 2);
-							  myButtons.relabelButton(but3, txt_menu2_3 , m2 == 2);
-							  myButtons.relabelButton(but4, txt_menu2_4 , m2 == 2);
-							  myGLCD.setColor(0, 255, 0);
-							  myGLCD.setBackColor(0, 0, 0);
-							  myGLCD.print("                      ", CENTER, 0); 
-							  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[3]))); 
-							  myGLCD.print(buffer, CENTER, 0);                              // txt_info2 Тест блока гарнитур
-						 }
-
-				   if (pressed_button==but_m3)
-						 {
-							  myButtons.setButtonColors(VGA_WHITE, VGA_GRAY, VGA_WHITE, VGA_RED, VGA_GREEN);
-							  myButtons.drawButtons();
-							  default_colors=false;
-							  m2=3;
-							  myButtons.relabelButton(but1, txt_menu3_1 , m2 == 3);
-							  myButtons.relabelButton(but2, txt_menu3_2 , m2 == 3);
-							  myButtons.relabelButton(but3, txt_menu3_3 , m2 == 3);
-							  myButtons.relabelButton(but4, txt_menu3_4 , m2 == 3);
-							  myGLCD.setColor(0, 255, 0);
-							  myGLCD.setBackColor(0, 0, 0);
-							  myGLCD.print("                      ", CENTER, 0); 
-							  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[4]))); 
-							  myGLCD.print(buffer, CENTER, 0);                              // txt_info3 Настройка системы
-						}
-				   if (pressed_button==but_m4)
-						{
-							  myButtons.setButtonColors(VGA_WHITE, VGA_GRAY, VGA_WHITE, VGA_RED, VGA_RED);
-							  myButtons.drawButtons();
-							  default_colors=false;
-							  m2=4;
-							  myButtons.relabelButton(but1, txt_menu4_1 , m2 == 4);
-							  myButtons.relabelButton(but2, txt_menu4_2 , m2 == 4);
-							  myButtons.relabelButton(but3, txt_menu4_3 , m2 == 4);
-							  myButtons.relabelButton(but4, txt_menu4_4 , m2 == 4);
-							  myGLCD.setColor(0, 255, 0);
-							  myGLCD.setBackColor(0, 0, 0);
-							  myGLCD.print("                      ", CENTER, 0); 
-							  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[5]))); 
-							  myGLCD.print(buffer, CENTER, 0);                                // txt_info4 Генератор сигналов
-						}
-
-				   if (pressed_button==but_m5)
-						{
-							  myButtons.setButtonColors(VGA_WHITE, VGA_GRAY, VGA_WHITE, VGA_RED, VGA_NAVY);
-							  myButtons.drawButtons();
-							  default_colors=false;
-							  m2=5;
-							  myButtons.relabelButton(but1, txt_osc_menu1 , m2 == 5);
-							  myButtons.relabelButton(but2, txt_osc_menu2 , m2 == 5);
-							  myButtons.relabelButton(but3, txt_osc_menu3 , m2 == 5);
-							  myButtons.relabelButton(but4, txt_osc_menu4 , m2 == 5);
-							  myGLCD.setColor(0, 255, 0);
-							  myGLCD.setBackColor(0, 0, 0);
-							  myGLCD.print("                      ", CENTER, 0); 
-							  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[6]))); 
-							  myGLCD.print(buffer, CENTER, 0);                                // txt_info5  Осциллограф   
-						}
-	
-	               //*****************  Меню №1  **************
-
-					if (pressed_button==but1 && m2 == 1)
-						{
-							// Тест кабеля №1
-							myGLCD.clrScr();   // Очистить экран
-							test_cabel_N1();
-							myGLCD.clrScr();
-							myButtons.drawButtons();
-							print_up();
-						}
-	  
-					if (pressed_button==but2 && m2 == 1)
-						{
-							// Тест кабеля №2
-							myGLCD.clrScr();   // Очистить экран
-							test_cabel_N2();
-							myGLCD.clrScr();
-							myButtons.drawButtons();
-							print_up();
-						}
-	  
-					if (pressed_button==but3 && m2 == 1)
-					   {
-							// Тест кабеля №3
-							myGLCD.clrScr();   // Очистить экран
-							test_cabel_N3();
-			   				myGLCD.clrScr();
-							myButtons.drawButtons();
-							print_up();
-					   }
-		           if (pressed_button==but4 && m2 == 1)
-					   {
-							// Тест кабеля №4
-							myGLCD.clrScr();   // Очистить экран
-							test_cabel_N4();
-			   				myGLCD.clrScr();
-							myButtons.drawButtons();
-							print_up();
-					   }
-
-		         //*****************  Меню №2  **************
-
-
-		           if (pressed_button==but1 && m2 == 2)
-					  {
-							//Тест панели гарнитур 1
-						    test_panel_N1();
-	        				myGLCD.clrScr();
-							myButtons.drawButtons();
-							print_up();
-				      }
-
-				   if (pressed_button==but2 && m2 == 2)
-				  	  {
- 							//Тест панели гарнитур 2
-						    test_panel_N2();
-							myGLCD.clrScr();
-							myButtons.drawButtons();
-							print_up();
-					  }
-	  
-				   if (pressed_button==but3 && m2 == 2)
-					  {
-						    test_panel_N3run();
-							myGLCD.clrScr();
-							myButtons.drawButtons();
-							print_up();
-					  }
-				   if (pressed_button==but4 && m2 == 2)
-					  {
-							// Тест входов всех разъемов
-						    // myGLCD.print(txt_pass_ok, RIGHT, 208); 
-							test_all_pin();
-	     					myGLCD.clrScr();
-							myButtons.drawButtons();
-							print_up();
-				      }
-		
-		        //*****************  Меню №3  **************
-				   if (pressed_button==but1 && m2 == 3) // Первый пункт меню 3
-				 	  {
-							myGLCD.clrScr();   // Очистить экран
-	/*						myGLCD.print(txt_pass_ok, RIGHT, 208); 
-							delay (500);*/
-							myButtons.drawButtons();
-							print_up();
-					  }
-
-			 //--------------------------------------------------------------
-		           if (pressed_button==but2 && m2 == 3)  // Второй пункт меню 3
-				      {
-							myGLCD.clrScr();
-							myGLCD.clrScr();
-							myButtons.drawButtons();
-							print_up();
-					  }
-
-			   //------------------------------------------------------------------
-
-			       if (pressed_button==but3 && m2 == 3)  // Третий пункт меню 3
-					  { 
-							myGLCD.clrScr();
-		                    save_tab_def();	  
-							myGLCD.clrScr();
-							myButtons.drawButtons();
-							print_up();
-				      }
-
-	 //------------------------------------------------------------------
-				   if (pressed_button==but4 && m2 == 3)                 // Четвертый пункт меню 3
-				      {
-							myGLCD.clrScr();
-							myGLCD.setFont(BigFont);
-							myGLCD.setBackColor(0, 0, 255);
-							myGLCD.clrScr();
-							drawButtons1();                            // Нарисовать цифровую клавиатуру
-							myGLCD.printNumI(time_minute, LEFT, 208);
-							strcpy_P(buffer, (char*)pgm_read_word(&(table_message[14]))); 
-							myGLCD.print(buffer, 35, 208);             // txt_time_wait
-							klav123();                                 // Считать информацию с клавиатуры
-							if (ret == 1)                              // Если "Возврат" - закончить
-								 {
-									goto bailout41;                    // Перейти на окончание выполнения пункта меню
-								 }
-							else                                       // Иначе выполнить пункт меню
-								 {
-									 time_minute = atol(stLast);
-								 }
-						    bailout41:                                 // Восстановить пункты меню
-						    myGLCD.clrScr();
-						    myButtons.drawButtons();
-						    print_up();
-				      }
-
-                   //*****************  Меню №4  **************
-
-                   if (pressed_button==but1 && m2 == 4) // 
-					  {
-			
-							myGLCD.clrScr();   // Очистить экран
-						//	myGLCD.print(txt_pass_ok, RIGHT, 208); 
-							delay (500);
-							sine();
-							//butA = myButtons.addButton(279, 20,  40,  35, "W", BUTTON_SYMBOL); // Синусоида
-							//if (myButtons.buttonEnabled(butB)) myButtons.deleteButton(butB);
-							//if (myButtons.buttonEnabled(butC)) myButtons.deleteButton(butC);
-							//if (myButtons.buttonEnabled(butD)) myButtons.deleteButton(butD);
-							myButtons.drawButtons();
-							print_up();
-							//
-				   
-					  }
-
-				   if (pressed_button==but2 && m2 == 4)
-					  {
-					
-							myGLCD.clrScr();
-						//	myGLCD.print(txt_pass_ok, RIGHT, 208);
-							delay (500);
-							saw();
-							//			butB = myButtons.addButton(279, 65, 40,  35, "W", BUTTON_SYMBOL); // Треугольный
-							//if (myButtons.buttonEnabled(butA)) myButtons.deleteButton(butA);
-							//if (myButtons.buttonEnabled(butC)) myButtons.deleteButton(butC);
-							//if (myButtons.buttonEnabled(butD)) myButtons.deleteButton(butD);
-							myButtons.drawButtons();
-							print_up();
-					  }
-
-		           if (pressed_button==but3 && m2 == 4) // 
-					  {
-				
-							myGLCD.clrScr();
-						//	myGLCD.print(txt_pass_ok, RIGHT, 208);
-							delay (500);
-							triangle();
-							//butC = myButtons.addButton(279, 110,  40,  35, "W", BUTTON_SYMBOL); // Пилообразный
-							//if (myButtons.buttonEnabled(butA)) myButtons.deleteButton(butA);
-							//if (myButtons.buttonEnabled(butB)) myButtons.deleteButton(butB);
-							//if (myButtons.buttonEnabled(butD)) myButtons.deleteButton(butD);
-							myButtons.drawButtons();
-							print_up();
-					  }
-				   if (pressed_button==but4 && m2 == 4) //
-					  {
-							myGLCD.clrScr();
-						//	myGLCD.print(txt_pass_ok, RIGHT, 208);
-							delay (500);
-							pulse();
-							//butD = myButtons.addButton(279, 155,  40,  35, "W", BUTTON_SYMBOL); // Прямоугольный сигнал
-							//if (myButtons.buttonEnabled(butB)) myButtons.deleteButton(butB);
-							//if (myButtons.buttonEnabled(butC)) myButtons.deleteButton(butC);
-							//if (myButtons.buttonEnabled(butA)) myButtons.deleteButton(butA);
-							myButtons.drawButtons();
-							print_up();
-					  }
-				    //*****************  Меню №5  **************
-
-                   if (pressed_button==but1 && m2 == 5) // Сброс данных
-					  {
-						    myGLCD.clrScr();
-							oscilloscope();
-							myGLCD.clrScr();
-							myButtons.drawButtons();
-							print_up();
-					  }
-				   if (pressed_button==but2 && m2 == 5)
-					  {
-						    myGLCD.clrScr();
-						    logData();
-							myGLCD.clrScr();   // Очистить экран
-							delay (500);
-							myButtons.drawButtons();
-							print_up();
-					  }
-
-				   if (pressed_button==but3 && m2 == 5) // Ввод пароля пользователя
-					  {
-							myGLCD.clrScr();   // Очистить экран
-							test_ADC();
-							myGLCD.clrScr();   // Очистить экран
-							myButtons.drawButtons();
-							print_up();
-					  }
-
-			       if (pressed_button==but4 && m2 == 5) // 
-			          {
-							myGLCD.clrScr();   // Очистить экран
-							//	myGLCD.print(txt_pass_ok, RIGHT, 208); 
-							delay (500);
-
-							myButtons.drawButtons();
-							print_up();
-				      }
-			
-		           if (pressed_button==-1) 
-					  {
-						//  myGLCD.print("HET", 220, 220);
-					  }
-				  } 
-       }
-}
-void print_up() // Печать верхней строчки над меню
-{
-	myGLCD.setColor(0, 255, 0);
-	myGLCD.setBackColor(0, 0, 0);
-	myGLCD.print("                      ", CENTER, 0); 
-	switch (m2) 
-	{
-	case 1:
-			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[2]))); 
-			myGLCD.print(buffer, CENTER, 0);                                 // txt_info1
-			break;
-		case 2:
-			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[3]))); 
-            myGLCD.print(buffer, CENTER, 0);                                 // txt_info2
-			break;
-		case 3:
-			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[4]))); 
-			myGLCD.print(buffer, CENTER, 0);                                 // txt_info3
-			break;
-		case 4:
-			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[5]))); 
-			myGLCD.print(buffer, CENTER, 0);                                 // txt_info4
-			break;
-        case 5:
-			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[6]))); 
-			myGLCD.print(buffer, CENTER, 0);                                 // txt_info5
-			break;
+  m2 = 1;                                                       // РЈСЃС‚Р°РЅРёРІРёС‚СЊ РїРµСЂРІСѓСЋ СЃС‚СЂР°РЅРёС†Рµ РјРµРЅСЋ
+  while (1)
+  {
+    wait_time = millis();                                    // РџСЂРѕРіСЂР°РјРјР° РІС‹Р·РѕРІР° С‡Р°СЃРѕРІ РїСЂРё РїСЂРѕСЃС‚РѕРµ
+    if (wait_time - wait_time_Old > 60000 * time_minute)
+    {
+      wait_time_Old =  millis();
+      AnalogClock();
+      myGLCD.clrScr();
+      myButtons.drawButtons();                           // Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ РєРЅРѕРїРєРё
+      print_up();                                        // Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ РІРµСЂС…РЅСЋСЋ СЃС‚СЂРѕРєСѓ
     }
+
+    myButtons.setTextFont(BigFont);                          // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р‘РѕР»СЊС€РѕР№ С€СЂРёС„С‚ РєРЅРѕРїРѕРє
+
+    if (myTouch.dataAvailable() == true)                   // РџСЂРѕРІРµСЂРёС‚СЊ РЅР°Р¶Р°С‚РёРµ РєРЅРѕРїРѕРє
+    {
+      pressed_button = myButtons.checkButtons();         // Р•СЃР»Рё РЅР°Р¶Р°С‚Р° - РїСЂРѕРІРµСЂРёС‚СЊ С‡С‚Рѕ РЅР°Р¶Р°С‚Рѕ
+      wait_time_Old =  millis();
+
+      if (pressed_button == butX)                   // РќР°Р¶Р°С‚Р° РІС‹Р·РѕРІ С‡Р°СЃС‹
+      {
+        AnalogClock();
+        myGLCD.clrScr();
+        myButtons.drawButtons();              // Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ РєРЅРѕРїРєРё
+        print_up();                           // Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ РІРµСЂС…РЅСЋСЋ СЃС‚СЂРѕРєСѓ
+      }
+
+      if (pressed_button == but_m1)                 // РќР°Р¶Р°С‚Р° 1 СЃС‚СЂР°РЅРёС†Р° РјРµРЅСЋ
+      {
+        myButtons.setButtonColors(VGA_WHITE, VGA_GRAY, VGA_WHITE, VGA_RED, VGA_BLUE); // Р“РѕР»СѓР±РѕР№ С„РѕРЅ РјРµРЅСЋ
+        myButtons.drawButtons();             // Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ РєРЅРѕРїРєРё
+        default_colors = true;
+        m2 = 1;                              // РЈСЃС‚Р°РЅРёРІРёС‚СЊ РїРµСЂРІСѓСЋ СЃС‚СЂР°РЅРёС†Рµ РјРµРЅСЋ
+        myButtons.relabelButton(but1, txt_menu1_1, m2 == 1);
+        myButtons.relabelButton(but2, txt_menu1_2, m2 == 1);
+        myButtons.relabelButton(but3, txt_menu1_3, m2 == 1);
+        myButtons.relabelButton(but4, txt_menu1_4, m2 == 1);
+        myGLCD.setColor(0, 255, 0);
+        myGLCD.setBackColor(0, 0, 0);
+        myGLCD.print("                      ", CENTER, 0);
+        strcpy_P(buffer, (char*)pgm_read_word(&(table_message[2])));
+        myGLCD.print(buffer, CENTER, 0);                               // txt_info1 "РўРµСЃС‚ РєР°Р±РµР»РµР№"
+
+      }
+      if (pressed_button == but_m2)
+      {
+        myButtons.setButtonColors(VGA_WHITE, VGA_RED, VGA_YELLOW, VGA_BLUE, VGA_TEAL);
+        myButtons.drawButtons();
+        default_colors = false;
+        m2 = 2;
+        myButtons.relabelButton(but1, txt_menu2_1 , m2 == 2);
+        myButtons.relabelButton(but2, txt_menu2_2 , m2 == 2);
+        myButtons.relabelButton(but3, txt_menu2_3 , m2 == 2);
+        myButtons.relabelButton(but4, txt_menu2_4 , m2 == 2);
+        myGLCD.setColor(0, 255, 0);
+        myGLCD.setBackColor(0, 0, 0);
+        myGLCD.print("                      ", CENTER, 0);
+        strcpy_P(buffer, (char*)pgm_read_word(&(table_message[3])));
+        myGLCD.print(buffer, CENTER, 0);                              // txt_info2 РўРµСЃС‚ Р±Р»РѕРєР° РіР°СЂРЅРёС‚СѓСЂ
+      }
+
+      if (pressed_button == but_m3)
+      {
+        myButtons.setButtonColors(VGA_WHITE, VGA_GRAY, VGA_WHITE, VGA_RED, VGA_GREEN);
+        myButtons.drawButtons();
+        default_colors = false;
+        m2 = 3;
+        myButtons.relabelButton(but1, txt_menu3_1 , m2 == 3);
+        myButtons.relabelButton(but2, txt_menu3_2 , m2 == 3);
+        myButtons.relabelButton(but3, txt_menu3_3 , m2 == 3);
+        myButtons.relabelButton(but4, txt_menu3_4 , m2 == 3);
+        myGLCD.setColor(0, 255, 0);
+        myGLCD.setBackColor(0, 0, 0);
+        myGLCD.print("                      ", CENTER, 0);
+        strcpy_P(buffer, (char*)pgm_read_word(&(table_message[4])));
+        myGLCD.print(buffer, CENTER, 0);                              // txt_info3 РќР°СЃС‚СЂРѕР№РєР° СЃРёСЃС‚РµРјС‹
+      }
+      if (pressed_button == but_m4)
+      {
+        myButtons.setButtonColors(VGA_WHITE, VGA_GRAY, VGA_WHITE, VGA_RED, VGA_RED);
+        myButtons.drawButtons();
+        default_colors = false;
+        m2 = 4;
+        myButtons.relabelButton(but1, txt_menu4_1 , m2 == 4);
+        myButtons.relabelButton(but2, txt_menu4_2 , m2 == 4);
+        myButtons.relabelButton(but3, txt_menu4_3 , m2 == 4);
+        myButtons.relabelButton(but4, txt_menu4_4 , m2 == 4);
+        myGLCD.setColor(0, 255, 0);
+        myGLCD.setBackColor(0, 0, 0);
+        myGLCD.print("                      ", CENTER, 0);
+        strcpy_P(buffer, (char*)pgm_read_word(&(table_message[5])));
+        myGLCD.print(buffer, CENTER, 0);                                // txt_info4 Р“РµРЅРµСЂР°С‚РѕСЂ СЃРёРіРЅР°Р»РѕРІ
+      }
+
+      if (pressed_button == but_m5)
+      {
+        myButtons.setButtonColors(VGA_WHITE, VGA_GRAY, VGA_WHITE, VGA_RED, VGA_NAVY);
+        myButtons.drawButtons();
+        default_colors = false;
+        m2 = 5;
+        myButtons.relabelButton(but1, txt_osc_menu1 , m2 == 5);
+        myButtons.relabelButton(but2, txt_osc_menu2 , m2 == 5);
+        myButtons.relabelButton(but3, txt_osc_menu3 , m2 == 5);
+        myButtons.relabelButton(but4, txt_osc_menu4 , m2 == 5);
+        myGLCD.setColor(0, 255, 0);
+        myGLCD.setBackColor(0, 0, 0);
+        myGLCD.print("                      ", CENTER, 0);
+        strcpy_P(buffer, (char*)pgm_read_word(&(table_message[6])));
+        myGLCD.print(buffer, CENTER, 0);                                // txt_info5  РћСЃС†РёР»Р»РѕРіСЂР°С„
+      }
+
+      //*****************  РњРµРЅСЋ в„–1  **************
+
+      if (pressed_button == but1 && m2 == 1)
+      {
+        // РўРµСЃС‚ РєР°Р±РµР»СЏ в„–1
+        myGLCD.clrScr();   // РћС‡РёСЃС‚РёС‚СЊ СЌРєСЂР°РЅ
+        test_cabel_N1();
+        myGLCD.clrScr();
+        myButtons.drawButtons();
+        print_up();
+      }
+
+      if (pressed_button == but2 && m2 == 1)
+      {
+        // РўРµСЃС‚ РєР°Р±РµР»СЏ в„–2
+        myGLCD.clrScr();   // РћС‡РёСЃС‚РёС‚СЊ СЌРєСЂР°РЅ
+        test_cabel_N2();
+        myGLCD.clrScr();
+        myButtons.drawButtons();
+        print_up();
+      }
+
+      if (pressed_button == but3 && m2 == 1)
+      {
+        // РўРµСЃС‚ РєР°Р±РµР»СЏ в„–3
+        myGLCD.clrScr();   // РћС‡РёСЃС‚РёС‚СЊ СЌРєСЂР°РЅ
+        test_cabel_N3();
+        myGLCD.clrScr();
+        myButtons.drawButtons();
+        print_up();
+      }
+      if (pressed_button == but4 && m2 == 1)
+      {
+        // РўРµСЃС‚ РєР°Р±РµР»СЏ в„–4
+        myGLCD.clrScr();   // РћС‡РёСЃС‚РёС‚СЊ СЌРєСЂР°РЅ
+        test_cabel_N4();
+        myGLCD.clrScr();
+        myButtons.drawButtons();
+        print_up();
+      }
+
+      //*****************  РњРµРЅСЋ в„–2  **************
+
+
+      if (pressed_button == but1 && m2 == 2)
+      {
+        //РўРµСЃС‚ РїР°РЅРµР»Рё РіР°СЂРЅРёС‚СѓСЂ 1
+        test_panel_N1();
+        myGLCD.clrScr();
+        myButtons.drawButtons();
+        print_up();
+      }
+
+      if (pressed_button == but2 && m2 == 2)
+      {
+        //РўРµСЃС‚ РїР°РЅРµР»Рё РіР°СЂРЅРёС‚СѓСЂ 2
+        test_panel_N2();
+        myGLCD.clrScr();
+        myButtons.drawButtons();
+        print_up();
+      }
+
+      if (pressed_button == but3 && m2 == 2)
+      {
+        test_panel_N3run();
+        myGLCD.clrScr();
+        myButtons.drawButtons();
+        print_up();
+      }
+      if (pressed_button == but4 && m2 == 2)
+      {
+        // РўРµСЃС‚ РІС…РѕРґРѕРІ РІСЃРµС… СЂР°Р·СЉРµРјРѕРІ
+        // myGLCD.print(txt_pass_ok, RIGHT, 208);
+        test_all_pin();
+        myGLCD.clrScr();
+        myButtons.drawButtons();
+        print_up();
+      }
+
+      //*****************  РњРµРЅСЋ в„–3  **************
+      if (pressed_button == but1 && m2 == 3) // РџРµСЂРІС‹Р№ РїСѓРЅРєС‚ РјРµРЅСЋ 3
+      {
+        myGLCD.clrScr();   // РћС‡РёСЃС‚РёС‚СЊ СЌРєСЂР°РЅ
+        /*						myGLCD.print(txt_pass_ok, RIGHT, 208);
+        						delay (500);*/
+        myButtons.drawButtons();
+        print_up();
+      }
+
+      //--------------------------------------------------------------
+      if (pressed_button == but2 && m2 == 3) // Р’С‚РѕСЂРѕР№ РїСѓРЅРєС‚ РјРµРЅСЋ 3
+      {
+        myGLCD.clrScr();
+        myGLCD.clrScr();
+        myButtons.drawButtons();
+        print_up();
+      }
+
+      //------------------------------------------------------------------
+
+      if (pressed_button == but3 && m2 == 3) // РўСЂРµС‚РёР№ РїСѓРЅРєС‚ РјРµРЅСЋ 3
+      {
+        myGLCD.clrScr();
+        save_tab_def();
+        myGLCD.clrScr();
+        myButtons.drawButtons();
+        print_up();
+      }
+
+      //------------------------------------------------------------------
+      if (pressed_button == but4 && m2 == 3)               // Р§РµС‚РІРµСЂС‚С‹Р№ РїСѓРЅРєС‚ РјРµРЅСЋ 3
+      {
+        myGLCD.clrScr();
+        myGLCD.setFont(BigFont);
+        myGLCD.setBackColor(0, 0, 255);
+        myGLCD.clrScr();
+        drawButtons1();                            // РќР°СЂРёСЃРѕРІР°С‚СЊ С†РёС„СЂРѕРІСѓСЋ РєР»Р°РІРёР°С‚СѓСЂСѓ
+        myGLCD.printNumI(time_minute, LEFT, 208);
+        strcpy_P(buffer, (char*)pgm_read_word(&(table_message[14])));
+        myGLCD.print(buffer, 35, 208);             // txt_time_wait
+        klav123();                                 // РЎС‡РёС‚Р°С‚СЊ РёРЅС„РѕСЂРјР°С†РёСЋ СЃ РєР»Р°РІРёР°С‚СѓСЂС‹
+        if (ret == 1)                              // Р•СЃР»Рё "Р’РѕР·РІСЂР°С‚" - Р·Р°РєРѕРЅС‡РёС‚СЊ
+        {
+          goto bailout41;                    // РџРµСЂРµР№С‚Рё РЅР° РѕРєРѕРЅС‡Р°РЅРёРµ РІС‹РїРѕР»РЅРµРЅРёСЏ РїСѓРЅРєС‚Р° РјРµРЅСЋ
+        }
+        else                                       // РРЅР°С‡Рµ РІС‹РїРѕР»РЅРёС‚СЊ РїСѓРЅРєС‚ РјРµРЅСЋ
+        {
+          time_minute = atol(stLast);
+        }
+bailout41:                                 // Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ РїСѓРЅРєС‚С‹ РјРµРЅСЋ
+        myGLCD.clrScr();
+        myButtons.drawButtons();
+        print_up();
+      }
+
+      //*****************  РњРµРЅСЋ в„–4  **************
+
+      if (pressed_button == but1 && m2 == 4) //
+      {
+
+        myGLCD.clrScr();   // РћС‡РёСЃС‚РёС‚СЊ СЌРєСЂР°РЅ
+        //	myGLCD.print(txt_pass_ok, RIGHT, 208);
+        delay (500);
+        sine();
+        //butA = myButtons.addButton(279, 20,  40,  35, "W", BUTTON_SYMBOL); // РЎРёРЅСѓСЃРѕРёРґР°
+        //if (myButtons.buttonEnabled(butB)) myButtons.deleteButton(butB);
+        //if (myButtons.buttonEnabled(butC)) myButtons.deleteButton(butC);
+        //if (myButtons.buttonEnabled(butD)) myButtons.deleteButton(butD);
+        myButtons.drawButtons();
+        print_up();
+        //
+
+      }
+
+      if (pressed_button == but2 && m2 == 4)
+      {
+
+        myGLCD.clrScr();
+        //	myGLCD.print(txt_pass_ok, RIGHT, 208);
+        delay (500);
+        saw();
+        //			butB = myButtons.addButton(279, 65, 40,  35, "W", BUTTON_SYMBOL); // РўСЂРµСѓРіРѕР»СЊРЅС‹Р№
+        //if (myButtons.buttonEnabled(butA)) myButtons.deleteButton(butA);
+        //if (myButtons.buttonEnabled(butC)) myButtons.deleteButton(butC);
+        //if (myButtons.buttonEnabled(butD)) myButtons.deleteButton(butD);
+        myButtons.drawButtons();
+        print_up();
+      }
+
+      if (pressed_button == but3 && m2 == 4) //
+      {
+
+        myGLCD.clrScr();
+        //	myGLCD.print(txt_pass_ok, RIGHT, 208);
+        delay (500);
+        triangle();
+        //butC = myButtons.addButton(279, 110,  40,  35, "W", BUTTON_SYMBOL); // РџРёР»РѕРѕР±СЂР°Р·РЅС‹Р№
+        //if (myButtons.buttonEnabled(butA)) myButtons.deleteButton(butA);
+        //if (myButtons.buttonEnabled(butB)) myButtons.deleteButton(butB);
+        //if (myButtons.buttonEnabled(butD)) myButtons.deleteButton(butD);
+        myButtons.drawButtons();
+        print_up();
+      }
+      if (pressed_button == but4 && m2 == 4) //
+      {
+        myGLCD.clrScr();
+        //	myGLCD.print(txt_pass_ok, RIGHT, 208);
+        delay (500);
+        pulse();
+        //butD = myButtons.addButton(279, 155,  40,  35, "W", BUTTON_SYMBOL); // РџСЂСЏРјРѕСѓРіРѕР»СЊРЅС‹Р№ СЃРёРіРЅР°Р»
+        //if (myButtons.buttonEnabled(butB)) myButtons.deleteButton(butB);
+        //if (myButtons.buttonEnabled(butC)) myButtons.deleteButton(butC);
+        //if (myButtons.buttonEnabled(butA)) myButtons.deleteButton(butA);
+        myButtons.drawButtons();
+        print_up();
+      }
+      //*****************  РњРµРЅСЋ в„–5  **************
+
+      if (pressed_button == but1 && m2 == 5) // РЎР±СЂРѕСЃ РґР°РЅРЅС‹С…
+      {
+        myGLCD.clrScr();
+        oscilloscope();
+        myGLCD.clrScr();
+        myButtons.drawButtons();
+        print_up();
+      }
+      if (pressed_button == but2 && m2 == 5)
+      {
+        myGLCD.clrScr();
+        logData();
+        myGLCD.clrScr();   // РћС‡РёСЃС‚РёС‚СЊ СЌРєСЂР°РЅ
+        delay (500);
+        myButtons.drawButtons();
+        print_up();
+      }
+
+      if (pressed_button == but3 && m2 == 5) // Р’РІРѕРґ РїР°СЂРѕР»СЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
+      {
+        myGLCD.clrScr();   // РћС‡РёСЃС‚РёС‚СЊ СЌРєСЂР°РЅ
+        test_ADC();
+        myGLCD.clrScr();   // РћС‡РёСЃС‚РёС‚СЊ СЌРєСЂР°РЅ
+        myButtons.drawButtons();
+        print_up();
+      }
+
+      if (pressed_button == but4 && m2 == 5) //
+      {
+        myGLCD.clrScr();   // РћС‡РёСЃС‚РёС‚СЊ СЌРєСЂР°РЅ
+        //	myGLCD.print(txt_pass_ok, RIGHT, 208);
+        delay (500);
+
+        myButtons.drawButtons();
+        print_up();
+      }
+
+      if (pressed_button == -1)
+      {
+        //  myGLCD.print("HET", 220, 220);
+      }
+    }
+  }
+}
+void print_up() // РџРµС‡Р°С‚СЊ РІРµСЂС…РЅРµР№ СЃС‚СЂРѕС‡РєРё РЅР°Рґ РјРµРЅСЋ
+{
+  myGLCD.setColor(0, 255, 0);
+  myGLCD.setBackColor(0, 0, 0);
+  myGLCD.print("                      ", CENTER, 0);
+  switch (m2)
+  {
+    case 1:
+      strcpy_P(buffer, (char*)pgm_read_word(&(table_message[2])));
+      myGLCD.print(buffer, CENTER, 0);                                 // txt_info1
+      break;
+    case 2:
+      strcpy_P(buffer, (char*)pgm_read_word(&(table_message[3])));
+      myGLCD.print(buffer, CENTER, 0);                                 // txt_info2
+      break;
+    case 3:
+      strcpy_P(buffer, (char*)pgm_read_word(&(table_message[4])));
+      myGLCD.print(buffer, CENTER, 0);                                 // txt_info3
+      break;
+    case 4:
+      strcpy_P(buffer, (char*)pgm_read_word(&(table_message[5])));
+      myGLCD.print(buffer, CENTER, 0);                                 // txt_info4
+      break;
+    case 5:
+      strcpy_P(buffer, (char*)pgm_read_word(&(table_message[6])));
+      myGLCD.print(buffer, CENTER, 0);                                 // txt_info5
+      break;
+  }
 }
 
 void pulse()
 {
-	digitalWrite(kn1Nano,  LOW);                        // 
-	digitalWrite(kn2Nano, HIGH);                        //
-	digitalWrite(kn3Nano, HIGH);                        //
-	digitalWrite(kn4Nano, HIGH);                         // 
+  digitalWrite(kn1Nano,  LOW);                        //
+  digitalWrite(kn2Nano, HIGH);                        //
+  digitalWrite(kn3Nano, HIGH);                        //
+  digitalWrite(kn4Nano, HIGH);                         //
 }
 void triangle()
 {
-	digitalWrite(kn1Nano, HIGH);                        // 
-	digitalWrite(kn2Nano,  LOW);                        //
-	digitalWrite(kn3Nano, HIGH);                        //
-	digitalWrite(kn4Nano, HIGH);                         // 
+  digitalWrite(kn1Nano, HIGH);                        //
+  digitalWrite(kn2Nano,  LOW);                        //
+  digitalWrite(kn3Nano, HIGH);                        //
+  digitalWrite(kn4Nano, HIGH);                         //
 }
 void saw()
 {
-	digitalWrite(kn1Nano, HIGH);                        // 
-	digitalWrite(kn2Nano, HIGH);                        //
-	digitalWrite(kn3Nano, LOW);                        //
-	digitalWrite(kn4Nano, HIGH);                         // 
+  digitalWrite(kn1Nano, HIGH);                        //
+  digitalWrite(kn2Nano, HIGH);                        //
+  digitalWrite(kn3Nano, LOW);                        //
+  digitalWrite(kn4Nano, HIGH);                         //
 }
 void sine()
 {
-	digitalWrite(kn1Nano, HIGH);                        // 
-	digitalWrite(kn2Nano, HIGH);                        //
-	digitalWrite(kn3Nano, HIGH);                        //
-	digitalWrite(kn4Nano, LOW);                         // 
+  digitalWrite(kn1Nano, HIGH);                        //
+  digitalWrite(kn2Nano, HIGH);                        //
+  digitalWrite(kn3Nano, HIGH);                        //
+  digitalWrite(kn4Nano, LOW);                         //
 }
 
 void setup_resistor()
-{ 
-	Wire.beginTransmission(address_AD5252);        // transmit to device
-	Wire.write(byte(control_word1));               // sends instruction byte  
-	Wire.write(0);                                 // sends potentiometer value byte  
-	Wire.endTransmission();                        // stop transmitting
-	Wire.beginTransmission(address_AD5252);        // transmit to device
-	Wire.write(byte(control_word2));               // sends instruction byte  
-	Wire.write(0);                                 // sends potentiometer value byte  
-	Wire.endTransmission();                        // stop transmitting
+{
+  Wire.beginTransmission(address_AD5252);        // transmit to device
+  Wire.write(byte(control_word1));               // sends instruction byte
+  Wire.write(0);                                 // sends potentiometer value byte
+  Wire.endTransmission();                        // stop transmitting
+  Wire.beginTransmission(address_AD5252);        // transmit to device
+  Wire.write(byte(control_word2));               // sends instruction byte
+  Wire.write(0);                                 // sends potentiometer value byte
+  Wire.endTransmission();                        // stop transmitting
 }
 void resistor(int resist, int valresist)
 {
-	resistance = valresist;
-	switch (resist)
-	{
-	case 1:
-			Wire.beginTransmission(address_AD5252);     // transmit to device
-			Wire.write(byte(control_word1));            // sends instruction byte  
-			Wire.write(resistance);                     // sends potentiometer value byte  
-			Wire.endTransmission();                     // stop transmitting
-			break;
-	case 2:				
-			Wire.beginTransmission(address_AD5252);     // transmit to device
-			Wire.write(byte(control_word2));            // sends instruction byte  
-			Wire.write(resistance);                     // sends potentiometer value byte  
-			Wire.endTransmission();                     // stop transmitting
-			break;
-	}
-			//Wire.requestFrom(address_AD5252, 1, true);  // Считать состояние движка резистора 
-			//level_resist = Wire.read();                 // sends potentiometer value byte  
-	// regBank.set(adr_control_command,0);
+  resistance = valresist;
+  switch (resist)
+  {
+    case 1:
+      Wire.beginTransmission(address_AD5252);     // transmit to device
+      Wire.write(byte(control_word1));            // sends instruction byte
+      Wire.write(resistance);                     // sends potentiometer value byte
+      Wire.endTransmission();                     // stop transmitting
+      break;
+    case 2:
+      Wire.beginTransmission(address_AD5252);     // transmit to device
+      Wire.write(byte(control_word2));            // sends instruction byte
+      Wire.write(resistance);                     // sends potentiometer value byte
+      Wire.endTransmission();                     // stop transmitting
+      break;
+  }
+  //Wire.requestFrom(address_AD5252, 1, true);  // РЎС‡РёС‚Р°С‚СЊ СЃРѕСЃС‚РѕСЏРЅРёРµ РґРІРёР¶РєР° СЂРµР·РёСЃС‚РѕСЂР°
+  //level_resist = Wire.read();                 // sends potentiometer value byte
+  // regBank.set(adr_control_command,0);
 }
 void set_rezistor1()
 {
-	int mwt1 = regBank.get(40003);             // Адрес хранения величины сигнала резистором № 1
-	resistor(1, mwt1);
-	regBank.set(adr_control_command,0);
+  int mwt1 = regBank.get(40003);             // РђРґСЂРµСЃ С…СЂР°РЅРµРЅРёСЏ РІРµР»РёС‡РёРЅС‹ СЃРёРіРЅР°Р»Р° СЂРµР·РёСЃС‚РѕСЂРѕРј в„– 1
+  resistor(1, mwt1);
+  regBank.set(adr_control_command, 0);
 }
 void set_rezistor2()
 {
-	int mwt2 = regBank.get(40004);             // Адрес хранения величины сигнала резистором № 2
-	resistor(2, mwt2);
-	regBank.set(adr_control_command,0);
+  int mwt2 = regBank.get(40004);             // РђРґСЂРµСЃ С…СЂР°РЅРµРЅРёСЏ РІРµР»РёС‡РёРЅС‹ СЃРёРіРЅР°Р»Р° СЂРµР·РёСЃС‚РѕСЂРѕРј в„– 2
+  resistor(2, mwt2);
+  regBank.set(adr_control_command, 0);
 }
 
-void save_tab_def()                        // Запись в EEPROM  таблиц проверки по умолчанию
+void save_tab_def()                        // Р—Р°РїРёСЃСЊ РІ EEPROM  С‚Р°Р±Р»РёС† РїСЂРѕРІРµСЂРєРё РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 {
-	for (int i = 1;i<5;i++)
-	{
-		myGLCD.setColor(255, 255, 255);
-		myGLCD.print("Save block N ", 25, 70);//
-		myGLCD.printNumI(i, 230, 70);
-		save_default(i);                 //Подпрограмма записи в EEPROM блока таблиц проверки по умолчанию
+  for (int i = 1; i < 5; i++)
+  {
+    myGLCD.setColor(255, 255, 255);
+    myGLCD.print("Save block N ", 25, 70);//
+    myGLCD.printNumI(i, 230, 70);
+    save_default(i);                 //РџРѕРґРїСЂРѕРіСЂР°РјРјР° Р·Р°РїРёСЃРё РІ EEPROM Р±Р»РѕРєР° С‚Р°Р±Р»РёС† РїСЂРѕРІРµСЂРєРё РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 
-		for (int x = 10;x<65;x++)
-		{
-			myGLCD.setColor(0, 0, 255);
-			myGLCD.fillRoundRect (30, 100, 30+ (x*4),110);
-			myGLCD.setColor(255, 255, 255);
-			myGLCD.drawRoundRect (28, 98, 32+ (x*4),112);
-		}
-		myGLCD.clrScr();
-	}
+    for (int x = 10; x < 65; x++)
+    {
+      myGLCD.setColor(0, 0, 255);
+      myGLCD.fillRoundRect (30, 100, 30 + (x * 4), 110);
+      myGLCD.setColor(255, 255, 255);
+      myGLCD.drawRoundRect (28, 98, 32 + (x * 4), 112);
+    }
+    myGLCD.clrScr();
+  }
 }
-void save_default(byte adrN_eeprom)                                               //Подпрограмма записи в EEPROM блока таблиц проверки по умолчанию
+void save_default(byte adrN_eeprom)                                               //РџРѕРґРїСЂРѕРіСЂР°РјРјР° Р·Р°РїРёСЃРё РІ EEPROM Р±Р»РѕРєР° С‚Р°Р±Р»РёС† РїСЂРѕРІРµСЂРєРё РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 {
-	byte _u_konnekt     = 0;                                                      // Временное хранения содержимого регистра.
-    byte _step_mem      = 0;                                                      // Длина блока с таблицы
-	int adr_memN        = 0;
-	int connekt_default = 0;                                                      // Адрес в постоянной памяти
-		switch (adrN_eeprom)
-		   {
-			case 1:
-				 adr_memN   = adr_memN1_1;                                        // Адрес блока EEPROM № 1 
-				 _step_mem  = (pgm_read_byte_near(connektN1_default));            // Длина блока с таблицы
-				 for (int i = 0; i < (_step_mem * 5)+1;i++)                       // Записать 5 блоков таблицы  
-					{
-					  _u_konnekt = pgm_read_byte_near(connektN1_default+i);
-					  i2c_eeprom_write_byte(deviceaddress,adr_memN+i, _u_konnekt); 
-					}
-				 break;
-			case 2:
-				 adr_memN   = adr_memN1_2;                                        // Адрес блока EEPROM № 2 
-				 _step_mem  = (pgm_read_byte_near(connektN2_default));            // Длина блока с таблицы
-				 for (int i = 0; i < (_step_mem * 5)+1;i++)                       // Записать 5 блоков таблицы  
-					{
-					  _u_konnekt = pgm_read_byte_near(connektN2_default+i);
-					  i2c_eeprom_write_byte(deviceaddress,adr_memN+i, _u_konnekt); 
-					}
-				 break;
-			case 3:
-				 adr_memN   = adr_memN1_3;                                       // Адрес блока EEPROM № 3
-				 _step_mem  = (pgm_read_byte_near(connektN3_default));           // Длина блока с таблицы
-				 for (int i = 0; i < (_step_mem * 5)+1;i++)                      // Записать 5 блоков таблицы  
-					{
-					  _u_konnekt = pgm_read_byte_near(connektN3_default+i);
-					  i2c_eeprom_write_byte(deviceaddress,adr_memN+i, _u_konnekt); 
-					}
-				 break;
-			case 4:
-				 adr_memN   = adr_memN1_4;                                       // Адрес блока EEPROM № 4
-				 _step_mem  = (pgm_read_byte_near(connektN4_default));           // Длина блока с таблицы
-				 for (int i = 0; i < (_step_mem * 5)+1;i++)                      // Записать 5 блоков таблицы   
-					{
-					  _u_konnekt = pgm_read_byte_near(connektN4_default+i);
-					  i2c_eeprom_write_byte(deviceaddress,adr_memN+i, _u_konnekt); 
-					}
-				 break;
-			default:
-				 adr_memN   = adr_memN1_1;                                       // Адрес блока EEPROM № 1 
-				 _step_mem  = (pgm_read_byte_near(connektN1_default));           // Длина блока с таблицы
-				 for (int i = 0; i < (_step_mem * 5)+1;i++)                      // Записать 5 блоков таблицы    
-					{
-					  _u_konnekt = pgm_read_byte_near(connektN1_default+i);
-					  i2c_eeprom_write_byte(deviceaddress,adr_memN+i, _u_konnekt); 
-					}
-				 break;
-		  }
+  byte _u_konnekt     = 0;                                                      // Р’СЂРµРјРµРЅРЅРѕРµ С…СЂР°РЅРµРЅРёСЏ СЃРѕРґРµСЂР¶РёРјРѕРіРѕ СЂРµРіРёСЃС‚СЂР°.
+  byte _step_mem      = 0;                                                      // Р”Р»РёРЅР° Р±Р»РѕРєР° СЃ С‚Р°Р±Р»РёС†С‹
+  int adr_memN        = 0;
+  int connekt_default = 0;                                                      // РђРґСЂРµСЃ РІ РїРѕСЃС‚РѕСЏРЅРЅРѕР№ РїР°РјСЏС‚Рё
+  switch (adrN_eeprom)
+  {
+    case 1:
+      adr_memN   = adr_memN1_1;                                        // РђРґСЂРµСЃ Р±Р»РѕРєР° EEPROM в„– 1
+      _step_mem  = (pgm_read_byte_near(connektN1_default));            // Р”Р»РёРЅР° Р±Р»РѕРєР° СЃ С‚Р°Р±Р»РёС†С‹
+      for (int i = 0; i < (_step_mem * 5) + 1; i++)                    // Р—Р°РїРёСЃР°С‚СЊ 5 Р±Р»РѕРєРѕРІ С‚Р°Р±Р»РёС†С‹
+      {
+        _u_konnekt = pgm_read_byte_near(connektN1_default + i);
+        i2c_eeprom_write_byte(deviceaddress, adr_memN + i, _u_konnekt);
+      }
+      break;
+    case 2:
+      adr_memN   = adr_memN1_2;                                        // РђРґСЂРµСЃ Р±Р»РѕРєР° EEPROM в„– 2
+      _step_mem  = (pgm_read_byte_near(connektN2_default));            // Р”Р»РёРЅР° Р±Р»РѕРєР° СЃ С‚Р°Р±Р»РёС†С‹
+      for (int i = 0; i < (_step_mem * 5) + 1; i++)                    // Р—Р°РїРёСЃР°С‚СЊ 5 Р±Р»РѕРєРѕРІ С‚Р°Р±Р»РёС†С‹
+      {
+        _u_konnekt = pgm_read_byte_near(connektN2_default + i);
+        i2c_eeprom_write_byte(deviceaddress, adr_memN + i, _u_konnekt);
+      }
+      break;
+    case 3:
+      adr_memN   = adr_memN1_3;                                       // РђРґСЂРµСЃ Р±Р»РѕРєР° EEPROM в„– 3
+      _step_mem  = (pgm_read_byte_near(connektN3_default));           // Р”Р»РёРЅР° Р±Р»РѕРєР° СЃ С‚Р°Р±Р»РёС†С‹
+      for (int i = 0; i < (_step_mem * 5) + 1; i++)                   // Р—Р°РїРёСЃР°С‚СЊ 5 Р±Р»РѕРєРѕРІ С‚Р°Р±Р»РёС†С‹
+      {
+        _u_konnekt = pgm_read_byte_near(connektN3_default + i);
+        i2c_eeprom_write_byte(deviceaddress, adr_memN + i, _u_konnekt);
+      }
+      break;
+    case 4:
+      adr_memN   = adr_memN1_4;                                       // РђРґСЂРµСЃ Р±Р»РѕРєР° EEPROM в„– 4
+      _step_mem  = (pgm_read_byte_near(connektN4_default));           // Р”Р»РёРЅР° Р±Р»РѕРєР° СЃ С‚Р°Р±Р»РёС†С‹
+      for (int i = 0; i < (_step_mem * 5) + 1; i++)                   // Р—Р°РїРёСЃР°С‚СЊ 5 Р±Р»РѕРєРѕРІ С‚Р°Р±Р»РёС†С‹
+      {
+        _u_konnekt = pgm_read_byte_near(connektN4_default + i);
+        i2c_eeprom_write_byte(deviceaddress, adr_memN + i, _u_konnekt);
+      }
+      break;
+    default:
+      adr_memN   = adr_memN1_1;                                       // РђРґСЂРµСЃ Р±Р»РѕРєР° EEPROM в„– 1
+      _step_mem  = (pgm_read_byte_near(connektN1_default));           // Р”Р»РёРЅР° Р±Р»РѕРєР° СЃ С‚Р°Р±Р»РёС†С‹
+      for (int i = 0; i < (_step_mem * 5) + 1; i++)                   // Р—Р°РїРёСЃР°С‚СЊ 5 Р±Р»РѕРєРѕРІ С‚Р°Р±Р»РёС†С‹
+      {
+        _u_konnekt = pgm_read_byte_near(connektN1_default + i);
+        i2c_eeprom_write_byte(deviceaddress, adr_memN + i, _u_konnekt);
+      }
+      break;
+  }
 }
-void save_default_pc()                                                       // Запись заводских установок таблицы разъемов №1
+void save_default_pc()                                                       // Р—Р°РїРёСЃСЊ Р·Р°РІРѕРґСЃРєРёС… СѓСЃС‚Р°РЅРѕРІРѕРє С‚Р°Р±Р»РёС†С‹ СЂР°Р·СЉРµРјРѕРІ в„–1
 {
-	int _step_mem       = 0;                                                 // Длина блока с таблицы
-	byte _u_konnekt     = 0;                                                 // Временное хранения содержимого регистра.
-    int adr_memN        = 0;
-	int adrN_eeprom     = regBank.get(40008);                                // Получить номер таблицы из регистра
+  int _step_mem       = 0;                                                 // Р”Р»РёРЅР° Р±Р»РѕРєР° СЃ С‚Р°Р±Р»РёС†С‹
+  byte _u_konnekt     = 0;                                                 // Р’СЂРµРјРµРЅРЅРѕРµ С…СЂР°РЅРµРЅРёСЏ СЃРѕРґРµСЂР¶РёРјРѕРіРѕ СЂРµРіРёСЃС‚СЂР°.
+  int adr_memN        = 0;
+  int adrN_eeprom     = regBank.get(40008);                                // РџРѕР»СѓС‡РёС‚СЊ РЅРѕРјРµСЂ С‚Р°Р±Р»РёС†С‹ РёР· СЂРµРіРёСЃС‚СЂР°
 
-		switch (adrN_eeprom)
-		   {
-			case 1:
-				 adr_memN = adr_memN1_1;                                     // Адрес блока EEPROM № 1 
-				 _step_mem = (pgm_read_byte_near(connektN1_default));        // Длина блока с таблицы
-				 for (int i = 1; i < (_step_mem * 2)+1;i++)                    
-					{
-					  _u_konnekt = pgm_read_byte_near(connektN1_default+i);
-					  i2c_eeprom_write_byte(deviceaddress,adr_memN+i, _u_konnekt); 
-					}
-				 break;
-			case 2:
-				 adr_memN = adr_memN1_2;                                     // Адрес блока EEPROM № 2 
-				 _step_mem = (pgm_read_byte_near(connektN2_default));        // Длина блока с таблицы
-				 for (int i = 1; i < (_step_mem * 2)+1;i++)                    
-					{
-					  _u_konnekt = pgm_read_byte_near(connektN2_default+i);
-					  i2c_eeprom_write_byte(deviceaddress,adr_memN+i, _u_konnekt); 
-					}
-				 break;
-			case 3:
-				 adr_memN = adr_memN1_3;                                     // Адрес блока EEPROM № 3
-				 _step_mem = (pgm_read_byte_near(connektN3_default));        // Длина блока с таблицы
-				 for (int i = 1; i < (_step_mem * 2)+1;i++)                    
-					{
-					  _u_konnekt = pgm_read_byte_near(connektN3_default+i);
-					  i2c_eeprom_write_byte(deviceaddress,adr_memN+i, _u_konnekt); 
-					}
-				 break;
-			case 4:
-				 adr_memN = adr_memN1_4;                                     // Адрес блока EEPROM № 4
-				 _step_mem = (pgm_read_byte_near(connektN4_default));        // Длина блока с таблицы
-				 for (int i = 1; i < (_step_mem * 2)+1;i++)                    
-					{
-					  _u_konnekt = pgm_read_byte_near(connektN4_default+i);
-					  i2c_eeprom_write_byte(deviceaddress,adr_memN+i, _u_konnekt); 
-					}
-				 break;
-			default:
-				 adr_memN = adr_memN1_1;                                     // Адрес блока EEPROM № 1 
-				 _step_mem = (pgm_read_byte_near(connektN1_default));        // Длина блока с таблицы
-			 	 for (int i = 1; i < (_step_mem * 2)+1;i++)                    
-					{
-					  _u_konnekt = pgm_read_byte_near(connektN1_default+i);
-					  i2c_eeprom_write_byte(deviceaddress,adr_memN+i, _u_konnekt); 
-					}
-				 break;
-		  }
-	regBank.set(adr_control_command,0);                                      // Завершить программу    
+  switch (adrN_eeprom)
+  {
+    case 1:
+      adr_memN = adr_memN1_1;                                     // РђРґСЂРµСЃ Р±Р»РѕРєР° EEPROM в„– 1
+      _step_mem = (pgm_read_byte_near(connektN1_default));        // Р”Р»РёРЅР° Р±Р»РѕРєР° СЃ С‚Р°Р±Р»РёС†С‹
+      for (int i = 1; i < (_step_mem * 2) + 1; i++)
+      {
+        _u_konnekt = pgm_read_byte_near(connektN1_default + i);
+        i2c_eeprom_write_byte(deviceaddress, adr_memN + i, _u_konnekt);
+      }
+      break;
+    case 2:
+      adr_memN = adr_memN1_2;                                     // РђРґСЂРµСЃ Р±Р»РѕРєР° EEPROM в„– 2
+      _step_mem = (pgm_read_byte_near(connektN2_default));        // Р”Р»РёРЅР° Р±Р»РѕРєР° СЃ С‚Р°Р±Р»РёС†С‹
+      for (int i = 1; i < (_step_mem * 2) + 1; i++)
+      {
+        _u_konnekt = pgm_read_byte_near(connektN2_default + i);
+        i2c_eeprom_write_byte(deviceaddress, adr_memN + i, _u_konnekt);
+      }
+      break;
+    case 3:
+      adr_memN = adr_memN1_3;                                     // РђРґСЂРµСЃ Р±Р»РѕРєР° EEPROM в„– 3
+      _step_mem = (pgm_read_byte_near(connektN3_default));        // Р”Р»РёРЅР° Р±Р»РѕРєР° СЃ С‚Р°Р±Р»РёС†С‹
+      for (int i = 1; i < (_step_mem * 2) + 1; i++)
+      {
+        _u_konnekt = pgm_read_byte_near(connektN3_default + i);
+        i2c_eeprom_write_byte(deviceaddress, adr_memN + i, _u_konnekt);
+      }
+      break;
+    case 4:
+      adr_memN = adr_memN1_4;                                     // РђРґСЂРµСЃ Р±Р»РѕРєР° EEPROM в„– 4
+      _step_mem = (pgm_read_byte_near(connektN4_default));        // Р”Р»РёРЅР° Р±Р»РѕРєР° СЃ С‚Р°Р±Р»РёС†С‹
+      for (int i = 1; i < (_step_mem * 2) + 1; i++)
+      {
+        _u_konnekt = pgm_read_byte_near(connektN4_default + i);
+        i2c_eeprom_write_byte(deviceaddress, adr_memN + i, _u_konnekt);
+      }
+      break;
+    default:
+      adr_memN = adr_memN1_1;                                     // РђРґСЂРµСЃ Р±Р»РѕРєР° EEPROM в„– 1
+      _step_mem = (pgm_read_byte_near(connektN1_default));        // Р”Р»РёРЅР° Р±Р»РѕРєР° СЃ С‚Р°Р±Р»РёС†С‹
+      for (int i = 1; i < (_step_mem * 2) + 1; i++)
+      {
+        _u_konnekt = pgm_read_byte_near(connektN1_default + i);
+        i2c_eeprom_write_byte(deviceaddress, adr_memN + i, _u_konnekt);
+      }
+      break;
+  }
+  regBank.set(adr_control_command, 0);                                     // Р—Р°РІРµСЂС€РёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ
 }
 
-void set_komm_mcp(char chanal_a_b, int chanal_n, char chanal_in_out )   // Программа включения аналового канала
+void set_komm_mcp(char chanal_a_b, int chanal_n, char chanal_in_out )   // РџСЂРѕРіСЂР°РјРјР° РІРєР»СЋС‡РµРЅРёСЏ Р°РЅР°Р»РѕРІРѕРіРѕ РєР°РЅР°Р»Р°
 {
-	/*
-	int chanal_a_b  -  выбрать блок разъемов А - 1 или В - 2
-	int chanal_n    -  выбрать № канала (1-48)
-	chanal_in_out   -  выбрать аналоговый выход - 1 или заземлить выбранный канал канал
-	*/
-	char _chanal_a_b     = chanal_a_b;                                // Канал входов коммутаторов  А - вход, B - выход.
-	int _chanal_n        = chanal_n;                                  // № канала (1- 48).
-	int _chanal_in_out   = chanal_in_out;                             // Вариант канала: 1 - сигнал,  2 - подключить на общий(заземлить).
+  /*
+    int chanal_a_b  -  РІС‹Р±СЂР°С‚СЊ Р±Р»РѕРє СЂР°Р·СЉРµРјРѕРІ Рђ - 1 РёР»Рё Р’ - 2
+    int chanal_n    -  РІС‹Р±СЂР°С‚СЊ в„– РєР°РЅР°Р»Р° (1-48)
+    chanal_in_out   -  РІС‹Р±СЂР°С‚СЊ Р°РЅР°Р»РѕРіРѕРІС‹Р№ РІС‹С…РѕРґ - 1 РёР»Рё Р·Р°Р·РµРјР»РёС‚СЊ РІС‹Р±СЂР°РЅРЅС‹Р№ РєР°РЅР°Р» РєР°РЅР°Р»
+  */
+  char _chanal_a_b     = chanal_a_b;                                // РљР°РЅР°Р» РІС…РѕРґРѕРІ РєРѕРјРјСѓС‚Р°С‚РѕСЂРѕРІ  Рђ - РІС…РѕРґ, B - РІС‹С…РѕРґ.
+  int _chanal_n        = chanal_n;                                  // в„– РєР°РЅР°Р»Р° (1- 48).
+  int _chanal_in_out   = chanal_in_out;                             // Р’Р°СЂРёР°РЅС‚ РєР°РЅР°Р»Р°: 1 - СЃРёРіРЅР°Р»,  2 - РїРѕРґРєР»СЋС‡РёС‚СЊ РЅР° РѕР±С‰РёР№(Р·Р°Р·РµРјР»РёС‚СЊ).
 
-	if (_chanal_a_b == 'A')                                           // Установка каналов А 
-	{
-		if (_chanal_in_out == 'O')                                    // Установка  аналового канала А  на вход/выход
-		{
-		    mcp_Out1.digitalWrite(8,  HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  1E1  U13
-			mcp_Out1.digitalWrite(9,  HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  1E2  U17
-			mcp_Out1.digitalWrite(10, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  1E3  U23
-			if (_chanal_n <17)
-			{
-                set_mcp_byte_1a(_chanal_n-1);                         // Сформировать байт выбора канала (0 - 15)
-				mcp_Out1.digitalWrite(8, LOW);                        // Выбрать EN микросхемы аналового коммутатора  1E1  U13
-			}
-			else if(_chanal_n > 16 && _chanal_n < 33)
-			{
-				set_mcp_byte_1a(_chanal_n - 17);                      //  Сформировать байт выбора канала (15 - 31)
-				mcp_Out1.digitalWrite(9, LOW);                        // Выбрать EN микросхемы аналового коммутатора  1E2  U17
-			}
-			else if(_chanal_n > 32 && _chanal_n < 49)
-			{
-				set_mcp_byte_1a(_chanal_n - 33);                      // Сформировать байт выбора канала (32 - 48)
-				mcp_Out1.digitalWrite(10, LOW);                       // Выбрать EN микросхемы аналового коммутатора  1E3  U23
-			}
+  if (_chanal_a_b == 'A')                                           // РЈСЃС‚Р°РЅРѕРІРєР° РєР°РЅР°Р»РѕРІ Рђ
+  {
+    if (_chanal_in_out == 'O')                                    // РЈСЃС‚Р°РЅРѕРІРєР°  Р°РЅР°Р»РѕРІРѕРіРѕ РєР°РЅР°Р»Р° Рђ  РЅР° РІС…РѕРґ/РІС‹С…РѕРґ
+    {
+      mcp_Out1.digitalWrite(8,  HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E1  U13
+      mcp_Out1.digitalWrite(9,  HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E2  U17
+      mcp_Out1.digitalWrite(10, HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E3  U23
+      if (_chanal_n < 17)
+      {
+        set_mcp_byte_1a(_chanal_n - 1);                       // РЎС„РѕСЂРјРёСЂРѕРІР°С‚СЊ Р±Р°Р№С‚ РІС‹Р±РѕСЂР° РєР°РЅР°Р»Р° (0 - 15)
+        mcp_Out1.digitalWrite(8, LOW);                        // Р’С‹Р±СЂР°С‚СЊ EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E1  U13
+      }
+      else if (_chanal_n > 16 && _chanal_n < 33)
+      {
+        set_mcp_byte_1a(_chanal_n - 17);                      //  РЎС„РѕСЂРјРёСЂРѕРІР°С‚СЊ Р±Р°Р№С‚ РІС‹Р±РѕСЂР° РєР°РЅР°Р»Р° (15 - 31)
+        mcp_Out1.digitalWrite(9, LOW);                        // Р’С‹Р±СЂР°С‚СЊ EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E2  U17
+      }
+      else if (_chanal_n > 32 && _chanal_n < 49)
+      {
+        set_mcp_byte_1a(_chanal_n - 33);                      // РЎС„РѕСЂРјРёСЂРѕРІР°С‚СЊ Р±Р°Р№С‚ РІС‹Р±РѕСЂР° РєР°РЅР°Р»Р° (32 - 48)
+        mcp_Out1.digitalWrite(10, LOW);                       // Р’С‹Р±СЂР°С‚СЊ EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E3  U23
+      }
 
-		}
-		if (_chanal_in_out == 'G')                                    // Заземлить канал А 
-		{
-		    mcp_Out1.digitalWrite(11, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  1E4  U14
-			mcp_Out1.digitalWrite(12, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  1E5  U19 
-			mcp_Out1.digitalWrite(13, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  1E6  U21 
-			if (_chanal_n <17)
-			{
-				set_mcp_byte_1b(_chanal_n-1);                         // Сформировать байт выбора канала (0 - 15)
-				mcp_Out1.digitalWrite(11, LOW);                       // Выбрать  EN микросхемы аналового коммутатора  1E4  U14
-			}
-			else if(_chanal_n > 16 && _chanal_n < 33)
-			{
-				set_mcp_byte_1b(_chanal_n - 17);                      // Сформировать байт выбора канала (16 - 31)
-				mcp_Out1.digitalWrite(12, LOW);                       // Выбрать EN микросхемы аналового коммутатора  1E5  U19 
-			}
-			else if(_chanal_n > 32 && _chanal_n < 49)
-			{
-				set_mcp_byte_1b(_chanal_n - 33);                      // Сформировать байт выбора канала (32 - 48)
-				mcp_Out1.digitalWrite(13, LOW);                       // Выбрать  EN микросхемы аналового коммутатора  1E6  U21 
-			}
+    }
+    if (_chanal_in_out == 'G')                                    // Р—Р°Р·РµРјР»РёС‚СЊ РєР°РЅР°Р» Рђ
+    {
+      mcp_Out1.digitalWrite(11, HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E4  U14
+      mcp_Out1.digitalWrite(12, HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E5  U19
+      mcp_Out1.digitalWrite(13, HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E6  U21
+      if (_chanal_n < 17)
+      {
+        set_mcp_byte_1b(_chanal_n - 1);                       // РЎС„РѕСЂРјРёСЂРѕРІР°С‚СЊ Р±Р°Р№С‚ РІС‹Р±РѕСЂР° РєР°РЅР°Р»Р° (0 - 15)
+        mcp_Out1.digitalWrite(11, LOW);                       // Р’С‹Р±СЂР°С‚СЊ  EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E4  U14
+      }
+      else if (_chanal_n > 16 && _chanal_n < 33)
+      {
+        set_mcp_byte_1b(_chanal_n - 17);                      // РЎС„РѕСЂРјРёСЂРѕРІР°С‚СЊ Р±Р°Р№С‚ РІС‹Р±РѕСЂР° РєР°РЅР°Р»Р° (16 - 31)
+        mcp_Out1.digitalWrite(12, LOW);                       // Р’С‹Р±СЂР°С‚СЊ EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E5  U19
+      }
+      else if (_chanal_n > 32 && _chanal_n < 49)
+      {
+        set_mcp_byte_1b(_chanal_n - 33);                      // РЎС„РѕСЂРјРёСЂРѕРІР°С‚СЊ Р±Р°Р№С‚ РІС‹Р±РѕСЂР° РєР°РЅР°Р»Р° (32 - 48)
+        mcp_Out1.digitalWrite(13, LOW);                       // Р’С‹Р±СЂР°С‚СЊ  EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E6  U21
+      }
 
-		}
-			//delay(10);
-	}
-	else if(_chanal_a_b == 'B')                                       // Установка каналов В 
-	{
-		if (_chanal_in_out == 'O')                                    // Установка  аналового канала А  на вход/выход
-		{
-		    mcp_Out2.digitalWrite(8,  HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E1  U15
-			mcp_Out2.digitalWrite(9,  HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E2  U18 
-			mcp_Out2.digitalWrite(10, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E3  U22
-			if (_chanal_n <17)
-			{
-				set_mcp_byte_2a(_chanal_n-1);                         // Сформировать байт выбора канала (0 - 15)
-				mcp_Out2.digitalWrite(8, LOW);                        // Выбрать EN микросхемы аналового коммутатора  2E1  U15
-			}
-			else if(_chanal_n > 16 && _chanal_n < 33)
-			{
-				set_mcp_byte_2a(_chanal_n - 17);                      // Сформировать байт выбора канала (16 - 31)
-				mcp_Out2.digitalWrite(9, LOW);                        // Выбрать EN микросхемы аналового коммутатора  2E2  U18 
-			}
-			else if(_chanal_n > 32 && _chanal_n < 49)
-			{
-				set_mcp_byte_2a(_chanal_n - 33);                      // Сформировать байт выбора канала (32 - 48)
-				mcp_Out2.digitalWrite(10, LOW);                       // Выбрать EN микросхемы аналового коммутатора  2E3  U22
-			}
+    }
+    //delay(10);
+  }
+  else if (_chanal_a_b == 'B')                                      // РЈСЃС‚Р°РЅРѕРІРєР° РєР°РЅР°Р»РѕРІ Р’
+  {
+    if (_chanal_in_out == 'O')                                    // РЈСЃС‚Р°РЅРѕРІРєР°  Р°РЅР°Р»РѕРІРѕРіРѕ РєР°РЅР°Р»Р° Рђ  РЅР° РІС…РѕРґ/РІС‹С…РѕРґ
+    {
+      mcp_Out2.digitalWrite(8,  HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E1  U15
+      mcp_Out2.digitalWrite(9,  HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E2  U18
+      mcp_Out2.digitalWrite(10, HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E3  U22
+      if (_chanal_n < 17)
+      {
+        set_mcp_byte_2a(_chanal_n - 1);                       // РЎС„РѕСЂРјРёСЂРѕРІР°С‚СЊ Р±Р°Р№С‚ РІС‹Р±РѕСЂР° РєР°РЅР°Р»Р° (0 - 15)
+        mcp_Out2.digitalWrite(8, LOW);                        // Р’С‹Р±СЂР°С‚СЊ EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E1  U15
+      }
+      else if (_chanal_n > 16 && _chanal_n < 33)
+      {
+        set_mcp_byte_2a(_chanal_n - 17);                      // РЎС„РѕСЂРјРёСЂРѕРІР°С‚СЊ Р±Р°Р№С‚ РІС‹Р±РѕСЂР° РєР°РЅР°Р»Р° (16 - 31)
+        mcp_Out2.digitalWrite(9, LOW);                        // Р’С‹Р±СЂР°С‚СЊ EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E2  U18
+      }
+      else if (_chanal_n > 32 && _chanal_n < 49)
+      {
+        set_mcp_byte_2a(_chanal_n - 33);                      // РЎС„РѕСЂРјРёСЂРѕРІР°С‚СЊ Р±Р°Р№С‚ РІС‹Р±РѕСЂР° РєР°РЅР°Р»Р° (32 - 48)
+        mcp_Out2.digitalWrite(10, LOW);                       // Р’С‹Р±СЂР°С‚СЊ EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E3  U22
+      }
 
-		}
-		if (_chanal_in_out == 'G')                                    // Заземлить канал B 
-		{
-		    mcp_Out2.digitalWrite(11, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E4  U16
-			mcp_Out2.digitalWrite(12, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E5  U20 
-			mcp_Out2.digitalWrite(13, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E6  U24
-			if (_chanal_n <17)
-			{
-				set_mcp_byte_2b(_chanal_n-1);                         // Сформировать байт выбора канала (0 - 15)
-				mcp_Out2.digitalWrite(11, LOW);                       // Выбрать EN микросхемы аналового коммутатора  2E4  U16
-			}
-			else if(_chanal_n > 16 && _chanal_n < 33)
-			{
-				set_mcp_byte_2b(_chanal_n - 17);                      // Сформировать байт выбора канала (16 - 31)
-				mcp_Out2.digitalWrite(12, LOW);                       // Выбрать EN микросхемы аналового коммутатора  2E5  U20 
-			}
-			else if(_chanal_n > 32 && _chanal_n < 49)
-			{
-				set_mcp_byte_2b(_chanal_n - 33);                      // Сформировать байт выбора канала (32 - 48)
-				mcp_Out2.digitalWrite(13, LOW);                       // Выбрать EN микросхемы аналового коммутатора  2E6  U24
-			}
-		}
-	}
-	//delay(10);
+    }
+    if (_chanal_in_out == 'G')                                    // Р—Р°Р·РµРјР»РёС‚СЊ РєР°РЅР°Р» B
+    {
+      mcp_Out2.digitalWrite(11, HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E4  U16
+      mcp_Out2.digitalWrite(12, HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E5  U20
+      mcp_Out2.digitalWrite(13, HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E6  U24
+      if (_chanal_n < 17)
+      {
+        set_mcp_byte_2b(_chanal_n - 1);                       // РЎС„РѕСЂРјРёСЂРѕРІР°С‚СЊ Р±Р°Р№С‚ РІС‹Р±РѕСЂР° РєР°РЅР°Р»Р° (0 - 15)
+        mcp_Out2.digitalWrite(11, LOW);                       // Р’С‹Р±СЂР°С‚СЊ EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E4  U16
+      }
+      else if (_chanal_n > 16 && _chanal_n < 33)
+      {
+        set_mcp_byte_2b(_chanal_n - 17);                      // РЎС„РѕСЂРјРёСЂРѕРІР°С‚СЊ Р±Р°Р№С‚ РІС‹Р±РѕСЂР° РєР°РЅР°Р»Р° (16 - 31)
+        mcp_Out2.digitalWrite(12, LOW);                       // Р’С‹Р±СЂР°С‚СЊ EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E5  U20
+      }
+      else if (_chanal_n > 32 && _chanal_n < 49)
+      {
+        set_mcp_byte_2b(_chanal_n - 33);                      // РЎС„РѕСЂРјРёСЂРѕРІР°С‚СЊ Р±Р°Р№С‚ РІС‹Р±РѕСЂР° РєР°РЅР°Р»Р° (32 - 48)
+        mcp_Out2.digitalWrite(13, LOW);                       // Р’С‹Р±СЂР°С‚СЊ EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E6  U24
+      }
+    }
+  }
+  //delay(10);
 }
 void set_mcp_byte_1a(int set_byte)
 {
 
-	    int _chanal_n = set_byte;
+  int _chanal_n = set_byte;
 
-		if(bitRead(_chanal_n, 0) == 1)      // Установить бит 0
-		{
-			mcp_Out1.digitalWrite(0, HIGH);
-		}
-		else
-		{
-            mcp_Out1.digitalWrite(0, LOW);
-		}
+  if (bitRead(_chanal_n, 0) == 1)     // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р±РёС‚ 0
+  {
+    mcp_Out1.digitalWrite(0, HIGH);
+  }
+  else
+  {
+    mcp_Out1.digitalWrite(0, LOW);
+  }
 
-		if(bitRead(_chanal_n, 1) == 1)      // Установить бит 1
-		{
-			mcp_Out1.digitalWrite(1, HIGH);
-		}
-		else
-		{
-            mcp_Out1.digitalWrite(1, LOW);
-		}
+  if (bitRead(_chanal_n, 1) == 1)     // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р±РёС‚ 1
+  {
+    mcp_Out1.digitalWrite(1, HIGH);
+  }
+  else
+  {
+    mcp_Out1.digitalWrite(1, LOW);
+  }
 
-		if(bitRead(_chanal_n, 2) == 1)      // Установить бит 2
-		{
-			mcp_Out1.digitalWrite(2, HIGH);
-		}
-		else
-		{
-            mcp_Out1.digitalWrite(2, LOW);
-		}
+  if (bitRead(_chanal_n, 2) == 1)     // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р±РёС‚ 2
+  {
+    mcp_Out1.digitalWrite(2, HIGH);
+  }
+  else
+  {
+    mcp_Out1.digitalWrite(2, LOW);
+  }
 
 
-		if(bitRead(_chanal_n, 3) == 1)      // Установить бит 3
-		{
-			mcp_Out1.digitalWrite(3, HIGH);
-		}
-		else
-		{
-            mcp_Out1.digitalWrite(3, LOW);
-		}
+  if (bitRead(_chanal_n, 3) == 1)     // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р±РёС‚ 3
+  {
+    mcp_Out1.digitalWrite(3, HIGH);
+  }
+  else
+  {
+    mcp_Out1.digitalWrite(3, LOW);
+  }
 }
 void set_mcp_byte_1b(int set_byte)
 {
-	    int _chanal_n = set_byte;
+  int _chanal_n = set_byte;
 
-		if(bitRead(_chanal_n, 0) == 1)      // Установить бит 0
-		{
-			mcp_Out1.digitalWrite(4, HIGH);
-		}
-		else
-		{
-            mcp_Out1.digitalWrite(4, LOW);
-		}
+  if (bitRead(_chanal_n, 0) == 1)     // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р±РёС‚ 0
+  {
+    mcp_Out1.digitalWrite(4, HIGH);
+  }
+  else
+  {
+    mcp_Out1.digitalWrite(4, LOW);
+  }
 
-		if(bitRead(_chanal_n, 1) == 1)      // Установить бит 1
-		{
-			mcp_Out1.digitalWrite(5, HIGH);
-		}
-		else
-		{
-            mcp_Out1.digitalWrite(5, LOW);
-		}
+  if (bitRead(_chanal_n, 1) == 1)     // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р±РёС‚ 1
+  {
+    mcp_Out1.digitalWrite(5, HIGH);
+  }
+  else
+  {
+    mcp_Out1.digitalWrite(5, LOW);
+  }
 
-		if(bitRead(_chanal_n, 2) == 1)      // Установить бит 2
-		{
-			mcp_Out1.digitalWrite(6, HIGH);
-		}
-		else
-		{
-            mcp_Out1.digitalWrite(6, LOW);
-		}
+  if (bitRead(_chanal_n, 2) == 1)     // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р±РёС‚ 2
+  {
+    mcp_Out1.digitalWrite(6, HIGH);
+  }
+  else
+  {
+    mcp_Out1.digitalWrite(6, LOW);
+  }
 
 
-		if(bitRead(_chanal_n, 3) == 1)      // Установить бит 3
-		{
-			mcp_Out1.digitalWrite(7, HIGH);
-		}
-		else
-		{
-            mcp_Out1.digitalWrite(7, LOW);
-		}
+  if (bitRead(_chanal_n, 3) == 1)     // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р±РёС‚ 3
+  {
+    mcp_Out1.digitalWrite(7, HIGH);
+  }
+  else
+  {
+    mcp_Out1.digitalWrite(7, LOW);
+  }
 }
 void set_mcp_byte_2a(int set_byte)
 {
-	int _chanal_n = set_byte;
+  int _chanal_n = set_byte;
 
-		if(bitRead(_chanal_n, 0) == 1)      // Установить бит 0
-		{
-			mcp_Out2.digitalWrite(0, HIGH);
-		}
-		else
-		{
-            mcp_Out2.digitalWrite(0, LOW);
-		}
+  if (bitRead(_chanal_n, 0) == 1)     // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р±РёС‚ 0
+  {
+    mcp_Out2.digitalWrite(0, HIGH);
+  }
+  else
+  {
+    mcp_Out2.digitalWrite(0, LOW);
+  }
 
-		if(bitRead(_chanal_n, 1) == 1)      // Установить бит 1
-		{
-			mcp_Out2.digitalWrite(1, HIGH);
-		}
-		else
-		{
-            mcp_Out2.digitalWrite(1, LOW);
-		}
+  if (bitRead(_chanal_n, 1) == 1)     // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р±РёС‚ 1
+  {
+    mcp_Out2.digitalWrite(1, HIGH);
+  }
+  else
+  {
+    mcp_Out2.digitalWrite(1, LOW);
+  }
 
-		if(bitRead(_chanal_n, 2) == 1)      // Установить бит 2
-		{
-			mcp_Out2.digitalWrite(2, HIGH);
-		}
-		else
-		{
-            mcp_Out2.digitalWrite(2, LOW);
-		}
+  if (bitRead(_chanal_n, 2) == 1)     // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р±РёС‚ 2
+  {
+    mcp_Out2.digitalWrite(2, HIGH);
+  }
+  else
+  {
+    mcp_Out2.digitalWrite(2, LOW);
+  }
 
 
-		if(bitRead(_chanal_n, 3) == 1)      // Установить бит 3
-		{
-			mcp_Out2.digitalWrite(3, HIGH);
-		}
-		else
-		{
-            mcp_Out2.digitalWrite(3, LOW);
-		}
+  if (bitRead(_chanal_n, 3) == 1)     // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р±РёС‚ 3
+  {
+    mcp_Out2.digitalWrite(3, HIGH);
+  }
+  else
+  {
+    mcp_Out2.digitalWrite(3, LOW);
+  }
 }
 void set_mcp_byte_2b(int set_byte)
 {
-	int _chanal_n = set_byte;
+  int _chanal_n = set_byte;
 
-		if(bitRead(_chanal_n, 0) == 1)      // Установить бит 0
-		{
-			mcp_Out2.digitalWrite(4, HIGH);
-		}
-		else
-		{
-            mcp_Out2.digitalWrite(4, LOW);
-		}
+  if (bitRead(_chanal_n, 0) == 1)     // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р±РёС‚ 0
+  {
+    mcp_Out2.digitalWrite(4, HIGH);
+  }
+  else
+  {
+    mcp_Out2.digitalWrite(4, LOW);
+  }
 
-		if(bitRead(_chanal_n, 1) == 1)      // Установить бит 1
-		{
-			mcp_Out2.digitalWrite(5, HIGH);
-		}
-		else
-		{
-            mcp_Out2.digitalWrite(5, LOW);
-		}
+  if (bitRead(_chanal_n, 1) == 1)     // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р±РёС‚ 1
+  {
+    mcp_Out2.digitalWrite(5, HIGH);
+  }
+  else
+  {
+    mcp_Out2.digitalWrite(5, LOW);
+  }
 
-		if(bitRead(_chanal_n, 2) == 1)      // Установить бит 2
-		{
-			mcp_Out2.digitalWrite(6, HIGH);
-		}
-		else
-		{
-            mcp_Out2.digitalWrite(6, LOW);
-		}
+  if (bitRead(_chanal_n, 2) == 1)     // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р±РёС‚ 2
+  {
+    mcp_Out2.digitalWrite(6, HIGH);
+  }
+  else
+  {
+    mcp_Out2.digitalWrite(6, LOW);
+  }
 
 
-		if(bitRead(_chanal_n, 3) == 1)      // Установить бит 3
-		{
-			mcp_Out2.digitalWrite(7, HIGH);
-		}
-		else
-		{
-            mcp_Out2.digitalWrite(7, LOW);
-		}
+  if (bitRead(_chanal_n, 3) == 1)     // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р±РёС‚ 3
+  {
+    mcp_Out2.digitalWrite(7, HIGH);
+  }
+  else
+  {
+    mcp_Out2.digitalWrite(7, LOW);
+  }
 }
-void mem_byte_trans_readPC()                                      //  Чтение таблиц из EEPROM для передачи в ПК
+void mem_byte_trans_readPC()                                      //  Р§С‚РµРЅРёРµ С‚Р°Р±Р»РёС† РёР· EEPROM РґР»СЏ РїРµСЂРµРґР°С‡Рё РІ РџРљ
 {
-	unsigned int _adr_reg = regBank.get(40005)+40000;             //  Адрес блока регистров для передачи в ПК таблиц.
-	unsigned int _adr_mem = regBank.get(40006);                   //  Адрес блока памяти для передачи в ПК таблиц.
-	unsigned int _size_block = regBank.get(40007);                //  Адрес длины блока таблиц
+  unsigned int _adr_reg = regBank.get(40005) + 40000;           //  РђРґСЂРµСЃ Р±Р»РѕРєР° СЂРµРіРёСЃС‚СЂРѕРІ РґР»СЏ РїРµСЂРµРґР°С‡Рё РІ РџРљ С‚Р°Р±Р»РёС†.
+  unsigned int _adr_mem = regBank.get(40006);                   //  РђРґСЂРµСЃ Р±Р»РѕРєР° РїР°РјСЏС‚Рё РґР»СЏ РїРµСЂРµРґР°С‡Рё РІ РџРљ С‚Р°Р±Р»РёС†.
+  unsigned int _size_block = regBank.get(40007);                //  РђРґСЂРµСЃ РґР»РёРЅС‹ Р±Р»РѕРєР° С‚Р°Р±Р»РёС†
 
-	for (unsigned int x_mem = 0;x_mem < _size_block;x_mem++)
-	{
-		regBank.set(_adr_reg+x_mem,i2c_eeprom_read_byte(deviceaddress,_adr_mem + x_mem));
-	}
-	regBank.set(adr_control_command,0);                           // Завершить программу    
-	delay(200);
+  for (unsigned int x_mem = 0; x_mem < _size_block; x_mem++)
+  {
+    regBank.set(_adr_reg + x_mem, i2c_eeprom_read_byte(deviceaddress, _adr_mem + x_mem));
+  }
+  regBank.set(adr_control_command, 0);                          // Р—Р°РІРµСЂС€РёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ
+  delay(200);
 }
-void mem_byte_trans_savePC()                                      //  Получить таблицу из ПK и записать в EEPROM
+void mem_byte_trans_savePC()                                      //  РџРѕР»СѓС‡РёС‚СЊ С‚Р°Р±Р»РёС†Сѓ РёР· РџK Рё Р·Р°РїРёСЃР°С‚СЊ РІ EEPROM
 {
-	unsigned int _adr_reg = regBank.get(40005);                   //  Адрес блока регистров для передачи в ПК таблиц.
-	unsigned int _adr_mem = regBank.get(40006);                   //  Адрес блока памяти для передачи в ПК таблиц.
-	unsigned int _size_block = regBank.get(40007);                //  Адрес длины блока таблиц
+  unsigned int _adr_reg = regBank.get(40005);                   //  РђРґСЂРµСЃ Р±Р»РѕРєР° СЂРµРіРёСЃС‚СЂРѕРІ РґР»СЏ РїРµСЂРµРґР°С‡Рё РІ РџРљ С‚Р°Р±Р»РёС†.
+  unsigned int _adr_mem = regBank.get(40006);                   //  РђРґСЂРµСЃ Р±Р»РѕРєР° РїР°РјСЏС‚Рё РґР»СЏ РїРµСЂРµРґР°С‡Рё РІ РџРљ С‚Р°Р±Р»РёС†.
+  unsigned int _size_block = regBank.get(40007);                //  РђРґСЂРµСЃ РґР»РёРЅС‹ Р±Р»РѕРєР° С‚Р°Р±Р»РёС†
 
-	for (unsigned int x_mem = 0;x_mem < _size_block;x_mem++)
-	{
-		i2c_eeprom_write_byte(deviceaddress, _adr_mem + x_mem, regBank.get(_adr_reg+x_mem));
-	}
-	regBank.set(adr_control_command,0);                           // Завершить программу    
-	delay(200);
+  for (unsigned int x_mem = 0; x_mem < _size_block; x_mem++)
+  {
+    i2c_eeprom_write_byte(deviceaddress, _adr_mem + x_mem, regBank.get(_adr_reg + x_mem));
+  }
+  regBank.set(adr_control_command, 0);                          // Р—Р°РІРµСЂС€РёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ
+  delay(200);
 }
 
 int search_cabel(int sc)
 {
-	pinMode(46, OUTPUT);                                                        // Установить на выход выход коммутаторов U13,U17,U23 (разъемы серии В на задней панели)
-	digitalWrite(46, LOW);                                                      // Установить контрольный уровень на коммутаторе
-	pinMode(47, INPUT);                                                         // Установить на вход  выход коммутаторов U15,U18,U22 (разъемы серии А на передней панели)
-	digitalWrite(47, HIGH);                                                     // Установить высокий уровень на выводе 47
- 	int n_connect = 0;
+  pinMode(46, OUTPUT);                                                        // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РЅР° РІС‹С…РѕРґ РІС‹С…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂРѕРІ U13,U17,U23 (СЂР°Р·СЉРµРјС‹ СЃРµСЂРёРё Р’ РЅР° Р·Р°РґРЅРµР№ РїР°РЅРµР»Рё)
+  digitalWrite(46, LOW);                                                      // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РєРѕРЅС‚СЂРѕР»СЊРЅС‹Р№ СѓСЂРѕРІРµРЅСЊ РЅР° РєРѕРјРјСѓС‚Р°С‚РѕСЂРµ
+  pinMode(47, INPUT);                                                         // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РЅР° РІС…РѕРґ  РІС‹С…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂРѕРІ U15,U18,U22 (СЂР°Р·СЉРµРјС‹ СЃРµСЂРёРё Рђ РЅР° РїРµСЂРµРґРЅРµР№ РїР°РЅРµР»Рё)
+  digitalWrite(47, HIGH);                                                     // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РІС‹СЃРѕРєРёР№ СѓСЂРѕРІРµРЅСЊ РЅР° РІС‹РІРѕРґРµ 47
+  int n_connect = 0;
 
-	switch (sc) 
-	{
-	case 1:
-		set_komm_mcp('A', 1,'O');
-		set_komm_mcp('B', 1,'O');
-		if (digitalRead(47) == LOW ) 
-		{
-			n_connect = 2;
-			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[27]))); 
-			myGLCD.print(buffer, CENTER, 20);                                  // txt__connect2
-		}
-		break;
-	case 39:
-		set_komm_mcp('A', 39,'O');
-		set_komm_mcp('B', 19,'O');
-		if (digitalRead(47) == LOW ) 
-		{
-			n_connect = 3;
-			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[28]))); 
-			myGLCD.print(buffer, CENTER, 20);                                 // txt__connect3
-		}
-		break;
-	case 40:
-		set_komm_mcp('A', 40,'O');
-		set_komm_mcp('B', 40,'O');
-		if (digitalRead(47) == LOW ) 
-		{
-			n_connect = 1;
-			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[26]))); 
-			myGLCD.print(buffer, CENTER, 20);                                 // txt__connect1
-		}
-		break;
-	case 41:
-		set_komm_mcp('A', 41,'O');
-		set_komm_mcp('B', 41,'O');
-		if (digitalRead(47) == LOW ) 
-		{
-			n_connect = 4;
-			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[29]))); 
-			myGLCD.print(buffer, CENTER, 20);                                 // txt__connect4
-		}
-		break;
-	}
-	if(n_connect ==0) Serial.println("Connector is not detected");
-	return n_connect;
+  switch (sc)
+  {
+    case 1:
+      set_komm_mcp('A', 1, 'O');
+      set_komm_mcp('B', 1, 'O');
+      if (digitalRead(47) == LOW )
+      {
+        n_connect = 2;
+        strcpy_P(buffer, (char*)pgm_read_word(&(table_message[27])));
+        myGLCD.print(buffer, CENTER, 20);                                  // txt__connect2
+      }
+      break;
+    case 39:
+      set_komm_mcp('A', 39, 'O');
+      set_komm_mcp('B', 19, 'O');
+      if (digitalRead(47) == LOW )
+      {
+        n_connect = 3;
+        strcpy_P(buffer, (char*)pgm_read_word(&(table_message[28])));
+        myGLCD.print(buffer, CENTER, 20);                                 // txt__connect3
+      }
+      break;
+    case 40:
+      set_komm_mcp('A', 40, 'O');
+      set_komm_mcp('B', 40, 'O');
+      if (digitalRead(47) == LOW )
+      {
+        n_connect = 1;
+        strcpy_P(buffer, (char*)pgm_read_word(&(table_message[26])));
+        myGLCD.print(buffer, CENTER, 20);                                 // txt__connect1
+      }
+      break;
+    case 41:
+      set_komm_mcp('A', 41, 'O');
+      set_komm_mcp('B', 41, 'O');
+      if (digitalRead(47) == LOW )
+      {
+        n_connect = 4;
+        strcpy_P(buffer, (char*)pgm_read_word(&(table_message[29])));
+        myGLCD.print(buffer, CENTER, 20);                                 // txt__connect4
+      }
+      break;
+  }
+  if (n_connect == 0) Serial.println("Connector is not detected");
+  return n_connect;
 }
 
 void test_cabel_N1()
 {
-	myGLCD.clrScr();
-	myGLCD.print(txt_menu1_1, CENTER, 1);                                      // "Тест кабель N 1"
-	myGLCD.setColor(255, 255, 255);                                            // Белая окантовка
-	myGLCD.drawRoundRect (5, 200, 155, 239);
- 	myGLCD.drawRoundRect (160, 200, 315, 239);
-	myGLCD.drawLine( 10, 60, 310, 60);
-	myGLCD.setColor(0, 0, 255);
-	myGLCD.fillRoundRect (6, 201, 154, 238);
-	myGLCD.fillRoundRect (161, 201, 314, 238);
-	myGLCD.setColor(255, 255, 255);  
-	myGLCD.setBackColor( 0, 0, 255);
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[21]))); 
-	myGLCD.print(buffer, 10, 210);                                             //txt_test_repeat  Повторить
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[20]))); 
-	myGLCD.print(buffer, 168, 210);                                            //txt_test_end Завершить
-	myGLCD.setBackColor( 0, 0, 0);                                             //  
-	mcp_Out2.digitalWrite(14, LOW);                                            // Отключить реле +12v
-	if (search_cabel(40)== 1)                                                  // Найден кабель №1
-	{
-		test_cabel_N1_run();                                                   // Выполнить проверку
-		while (true)                                                           // Ожидание очередных комманд
-			{
+  myGLCD.clrScr();
+  myGLCD.print(txt_menu1_1, CENTER, 1);                                      // "РўРµСЃС‚ РєР°Р±РµР»СЊ N 1"
+  myGLCD.setColor(255, 255, 255);                                            // Р‘РµР»Р°СЏ РѕРєР°РЅС‚РѕРІРєР°
+  myGLCD.drawRoundRect (5, 200, 155, 239);
+  myGLCD.drawRoundRect (160, 200, 315, 239);
+  myGLCD.drawLine( 10, 60, 310, 60);
+  myGLCD.setColor(0, 0, 255);
+  myGLCD.fillRoundRect (6, 201, 154, 238);
+  myGLCD.fillRoundRect (161, 201, 314, 238);
+  myGLCD.setColor(255, 255, 255);
+  myGLCD.setBackColor( 0, 0, 255);
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[21])));
+  myGLCD.print(buffer, 10, 210);                                             //txt_test_repeat  РџРѕРІС‚РѕСЂРёС‚СЊ
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[20])));
+  myGLCD.print(buffer, 168, 210);                                            //txt_test_end Р—Р°РІРµСЂС€РёС‚СЊ
+  myGLCD.setBackColor( 0, 0, 0);                                             //
+  mcp_Out2.digitalWrite(14, LOW);                                            // РћС‚РєР»СЋС‡РёС‚СЊ СЂРµР»Рµ +12v
+  if (search_cabel(40) == 1)                                                 // РќР°Р№РґРµРЅ РєР°Р±РµР»СЊ в„–1
+  {
+    test_cabel_N1_run();                                                   // Р’С‹РїРѕР»РЅРёС‚СЊ РїСЂРѕРІРµСЂРєСѓ
+    while (true)                                                           // РћР¶РёРґР°РЅРёРµ РѕС‡РµСЂРµРґРЅС‹С… РєРѕРјРјР°РЅРґ
+    {
 
-			if (myTouch.dataAvailable())
-				{
-				myTouch.read();
-				x=myTouch.getX();
-				y=myTouch.getY();
-		
-				if (((y>=200) && (y<=239)) && ((x>=5) && (x<=155)))           //нажата кнопка "Повторить проверку"
-					{
-						waitForIt(5, 200, 155, 239);
-						myGLCD.setFont(BigFont);
-						test_cabel_N1_run();                                  // Выполнить программу проверки
-					}
-				if (((y>=200) && (y<=239)) && ((x>=160) && (x<=315)))         //нажата кнопка "Завершить  проверку"
-					{
-						waitForIt(160, 200, 315, 239);
-						myGLCD.setFont(BigFont);
-						break;                                                // Выход из программы
-					}
-				}
+      if (myTouch.dataAvailable())
+      {
+        myTouch.read();
+        x = myTouch.getX();
+        y = myTouch.getY();
 
-			}
-	 }
-	else
-	{
-	  myGLCD.setColor(VGA_RED);  
-	  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[22]))); 
-	  myGLCD.print(buffer, CENTER, 80);                                       // txt_error_connect1 "Ошибка"
-	  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[23]))); 
-	  myGLCD.print(buffer, CENTER, 110);                                      // txt_error_connect2 "подключения кабеля" 
-	  myGLCD.setColor(255, 255, 255);  
-	  delay(3000);
-	}
+        if (((y >= 200) && (y <= 239)) && ((x >= 5) && (x <= 155)))   //РЅР°Р¶Р°С‚Р° РєРЅРѕРїРєР° "РџРѕРІС‚РѕСЂРёС‚СЊ РїСЂРѕРІРµСЂРєСѓ"
+        {
+          waitForIt(5, 200, 155, 239);
+          myGLCD.setFont(BigFont);
+          test_cabel_N1_run();                                  // Р’С‹РїРѕР»РЅРёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ РїСЂРѕРІРµСЂРєРё
+        }
+        if (((y >= 200) && (y <= 239)) && ((x >= 160) && (x <= 315))) //РЅР°Р¶Р°С‚Р° РєРЅРѕРїРєР° "Р—Р°РІРµСЂС€РёС‚СЊ  РїСЂРѕРІРµСЂРєСѓ"
+        {
+          waitForIt(160, 200, 315, 239);
+          myGLCD.setFont(BigFont);
+          break;                                                // Р’С‹С…РѕРґ РёР· РїСЂРѕРіСЂР°РјРјС‹
+        }
+      }
+
+    }
+  }
+  else
+  {
+    myGLCD.setColor(VGA_RED);
+    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[22])));
+    myGLCD.print(buffer, CENTER, 80);                                       // txt_error_connect1 "РћС€РёР±РєР°"
+    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[23])));
+    myGLCD.print(buffer, CENTER, 110);                                      // txt_error_connect2 "РїРѕРґРєР»СЋС‡РµРЅРёСЏ РєР°Р±РµР»СЏ"
+    myGLCD.setColor(255, 255, 255);
+    delay(3000);
+  }
 }
 void test_cabel_N2()
 {
-	myGLCD.clrScr();
-	myGLCD.print(txt_menu1_2, CENTER, 1); 
-	myGLCD.setColor(255, 255, 255);                                             // Белая окантовка
-	myGLCD.drawRoundRect (5, 200, 155, 239);
- 	myGLCD.drawRoundRect (160, 200, 315, 239);
-	myGLCD.drawLine( 10, 60, 310, 60);
-	myGLCD.setColor(0, 0, 255);
-	myGLCD.fillRoundRect (6, 201, 154, 238);
-	myGLCD.fillRoundRect (161, 201, 314, 238);
-	myGLCD.setColor(255, 255, 255);  
-	myGLCD.setBackColor( 0, 0, 255);
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[21]))); 
-	myGLCD.print(buffer, 10, 210);                                             //txt_test_repeat  Повторить
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[20]))); 
-	myGLCD.print(buffer, 168, 210);                                            //txt_test_end Завершить
-	myGLCD.setBackColor( 0, 0, 0);
-	mcp_Out2.digitalWrite(14, LOW);                                            // Отключить реле +12v
+  myGLCD.clrScr();
+  myGLCD.print(txt_menu1_2, CENTER, 1);
+  myGLCD.setColor(255, 255, 255);                                             // Р‘РµР»Р°СЏ РѕРєР°РЅС‚РѕРІРєР°
+  myGLCD.drawRoundRect (5, 200, 155, 239);
+  myGLCD.drawRoundRect (160, 200, 315, 239);
+  myGLCD.drawLine( 10, 60, 310, 60);
+  myGLCD.setColor(0, 0, 255);
+  myGLCD.fillRoundRect (6, 201, 154, 238);
+  myGLCD.fillRoundRect (161, 201, 314, 238);
+  myGLCD.setColor(255, 255, 255);
+  myGLCD.setBackColor( 0, 0, 255);
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[21])));
+  myGLCD.print(buffer, 10, 210);                                             //txt_test_repeat  РџРѕРІС‚РѕСЂРёС‚СЊ
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[20])));
+  myGLCD.print(buffer, 168, 210);                                            //txt_test_end Р—Р°РІРµСЂС€РёС‚СЊ
+  myGLCD.setBackColor( 0, 0, 0);
+  mcp_Out2.digitalWrite(14, LOW);                                            // РћС‚РєР»СЋС‡РёС‚СЊ СЂРµР»Рµ +12v
 
-	if (search_cabel(1)== 2)
-	{
-		test_cabel_N2_run();
+  if (search_cabel(1) == 2)
+  {
+    test_cabel_N2_run();
 
-		while (true)
-			{
+    while (true)
+    {
 
-			if (myTouch.dataAvailable())
-				{
-				myTouch.read();
-				x=myTouch.getX();
-				y=myTouch.getY();
-		
-				if (((y>=200) && (y<=239)) && ((x>=5) && (x<=155)))                    //Повторить
-					{
-						waitForIt(5, 200, 155, 239);
-						myGLCD.setFont(BigFont);
-						test_cabel_N2_run();
-					}
-				if (((y>=200) && (y<=239)) && ((x>=160) && (x<=315)))                 //Завершить
-					{
-						waitForIt(160, 200, 315, 239);
-						myGLCD.setFont(BigFont);
-						break;
-					}
-				}
-			}
-	 }
-	else
-	{
-	  myGLCD.setColor(VGA_RED);  
-	  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[22]))); 
-	  myGLCD.print(buffer, CENTER, 80);                                       // txt_error_connect1 "Ошибка"
-	  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[23]))); 
-	  myGLCD.print(buffer, CENTER, 110);                                      // txt_error_connect2 "подключения кабеля" 
-	  myGLCD.setColor(255, 255, 255);  
-	  delay(3000);
-	}
+      if (myTouch.dataAvailable())
+      {
+        myTouch.read();
+        x = myTouch.getX();
+        y = myTouch.getY();
+
+        if (((y >= 200) && (y <= 239)) && ((x >= 5) && (x <= 155)))            //РџРѕРІС‚РѕСЂРёС‚СЊ
+        {
+          waitForIt(5, 200, 155, 239);
+          myGLCD.setFont(BigFont);
+          test_cabel_N2_run();
+        }
+        if (((y >= 200) && (y <= 239)) && ((x >= 160) && (x <= 315)))         //Р—Р°РІРµСЂС€РёС‚СЊ
+        {
+          waitForIt(160, 200, 315, 239);
+          myGLCD.setFont(BigFont);
+          break;
+        }
+      }
+    }
+  }
+  else
+  {
+    myGLCD.setColor(VGA_RED);
+    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[22])));
+    myGLCD.print(buffer, CENTER, 80);                                       // txt_error_connect1 "РћС€РёР±РєР°"
+    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[23])));
+    myGLCD.print(buffer, CENTER, 110);                                      // txt_error_connect2 "РїРѕРґРєР»СЋС‡РµРЅРёСЏ РєР°Р±РµР»СЏ"
+    myGLCD.setColor(255, 255, 255);
+    delay(3000);
+  }
 }
 void test_cabel_N3()
 {
-	myGLCD.clrScr();
-	myGLCD.print(txt_menu1_3, CENTER, 1); 
-	myGLCD.setColor(255, 255, 255);                                             // Белая окантовка
-	myGLCD.drawRoundRect (5, 200, 155, 239);
- 	myGLCD.drawRoundRect (160, 200, 315, 239);
-	myGLCD.drawLine( 10, 60, 310, 60);
-	myGLCD.setColor(0, 0, 255);
-	myGLCD.fillRoundRect (6, 201, 154, 238);
-	myGLCD.fillRoundRect (161, 201, 314, 238);
-	myGLCD.setColor(255, 255, 255);  
-	myGLCD.setBackColor( 0, 0, 255);
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[21]))); 
-	myGLCD.print(buffer, 10, 210);                                             //txt_test_repeat  Повторить
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[20]))); 
-	myGLCD.print(buffer, 168, 210);                                            //txt_test_end Завершить
-	myGLCD.setBackColor( 0, 0, 0);
-	mcp_Out2.digitalWrite(14, LOW);                                            // Отключить реле +12v
+  myGLCD.clrScr();
+  myGLCD.print(txt_menu1_3, CENTER, 1);
+  myGLCD.setColor(255, 255, 255);                                             // Р‘РµР»Р°СЏ РѕРєР°РЅС‚РѕРІРєР°
+  myGLCD.drawRoundRect (5, 200, 155, 239);
+  myGLCD.drawRoundRect (160, 200, 315, 239);
+  myGLCD.drawLine( 10, 60, 310, 60);
+  myGLCD.setColor(0, 0, 255);
+  myGLCD.fillRoundRect (6, 201, 154, 238);
+  myGLCD.fillRoundRect (161, 201, 314, 238);
+  myGLCD.setColor(255, 255, 255);
+  myGLCD.setBackColor( 0, 0, 255);
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[21])));
+  myGLCD.print(buffer, 10, 210);                                             //txt_test_repeat  РџРѕРІС‚РѕСЂРёС‚СЊ
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[20])));
+  myGLCD.print(buffer, 168, 210);                                            //txt_test_end Р—Р°РІРµСЂС€РёС‚СЊ
+  myGLCD.setBackColor( 0, 0, 0);
+  mcp_Out2.digitalWrite(14, LOW);                                            // РћС‚РєР»СЋС‡РёС‚СЊ СЂРµР»Рµ +12v
 
-	if (search_cabel(39)== 3)
-	{
-		test_cabel_N3_run();
+  if (search_cabel(39) == 3)
+  {
+    test_cabel_N3_run();
 
-		while (true)
-			{
-			if (myTouch.dataAvailable())
-				{
-				myTouch.read();
-				x=myTouch.getX();
-				y=myTouch.getY();
-		
-				if (((y>=200) && (y<=239)) && ((x>=5) && (x<=155)))                    //Повторить
-					{
-						waitForIt(5, 200, 155, 239);
-						myGLCD.setFont(BigFont);
-						test_cabel_N3_run();
-					}
-				if (((y>=200) && (y<=239)) && ((x>=160) && (x<=315)))                 //Завершить
-					{
-						waitForIt(160, 200, 315, 239);
-						myGLCD.setFont(BigFont);
-						break;
-					}
-				}
-			}
-	 }
-	else
-	{
-	  myGLCD.setColor(VGA_RED);  
-	  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[22]))); 
-	  myGLCD.print(buffer, CENTER, 80);                                       // txt_error_connect1 "Ошибка"
-	  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[23]))); 
-	  myGLCD.print(buffer, CENTER, 110);                                      // txt_error_connect2 "подключения кабеля" 
-	  myGLCD.setColor(255, 255, 255);  
-	  delay(3000);
-	}
+    while (true)
+    {
+      if (myTouch.dataAvailable())
+      {
+        myTouch.read();
+        x = myTouch.getX();
+        y = myTouch.getY();
+
+        if (((y >= 200) && (y <= 239)) && ((x >= 5) && (x <= 155)))            //РџРѕРІС‚РѕСЂРёС‚СЊ
+        {
+          waitForIt(5, 200, 155, 239);
+          myGLCD.setFont(BigFont);
+          test_cabel_N3_run();
+        }
+        if (((y >= 200) && (y <= 239)) && ((x >= 160) && (x <= 315)))         //Р—Р°РІРµСЂС€РёС‚СЊ
+        {
+          waitForIt(160, 200, 315, 239);
+          myGLCD.setFont(BigFont);
+          break;
+        }
+      }
+    }
+  }
+  else
+  {
+    myGLCD.setColor(VGA_RED);
+    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[22])));
+    myGLCD.print(buffer, CENTER, 80);                                       // txt_error_connect1 "РћС€РёР±РєР°"
+    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[23])));
+    myGLCD.print(buffer, CENTER, 110);                                      // txt_error_connect2 "РїРѕРґРєР»СЋС‡РµРЅРёСЏ РєР°Р±РµР»СЏ"
+    myGLCD.setColor(255, 255, 255);
+    delay(3000);
+  }
 }
 void test_cabel_N4()
 {
-	myGLCD.clrScr();
-	myGLCD.print(txt_menu1_4, CENTER, 1); 
-	myGLCD.setColor(255, 255, 255);                                             // Белая окантовка
-	myGLCD.drawRoundRect (5, 200, 155, 239);
- 	myGLCD.drawRoundRect (160, 200, 315, 239);
-	myGLCD.drawLine( 10, 60, 310, 60);
-	myGLCD.setColor(0, 0, 255);
-	myGLCD.fillRoundRect (6, 201, 154, 238);
-	myGLCD.fillRoundRect (161, 201, 314, 238);
-	myGLCD.setColor(255, 255, 255);  
-	myGLCD.setBackColor( 0, 0, 255);
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[21]))); 
-	myGLCD.print(buffer, 10, 210);                                             //txt_test_repeat  Повторить
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[20]))); 
-	myGLCD.print(buffer, 168, 210);                                            //txt_test_end Завершить
-	myGLCD.setBackColor( 0, 0, 0);
-	mcp_Out2.digitalWrite(14, LOW);                                            // Отключить реле +12v
+  myGLCD.clrScr();
+  myGLCD.print(txt_menu1_4, CENTER, 1);
+  myGLCD.setColor(255, 255, 255);                                             // Р‘РµР»Р°СЏ РѕРєР°РЅС‚РѕРІРєР°
+  myGLCD.drawRoundRect (5, 200, 155, 239);
+  myGLCD.drawRoundRect (160, 200, 315, 239);
+  myGLCD.drawLine( 10, 60, 310, 60);
+  myGLCD.setColor(0, 0, 255);
+  myGLCD.fillRoundRect (6, 201, 154, 238);
+  myGLCD.fillRoundRect (161, 201, 314, 238);
+  myGLCD.setColor(255, 255, 255);
+  myGLCD.setBackColor( 0, 0, 255);
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[21])));
+  myGLCD.print(buffer, 10, 210);                                             //txt_test_repeat  РџРѕРІС‚РѕСЂРёС‚СЊ
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[20])));
+  myGLCD.print(buffer, 168, 210);                                            //txt_test_end Р—Р°РІРµСЂС€РёС‚СЊ
+  myGLCD.setBackColor( 0, 0, 0);
+  mcp_Out2.digitalWrite(14, LOW);                                            // РћС‚РєР»СЋС‡РёС‚СЊ СЂРµР»Рµ +12v
 
-	if (search_cabel(41)== 4)
-	{
-		test_cabel_N4_run();
+  if (search_cabel(41) == 4)
+  {
+    test_cabel_N4_run();
 
-		while (true)
-			{
+    while (true)
+    {
 
-			if (myTouch.dataAvailable())
-				{
-				myTouch.read();
-				x=myTouch.getX();
-				y=myTouch.getY();
-		
-				if (((y>=200) && (y<=239)) && ((x>=5) && (x<=155)))                    //Повторить
-					{
-						waitForIt(5, 200, 155, 239);
-						myGLCD.setFont(BigFont);
-						test_cabel_N4_run();
-					}
-				if (((y>=200) && (y<=239)) && ((x>=160) && (x<=315)))                 //Завершить
-					{
-						waitForIt(160, 200, 315, 239);
-						myGLCD.setFont(BigFont);
-						break;
-					}
-				}
+      if (myTouch.dataAvailable())
+      {
+        myTouch.read();
+        x = myTouch.getX();
+        y = myTouch.getY();
 
-			}
-	 }
-	else
-	{
-	  myGLCD.setColor(VGA_RED);  
-	  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[22]))); 
-	  myGLCD.print(buffer, CENTER, 80);                                       // txt_error_connect1 "Ошибка"
-	  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[23]))); 
-	  myGLCD.print(buffer, CENTER, 110);                                      // txt_error_connect2 "подключения кабеля" 
-	  myGLCD.setColor(255, 255, 255);  
-	  delay(3000);
-	}
+        if (((y >= 200) && (y <= 239)) && ((x >= 5) && (x <= 155)))            //РџРѕРІС‚РѕСЂРёС‚СЊ
+        {
+          waitForIt(5, 200, 155, 239);
+          myGLCD.setFont(BigFont);
+          test_cabel_N4_run();
+        }
+        if (((y >= 200) && (y <= 239)) && ((x >= 160) && (x <= 315)))         //Р—Р°РІРµСЂС€РёС‚СЊ
+        {
+          waitForIt(160, 200, 315, 239);
+          myGLCD.setFont(BigFont);
+          break;
+        }
+      }
+
+    }
+  }
+  else
+  {
+    myGLCD.setColor(VGA_RED);
+    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[22])));
+    myGLCD.print(buffer, CENTER, 80);                                       // txt_error_connect1 "РћС€РёР±РєР°"
+    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[23])));
+    myGLCD.print(buffer, CENTER, 110);                                      // txt_error_connect2 "РїРѕРґРєР»СЋС‡РµРЅРёСЏ РєР°Р±РµР»СЏ"
+    myGLCD.setColor(255, 255, 255);
+    delay(3000);
+  }
 }
 void test_panel_N1()
 {
-	mcp_Out1.digitalWrite(8,  HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  1E1  U13
-	mcp_Out1.digitalWrite(9,  HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  1E2  U17
-	mcp_Out1.digitalWrite(10, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  1E3  U23
-	mcp_Out1.digitalWrite(11, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  1E4  U14
-	mcp_Out1.digitalWrite(12, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  1E5  U19 
-	mcp_Out1.digitalWrite(13, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  1E6  U21 
+  mcp_Out1.digitalWrite(8,  HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E1  U13
+  mcp_Out1.digitalWrite(9,  HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E2  U17
+  mcp_Out1.digitalWrite(10, HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E3  U23
+  mcp_Out1.digitalWrite(11, HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E4  U14
+  mcp_Out1.digitalWrite(12, HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E5  U19
+  mcp_Out1.digitalWrite(13, HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E6  U21
 
-	mcp_Out2.digitalWrite(8,  HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E1  U15
-	mcp_Out2.digitalWrite(9,  HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E2  U18 
-	mcp_Out2.digitalWrite(10, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E3  U22
-	mcp_Out2.digitalWrite(11, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E4  U16
-	mcp_Out2.digitalWrite(12, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E5  U20 
-	mcp_Out2.digitalWrite(13, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E6  U24
-	mcp_Out2.digitalWrite(14, LOW);                           // Отключить реле +12v
+  mcp_Out2.digitalWrite(8,  HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E1  U15
+  mcp_Out2.digitalWrite(9,  HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E2  U18
+  mcp_Out2.digitalWrite(10, HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E3  U22
+  mcp_Out2.digitalWrite(11, HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E4  U16
+  mcp_Out2.digitalWrite(12, HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E5  U20
+  mcp_Out2.digitalWrite(13, HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E6  U24
+  mcp_Out2.digitalWrite(14, LOW);                           // РћС‚РєР»СЋС‡РёС‚СЊ СЂРµР»Рµ +12v
 
-	myGLCD.clrScr();
-	myGLCD.print(txt_menu2_1, CENTER, 1);                            // "Тест панели"
-	myGLCD.setColor(255, 255, 255);                                  // Белая окантовка
-	myGLCD.drawRoundRect (5, 200, 155, 239);
- 	myGLCD.drawRoundRect (160, 200, 315, 239);
-	myGLCD.drawLine( 10, 60, 310, 60);
-	myGLCD.setColor(0, 0, 255);
-	myGLCD.fillRoundRect (6, 201, 154, 238);
-	myGLCD.fillRoundRect (161, 201, 314, 238);
-	myGLCD.setColor(255, 255, 255);  
-	myGLCD.setBackColor( 0, 0, 255);
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[21]))); 
-	myGLCD.print(buffer, 10, 210);                                   //txt_test_repeat  Повторить
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[20]))); 
-	myGLCD.print(buffer, 168, 210);                                  //txt_test_end Завершить
-	myGLCD.setBackColor( 0, 0, 0);                                             //  
+  myGLCD.clrScr();
+  myGLCD.print(txt_menu2_1, CENTER, 1);                            // "РўРµСЃС‚ РїР°РЅРµР»Рё"
+  myGLCD.setColor(255, 255, 255);                                  // Р‘РµР»Р°СЏ РѕРєР°РЅС‚РѕРІРєР°
+  myGLCD.drawRoundRect (5, 200, 155, 239);
+  myGLCD.drawRoundRect (160, 200, 315, 239);
+  myGLCD.drawLine( 10, 60, 310, 60);
+  myGLCD.setColor(0, 0, 255);
+  myGLCD.fillRoundRect (6, 201, 154, 238);
+  myGLCD.fillRoundRect (161, 201, 314, 238);
+  myGLCD.setColor(255, 255, 255);
+  myGLCD.setBackColor( 0, 0, 255);
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[21])));
+  myGLCD.print(buffer, 10, 210);                                   //txt_test_repeat  РџРѕРІС‚РѕСЂРёС‚СЊ
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[20])));
+  myGLCD.print(buffer, 168, 210);                                  //txt_test_end Р—Р°РІРµСЂС€РёС‚СЊ
+  myGLCD.setBackColor( 0, 0, 0);                                             //
 
-		test_panel_N1run();                                                   // Выполнить проверку
-		while (true)                                                           // Ожидание очередных комманд
-			{
+  test_panel_N1run();                                                   // Р’С‹РїРѕР»РЅРёС‚СЊ РїСЂРѕРІРµСЂРєСѓ
+  while (true)                                                           // РћР¶РёРґР°РЅРёРµ РѕС‡РµСЂРµРґРЅС‹С… РєРѕРјРјР°РЅРґ
+  {
 
-			if (myTouch.dataAvailable())
-				{
-				myTouch.read();
-				x=myTouch.getX();
-				y=myTouch.getY();
-		
-				if (((y>=200) && (y<=239)) && ((x>=5) && (x<=155)))           //нажата кнопка "Повторить проверку"
-					{
-						waitForIt(5, 200, 155, 239);
-						myGLCD.setFont(BigFont);
-						test_panel_N1run();                                   // Выполнить программу проверки
-					}
-				if (((y>=200) && (y<=239)) && ((x>=160) && (x<=315)))         //нажата кнопка "Завершить  проверку"
-					{
-						waitForIt(160, 200, 315, 239);
-						myGLCD.setFont(BigFont);
-						break;                                                // Выход из программы
-					}
-				}
+    if (myTouch.dataAvailable())
+    {
+      myTouch.read();
+      x = myTouch.getX();
+      y = myTouch.getY();
 
-			}
+      if (((y >= 200) && (y <= 239)) && ((x >= 5) && (x <= 155)))   //РЅР°Р¶Р°С‚Р° РєРЅРѕРїРєР° "РџРѕРІС‚РѕСЂРёС‚СЊ РїСЂРѕРІРµСЂРєСѓ"
+      {
+        waitForIt(5, 200, 155, 239);
+        myGLCD.setFont(BigFont);
+        test_panel_N1run();                                   // Р’С‹РїРѕР»РЅРёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ РїСЂРѕРІРµСЂРєРё
+      }
+      if (((y >= 200) && (y <= 239)) && ((x >= 160) && (x <= 315))) //РЅР°Р¶Р°С‚Р° РєРЅРѕРїРєР° "Р—Р°РІРµСЂС€РёС‚СЊ  РїСЂРѕРІРµСЂРєСѓ"
+      {
+        waitForIt(160, 200, 315, 239);
+        myGLCD.setFont(BigFont);
+        break;                                                // Р’С‹С…РѕРґ РёР· РїСЂРѕРіСЂР°РјРјС‹
+      }
+    }
 
-	delay(1000);
+  }
 
-	mcp_Out2.digitalWrite(14, LOW);                 // Отключить реле
+  delay(1000);
+
+  mcp_Out2.digitalWrite(14, LOW);                 // РћС‚РєР»СЋС‡РёС‚СЊ СЂРµР»Рµ
 }
 void test_panel_N2()
 {
-	mcp_Out1.digitalWrite(8,  HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  1E1  U13
-	mcp_Out1.digitalWrite(9,  HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  1E2  U17
-	mcp_Out1.digitalWrite(10, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  1E3  U23
-	mcp_Out1.digitalWrite(11, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  1E4  U14
-	mcp_Out1.digitalWrite(12, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  1E5  U19 
-	mcp_Out1.digitalWrite(13, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  1E6  U21 
+  mcp_Out1.digitalWrite(8,  HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E1  U13
+  mcp_Out1.digitalWrite(9,  HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E2  U17
+  mcp_Out1.digitalWrite(10, HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E3  U23
+  mcp_Out1.digitalWrite(11, HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E4  U14
+  mcp_Out1.digitalWrite(12, HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E5  U19
+  mcp_Out1.digitalWrite(13, HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E6  U21
 
-	mcp_Out2.digitalWrite(8,  HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E1  U15
-	mcp_Out2.digitalWrite(9,  HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E2  U18 
-	mcp_Out2.digitalWrite(10, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E3  U22
-	mcp_Out2.digitalWrite(11, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E4  U16
-	mcp_Out2.digitalWrite(12, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E5  U20 
-	mcp_Out2.digitalWrite(13, HIGH);                          // Сброс выбора EN микросхемы аналового коммутатора  2E6  U24
-    mcp_Out2.digitalWrite(14, LOW);                           // Отключить реле +12v
+  mcp_Out2.digitalWrite(8,  HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E1  U15
+  mcp_Out2.digitalWrite(9,  HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E2  U18
+  mcp_Out2.digitalWrite(10, HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E3  U22
+  mcp_Out2.digitalWrite(11, HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E4  U16
+  mcp_Out2.digitalWrite(12, HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E5  U20
+  mcp_Out2.digitalWrite(13, HIGH);                          // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E6  U24
+  mcp_Out2.digitalWrite(14, LOW);                           // РћС‚РєР»СЋС‡РёС‚СЊ СЂРµР»Рµ +12v
 
-	myGLCD.clrScr();
-	myGLCD.print(txt_menu2_1, CENTER, 1);                            // "Тест панели"
-	myGLCD.setColor(255, 255, 255);                                  // Белая окантовка
-	myGLCD.drawRoundRect (5, 200, 155, 239);
- 	myGLCD.drawRoundRect (160, 200, 315, 239);
-	myGLCD.drawLine( 10, 60, 310, 60);
-	myGLCD.setColor(0, 0, 255);
-	myGLCD.fillRoundRect (6, 201, 154, 238);
-	myGLCD.fillRoundRect (161, 201, 314, 238);
-	myGLCD.setColor(255, 255, 255);  
-	myGLCD.setBackColor( 0, 0, 255);
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[21]))); 
-	myGLCD.print(buffer, 10, 210);                                   //txt_test_repeat  Повторить
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[20]))); 
-	myGLCD.print(buffer, 168, 210);                                  //txt_test_end Завершить
-	myGLCD.setBackColor( 0, 0, 0);                                             //  
+  myGLCD.clrScr();
+  myGLCD.print(txt_menu2_1, CENTER, 1);                            // "РўРµСЃС‚ РїР°РЅРµР»Рё"
+  myGLCD.setColor(255, 255, 255);                                  // Р‘РµР»Р°СЏ РѕРєР°РЅС‚РѕРІРєР°
+  myGLCD.drawRoundRect (5, 200, 155, 239);
+  myGLCD.drawRoundRect (160, 200, 315, 239);
+  myGLCD.drawLine( 10, 60, 310, 60);
+  myGLCD.setColor(0, 0, 255);
+  myGLCD.fillRoundRect (6, 201, 154, 238);
+  myGLCD.fillRoundRect (161, 201, 314, 238);
+  myGLCD.setColor(255, 255, 255);
+  myGLCD.setBackColor( 0, 0, 255);
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[21])));
+  myGLCD.print(buffer, 10, 210);                                   //txt_test_repeat  РџРѕРІС‚РѕСЂРёС‚СЊ
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[20])));
+  myGLCD.print(buffer, 168, 210);                                  //txt_test_end Р—Р°РІРµСЂС€РёС‚СЊ
+  myGLCD.setBackColor( 0, 0, 0);                                             //
 
-		test_panel_N2run();                                                   // Выполнить проверку
-		while (true)                                                           // Ожидание очередных комманд
-			{
+  test_panel_N2run();                                                   // Р’С‹РїРѕР»РЅРёС‚СЊ РїСЂРѕРІРµСЂРєСѓ
+  while (true)                                                           // РћР¶РёРґР°РЅРёРµ РѕС‡РµСЂРµРґРЅС‹С… РєРѕРјРјР°РЅРґ
+  {
 
-			if (myTouch.dataAvailable())
-				{
-				myTouch.read();
-				x=myTouch.getX();
-				y=myTouch.getY();
-		
-				if (((y>=200) && (y<=239)) && ((x>=5) && (x<=155)))           //нажата кнопка "Повторить проверку"
-					{
-						waitForIt(5, 200, 155, 239);
-						myGLCD.setFont(BigFont);
-						test_panel_N2run();                                   // Выполнить программу проверки
-					}
-				if (((y>=200) && (y<=239)) && ((x>=160) && (x<=315)))         //нажата кнопка "Завершить  проверку"
-					{
-						waitForIt(160, 200, 315, 239);
-						myGLCD.setFont(BigFont);
-						break;                                                // Выход из программы
-					}
-				}
+    if (myTouch.dataAvailable())
+    {
+      myTouch.read();
+      x = myTouch.getX();
+      y = myTouch.getY();
 
-			}
+      if (((y >= 200) && (y <= 239)) && ((x >= 5) && (x <= 155)))   //РЅР°Р¶Р°С‚Р° РєРЅРѕРїРєР° "РџРѕРІС‚РѕСЂРёС‚СЊ РїСЂРѕРІРµСЂРєСѓ"
+      {
+        waitForIt(5, 200, 155, 239);
+        myGLCD.setFont(BigFont);
+        test_panel_N2run();                                   // Р’С‹РїРѕР»РЅРёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ РїСЂРѕРІРµСЂРєРё
+      }
+      if (((y >= 200) && (y <= 239)) && ((x >= 160) && (x <= 315))) //РЅР°Р¶Р°С‚Р° РєРЅРѕРїРєР° "Р—Р°РІРµСЂС€РёС‚СЊ  РїСЂРѕРІРµСЂРєСѓ"
+      {
+        waitForIt(160, 200, 315, 239);
+        myGLCD.setFont(BigFont);
+        break;                                                // Р’С‹С…РѕРґ РёР· РїСЂРѕРіСЂР°РјРјС‹
+      }
+    }
 
-	delay(1000);
+  }
 
-	mcp_Out2.digitalWrite(14, LOW);                 // Отключить реле
+  delay(1000);
+
+  mcp_Out2.digitalWrite(14, LOW);                 // РћС‚РєР»СЋС‡РёС‚СЊ СЂРµР»Рµ
 }
 
 void test_cabel_N1_run()
 {
-	byte  _size_block = i2c_eeprom_read_byte(deviceaddress,adr_memN1_1);         // Получить количество выводов проверяемого разъема 
-	pinMode(46, OUTPUT);                                                         // Установить на выход выход коммутаторов U13,U17,U23 (разъемы серии В на задней панели)
-	pinMode(47, INPUT);                                                          // Установить на вход  выход коммутаторов U15,U18,U22 (разъемы серии А на передней панели)
-	digitalWrite(47, HIGH);                                                      // Установить высокий уровень на выводе 47
-	myGLCD.print("                    ",1, 40);                                  // Очистить строчку результатов проверки
-	byte canal_N     = 0;                                                        // Переменная хранения № канала в памяти
-	unsigned int x_A = 1;                                                        // Переменная установления канала А
-	unsigned int x_B = 1;                                                        // Переменная установления канала В
-	int x_p          = 1;                                                        // Определить начало вывода ошибок по Х
-	int y_p          = 82;                                                       // Определить начало вывода ошибок по У
-	int count_error  = 0;                                                        // Счетчик количества ошибок
-	int ware_on      = 0;                                                        // Проверка должно ли быть сединение
-	for(int p = 0;p < 6;p++)                                                     // Очистить поле ошибок на дисплее
-	{
-		myGLCD.print("                    ", x_p, y_p);                          // Очистить 6 строк
-		y_p += 19;
-	}
-	y_p = 82;                                                                    // Восстановить начало вывода ошибок по У
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[24]))); 
-	myGLCD.print(buffer, 50, 65);                                                // txt_error_connect3 "Ошибок нет"       
-	if (search_cabel(40)== 1)                                                    // Проверить корректность подключения кабеля №1
-	{
-		digitalWrite(46, LOW);                                                   // Установить контрольный уровень на коммутаторах U13,U17,U23
-		delay(10);                                                               // Время на переключение вывода 46     
-		for (x_A = 1;x_A < _size_block+1;x_A++)                                  // Последовательное чтение контактов разьемов.
-		{
-			canal_N = i2c_eeprom_read_byte(deviceaddress,adr_memN1_1 + x_A);     // Получить № канала из EEPROM
-			ware_on = i2c_eeprom_read_byte(deviceaddress,adr_memN1_1 + x_A + (_size_block*4)); // Получить из таблицы признак соединения.
-			if (canal_N == 1)                                                    // 40 канал для проверки номера проверяемого разъема
-			{
-				set_komm_mcp('A', 40,'O');                                       // Установить вход коммутатора на контрольный 40 выход
-			}
-	    	else
-			{
-	    		set_komm_mcp('A', canal_N,'O');                                  // Установить текущий вход коммутатора
-			}
-		                                                                      	 // Последовательно проверить все вывода разьема "В"
-			                                                                     // Проверяем все выхода разьема "В"
-			for (x_B = 1;x_B < _size_block+1;x_B++)                              // Последовательное чтение контактов разьемов "В" .
-			{
-				canal_N = i2c_eeprom_read_byte(deviceaddress,adr_memN1_1 + x_B + _size_block); // Получить из таблицы номер входа коммутатора.
+  byte  _size_block = i2c_eeprom_read_byte(deviceaddress, adr_memN1_1);        // РџРѕР»СѓС‡РёС‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ РІС‹РІРѕРґРѕРІ РїСЂРѕРІРµСЂСЏРµРјРѕРіРѕ СЂР°Р·СЉРµРјР°
+  pinMode(46, OUTPUT);                                                         // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РЅР° РІС‹С…РѕРґ РІС‹С…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂРѕРІ U13,U17,U23 (СЂР°Р·СЉРµРјС‹ СЃРµСЂРёРё Р’ РЅР° Р·Р°РґРЅРµР№ РїР°РЅРµР»Рё)
+  pinMode(47, INPUT);                                                          // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РЅР° РІС…РѕРґ  РІС‹С…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂРѕРІ U15,U18,U22 (СЂР°Р·СЉРµРјС‹ СЃРµСЂРёРё Рђ РЅР° РїРµСЂРµРґРЅРµР№ РїР°РЅРµР»Рё)
+  digitalWrite(47, HIGH);                                                      // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РІС‹СЃРѕРєРёР№ СѓСЂРѕРІРµРЅСЊ РЅР° РІС‹РІРѕРґРµ 47
+  myGLCD.print("                    ", 1, 40);                                 // РћС‡РёСЃС‚РёС‚СЊ СЃС‚СЂРѕС‡РєСѓ СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ РїСЂРѕРІРµСЂРєРё
+  byte canal_N     = 0;                                                        // РџРµСЂРµРјРµРЅРЅР°СЏ С…СЂР°РЅРµРЅРёСЏ в„– РєР°РЅР°Р»Р° РІ РїР°РјСЏС‚Рё
+  unsigned int x_A = 1;                                                        // РџРµСЂРµРјРµРЅРЅР°СЏ СѓСЃС‚Р°РЅРѕРІР»РµРЅРёСЏ РєР°РЅР°Р»Р° Рђ
+  unsigned int x_B = 1;                                                        // РџРµСЂРµРјРµРЅРЅР°СЏ СѓСЃС‚Р°РЅРѕРІР»РµРЅРёСЏ РєР°РЅР°Р»Р° Р’
+  int x_p          = 1;                                                        // РћРїСЂРµРґРµР»РёС‚СЊ РЅР°С‡Р°Р»Рѕ РІС‹РІРѕРґР° РѕС€РёР±РѕРє РїРѕ РҐ
+  int y_p          = 82;                                                       // РћРїСЂРµРґРµР»РёС‚СЊ РЅР°С‡Р°Р»Рѕ РІС‹РІРѕРґР° РѕС€РёР±РѕРє РїРѕ РЈ
+  int count_error  = 0;                                                        // РЎС‡РµС‚С‡РёРє РєРѕР»РёС‡РµСЃС‚РІР° РѕС€РёР±РѕРє
+  int ware_on      = 0;                                                        // РџСЂРѕРІРµСЂРєР° РґРѕР»Р¶РЅРѕ Р»Рё Р±С‹С‚СЊ СЃРµРґРёРЅРµРЅРёРµ
+  for (int p = 0; p < 6; p++)                                                  // РћС‡РёСЃС‚РёС‚СЊ РїРѕР»Рµ РѕС€РёР±РѕРє РЅР° РґРёСЃРїР»РµРµ
+  {
+    myGLCD.print("                    ", x_p, y_p);                          // РћС‡РёСЃС‚РёС‚СЊ 6 СЃС‚СЂРѕРє
+    y_p += 19;
+  }
+  y_p = 82;                                                                    // Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ РЅР°С‡Р°Р»Рѕ РІС‹РІРѕРґР° РѕС€РёР±РѕРє РїРѕ РЈ
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[24])));
+  myGLCD.print(buffer, 50, 65);                                                // txt_error_connect3 "РћС€РёР±РѕРє РЅРµС‚"
+  if (search_cabel(40) == 1)                                                   // РџСЂРѕРІРµСЂРёС‚СЊ РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚СЊ РїРѕРґРєР»СЋС‡РµРЅРёСЏ РєР°Р±РµР»СЏ в„–1
+  {
+    digitalWrite(46, LOW);                                                   // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РєРѕРЅС‚СЂРѕР»СЊРЅС‹Р№ СѓСЂРѕРІРµРЅСЊ РЅР° РєРѕРјРјСѓС‚Р°С‚РѕСЂР°С… U13,U17,U23
+    delay(10);                                                               // Р’СЂРµРјСЏ РЅР° РїРµСЂРµРєР»СЋС‡РµРЅРёРµ РІС‹РІРѕРґР° 46
+    for (x_A = 1; x_A < _size_block + 1; x_A++)                              // РџРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕРµ С‡С‚РµРЅРёРµ РєРѕРЅС‚Р°РєС‚РѕРІ СЂР°Р·СЊРµРјРѕРІ.
+    {
+      canal_N = i2c_eeprom_read_byte(deviceaddress, adr_memN1_1 + x_A);    // РџРѕР»СѓС‡РёС‚СЊ в„– РєР°РЅР°Р»Р° РёР· EEPROM
+      ware_on = i2c_eeprom_read_byte(deviceaddress, adr_memN1_1 + x_A + (_size_block * 4)); // РџРѕР»СѓС‡РёС‚СЊ РёР· С‚Р°Р±Р»РёС†С‹ РїСЂРёР·РЅР°Рє СЃРѕРµРґРёРЅРµРЅРёСЏ.
+      if (canal_N == 1)                                                    // 40 РєР°РЅР°Р» РґР»СЏ РїСЂРѕРІРµСЂРєРё РЅРѕРјРµСЂР° РїСЂРѕРІРµСЂСЏРµРјРѕРіРѕ СЂР°Р·СЉРµРјР°
+      {
+        set_komm_mcp('A', 40, 'O');                                      // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РІС…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂР° РЅР° РєРѕРЅС‚СЂРѕР»СЊРЅС‹Р№ 40 РІС‹С…РѕРґ
+      }
+      else
+      {
+        set_komm_mcp('A', canal_N, 'O');                                 // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ С‚РµРєСѓС‰РёР№ РІС…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°
+      }
+      // РџРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕ РїСЂРѕРІРµСЂРёС‚СЊ РІСЃРµ РІС‹РІРѕРґР° СЂР°Р·СЊРµРјР° "Р’"
+      // РџСЂРѕРІРµСЂСЏРµРј РІСЃРµ РІС‹С…РѕРґР° СЂР°Р·СЊРµРјР° "Р’"
+      for (x_B = 1; x_B < _size_block + 1; x_B++)                          // РџРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕРµ С‡С‚РµРЅРёРµ РєРѕРЅС‚Р°РєС‚РѕРІ СЂР°Р·СЊРµРјРѕРІ "Р’" .
+      {
+        canal_N = i2c_eeprom_read_byte(deviceaddress, adr_memN1_1 + x_B + _size_block); // РџРѕР»СѓС‡РёС‚СЊ РёР· С‚Р°Р±Р»РёС†С‹ РЅРѕРјРµСЂ РІС…РѕРґР° РєРѕРјРјСѓС‚Р°С‚РѕСЂР°.
 
-				if (canal_N == 1)                                                // 40 канал для проверки номера проверяемого разъема
-				{
-					set_komm_mcp('B', 40,'O');                                   // Установить контрольный вход коммутатора
-				}
-				else
-				{
-	    			set_komm_mcp('B', canal_N,'O');                              // Установить текущий вход коммутатора
-				}
-				// ++++++++++++++++++++++++ Проверка на соединение А - В +++++++++++++++++++++++++++++++++++
-				if (x_A == x_B)    
-				{
-					myGLCD.printNumI(x_A, 30, 40); 
-					if(ware_on == 1)myGLCD.print("<->", 66, 40); 
-					else myGLCD.print("<X>", 66, 40); 
-					myGLCD.printNumI(canal_N, 130, 40); 
-					if (digitalRead(47) == LOW && ware_on == 1)
-					{
-						myGLCD.print(" - Pass", 170, 40);
-					}
-					else
-					{
-						if (digitalRead(47) != LOW && ware_on == 0)                  // Должен быть соединен
-		                {
-							myGLCD.print(" - Pass", 170, 40);
-						}
-						else
-						{
-							count_error++;
-							strcpy_P(buffer, (char*)pgm_read_word(&(table_message[25]))); 
-							myGLCD.print(buffer, 50, 65);                            // txt_error_connect4
-							myGLCD.printNumI(count_error, 190, 65); 
+        if (canal_N == 1)                                                // 40 РєР°РЅР°Р» РґР»СЏ РїСЂРѕРІРµСЂРєРё РЅРѕРјРµСЂР° РїСЂРѕРІРµСЂСЏРµРјРѕРіРѕ СЂР°Р·СЉРµРјР°
+        {
+          set_komm_mcp('B', 40, 'O');                                  // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РєРѕРЅС‚СЂРѕР»СЊРЅС‹Р№ РІС…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°
+        }
+        else
+        {
+          set_komm_mcp('B', canal_N, 'O');                             // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ С‚РµРєСѓС‰РёР№ РІС…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°
+        }
+        // ++++++++++++++++++++++++ РџСЂРѕРІРµСЂРєР° РЅР° СЃРѕРµРґРёРЅРµРЅРёРµ Рђ - Р’ +++++++++++++++++++++++++++++++++++
+        if (x_A == x_B)
+        {
+          myGLCD.printNumI(x_A, 30, 40);
+          if (ware_on == 1)myGLCD.print("<->", 66, 40);
+          else myGLCD.print("<X>", 66, 40);
+          myGLCD.printNumI(canal_N, 130, 40);
+          if (digitalRead(47) == LOW && ware_on == 1)
+          {
+            myGLCD.print(" - Pass", 170, 40);
+          }
+          else
+          {
+            if (digitalRead(47) != LOW && ware_on == 0)                  // Р”РѕР»Р¶РµРЅ Р±С‹С‚СЊ СЃРѕРµРґРёРЅРµРЅ
+            {
+              myGLCD.print(" - Pass", 170, 40);
+            }
+            else
+            {
+              count_error++;
+              strcpy_P(buffer, (char*)pgm_read_word(&(table_message[25])));
+              myGLCD.print(buffer, 50, 65);                            // txt_error_connect4
+              myGLCD.printNumI(count_error, 190, 65);
 
-							if ( ware_on == 1)
-							{
-								if(x_A < 10)
-								{
-									myGLCD.printNumI(x_A, x_p+13, y_p);              // Перечисление ошибочных контактов
-									myGLCD.print("-", x_p+29, y_p); 
-								}
-								else
-								{
-									myGLCD.printNumI(x_A, x_p, y_p);                 // Перечисление ошибочных контактов
-									myGLCD.print("-", x_p+29, y_p); 
-								}
-								if(canal_N < 10)
-								{
-									myGLCD.printNumI(canal_N, x_p+32+26, y_p);       // Перечисление ошибочных контактов
-								}
-								else
-								{
-									myGLCD.printNumI(canal_N, x_p+32+10, y_p);       // Перечисление ошибочных контактов
-								}
-							}
-							else
-							{
-								if(x_A < 10)
-								{
-									myGLCD.printNumI(x_A, x_p+13, y_p);              // Перечисление ошибочных контактов
-									myGLCD.print("+", x_p+29, y_p); 
-								}
-								else
-								{
-									myGLCD.printNumI(x_A, x_p, y_p);                 // Перечисление ошибочных контактов
-									myGLCD.print("+", x_p+29, y_p); 
-								}
-								if(canal_N < 10)
-								{
-									myGLCD.printNumI(canal_N, x_p+32+26, y_p);       // Перечисление ошибочных контактов
-								}
-								else
-								{
-									myGLCD.printNumI(canal_N, x_p+32+10, y_p);       // Перечисление ошибочных контактов
-								}
-							}
-							y_p += 19;
-							if ( y_p > 190)                                          // Вывод на экран таблицы ошибок
-							{
-								myGLCD.drawLine( x_p+75, 85, x_p+75, 190);
-								x_p +=80;
-								y_p = 82;
-							}
-						}
-					}
-				}
+              if ( ware_on == 1)
+              {
+                if (x_A < 10)
+                {
+                  myGLCD.printNumI(x_A, x_p + 13, y_p);            // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                  myGLCD.print("-", x_p + 29, y_p);
+                }
+                else
+                {
+                  myGLCD.printNumI(x_A, x_p, y_p);                 // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                  myGLCD.print("-", x_p + 29, y_p);
+                }
+                if (canal_N < 10)
+                {
+                  myGLCD.printNumI(canal_N, x_p + 32 + 26, y_p);   // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                }
+                else
+                {
+                  myGLCD.printNumI(canal_N, x_p + 32 + 10, y_p);   // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                }
+              }
+              else
+              {
+                if (x_A < 10)
+                {
+                  myGLCD.printNumI(x_A, x_p + 13, y_p);            // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                  myGLCD.print("+", x_p + 29, y_p);
+                }
+                else
+                {
+                  myGLCD.printNumI(x_A, x_p, y_p);                 // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                  myGLCD.print("+", x_p + 29, y_p);
+                }
+                if (canal_N < 10)
+                {
+                  myGLCD.printNumI(canal_N, x_p + 32 + 26, y_p);   // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                }
+                else
+                {
+                  myGLCD.printNumI(canal_N, x_p + 32 + 10, y_p);   // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                }
+              }
+              y_p += 19;
+              if ( y_p > 190)                                          // Р’С‹РІРѕРґ РЅР° СЌРєСЂР°РЅ С‚Р°Р±Р»РёС†С‹ РѕС€РёР±РѕРє
+              {
+                myGLCD.drawLine( x_p + 75, 85, x_p + 75, 190);
+                x_p += 80;
+                y_p = 82;
+              }
+            }
+          }
+        }
 
-				//------------------------ Конец проверки на соединение ---------------------------------------
-			
-				//++++++++++++++++++++++++ Проверка остальных проводов на замыкание ---------------------------
-				if (x_A != x_B)                                                      //Проверяемые провода не не должны быть соеденены
-				{
-					if (digitalRead(47) == LOW)                                      // Все таки замкнуты
-					{
-						                                                             // Проверим дополнительную 3 таблицу, возможно должны иметь соединение
-						int canal_N_err = i2c_eeprom_read_byte(deviceaddress,adr_memN1_1 + x_A +(_size_block*2)); // Получить из таблицы номер входа коммутатора.
-						if (x_B != canal_N_err)                                      // Проверяемое соединение не записано в таблицу
-						{
-							                                                         // Проверим дополнительную 4 таблицу
-							int canal_N_err = i2c_eeprom_read_byte(deviceaddress,adr_memN1_1 + x_A +(_size_block*3)); // Получить из таблицы номер входа коммутатора.
-							if (x_B != canal_N_err)                                  // Проверяемое соединение не записано в таблицу
-							{
-								count_error++;
-								strcpy_P(buffer, (char*)pgm_read_word(&(table_message[25]))); 
-								myGLCD.print(buffer, 50, 65);                        // txt_error_connect4
-								myGLCD.printNumI(count_error, 190, 65); 
-								if(x_A < 10)
-								{
-									myGLCD.printNumI(x_A, x_p+13, y_p);              // Перечисление ошибочных контактов
-									myGLCD.print("+", x_p+29, y_p); 
-								}
-								else
-								{
-									myGLCD.printNumI(x_A, x_p, y_p);                 // Перечисление ошибочных контактов
-									myGLCD.print("+", x_p+29, y_p); 
-								}
-								if(canal_N < 10)
-								{
-									myGLCD.printNumI(canal_N, x_p+32+26, y_p);       // Перечисление ошибочных контактов
-								}
-								else
-								{
-									myGLCD.printNumI(canal_N, x_p+32+10, y_p);       // Перечисление ошибочных контактов
-								}
-								y_p += 19;
-								if ( y_p > 190)                                      // Вывод на экран таблицы ошибок
-								{
-									myGLCD.drawLine( x_p+75, 85, x_p+75, 190);
-									x_p +=80;
-									y_p = 82;
-								}
-							}
-						}
-					}
-				} 	//----------------------- Конец проверки на замыкание -----------------------------------------
-			}
-		}
-    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[30]))); 
-    if(count_error == 0) myGLCD.print(buffer, CENTER, 120);                   // txt__test_end  
-	}
-	else
-	{
-		myGLCD.setColor(VGA_RED);  
-		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[22]))); 
-		myGLCD.print(buffer, CENTER, 82+19);                                  // txt_error_connect1 Сообщить что кабель не обнаружен
-		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[23]))); 
-		myGLCD.print(buffer, CENTER, 82+38);                                  // txt_error_connect2
-		myGLCD.setColor(255, 255, 255);                                       // Восстановить белый шрифт
-		delay(3000);
-	}
+        //------------------------ РљРѕРЅРµС† РїСЂРѕРІРµСЂРєРё РЅР° СЃРѕРµРґРёРЅРµРЅРёРµ ---------------------------------------
+
+        //++++++++++++++++++++++++ РџСЂРѕРІРµСЂРєР° РѕСЃС‚Р°Р»СЊРЅС‹С… РїСЂРѕРІРѕРґРѕРІ РЅР° Р·Р°РјС‹РєР°РЅРёРµ ---------------------------
+        if (x_A != x_B)                                                      //РџСЂРѕРІРµСЂСЏРµРјС‹Рµ РїСЂРѕРІРѕРґР° РЅРµ РЅРµ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ СЃРѕРµРґРµРЅРµРЅС‹
+        {
+          if (digitalRead(47) == LOW)                                      // Р’СЃРµ С‚Р°РєРё Р·Р°РјРєРЅСѓС‚С‹
+          {
+            // РџСЂРѕРІРµСЂРёРј РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅСѓСЋ 3 С‚Р°Р±Р»РёС†Сѓ, РІРѕР·РјРѕР¶РЅРѕ РґРѕР»Р¶РЅС‹ РёРјРµС‚СЊ СЃРѕРµРґРёРЅРµРЅРёРµ
+            int canal_N_err = i2c_eeprom_read_byte(deviceaddress, adr_memN1_1 + x_A + (_size_block * 2)); // РџРѕР»СѓС‡РёС‚СЊ РёР· С‚Р°Р±Р»РёС†С‹ РЅРѕРјРµСЂ РІС…РѕРґР° РєРѕРјРјСѓС‚Р°С‚РѕСЂР°.
+            if (x_B != canal_N_err)                                      // РџСЂРѕРІРµСЂСЏРµРјРѕРµ СЃРѕРµРґРёРЅРµРЅРёРµ РЅРµ Р·Р°РїРёСЃР°РЅРѕ РІ С‚Р°Р±Р»РёС†Сѓ
+            {
+              // РџСЂРѕРІРµСЂРёРј РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅСѓСЋ 4 С‚Р°Р±Р»РёС†Сѓ
+              int canal_N_err = i2c_eeprom_read_byte(deviceaddress, adr_memN1_1 + x_A + (_size_block * 3)); // РџРѕР»СѓС‡РёС‚СЊ РёР· С‚Р°Р±Р»РёС†С‹ РЅРѕРјРµСЂ РІС…РѕРґР° РєРѕРјРјСѓС‚Р°С‚РѕСЂР°.
+              if (x_B != canal_N_err)                                  // РџСЂРѕРІРµСЂСЏРµРјРѕРµ СЃРѕРµРґРёРЅРµРЅРёРµ РЅРµ Р·Р°РїРёСЃР°РЅРѕ РІ С‚Р°Р±Р»РёС†Сѓ
+              {
+                count_error++;
+                strcpy_P(buffer, (char*)pgm_read_word(&(table_message[25])));
+                myGLCD.print(buffer, 50, 65);                        // txt_error_connect4
+                myGLCD.printNumI(count_error, 190, 65);
+                if (x_A < 10)
+                {
+                  myGLCD.printNumI(x_A, x_p + 13, y_p);            // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                  myGLCD.print("+", x_p + 29, y_p);
+                }
+                else
+                {
+                  myGLCD.printNumI(x_A, x_p, y_p);                 // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                  myGLCD.print("+", x_p + 29, y_p);
+                }
+                if (canal_N < 10)
+                {
+                  myGLCD.printNumI(canal_N, x_p + 32 + 26, y_p);   // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                }
+                else
+                {
+                  myGLCD.printNumI(canal_N, x_p + 32 + 10, y_p);   // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                }
+                y_p += 19;
+                if ( y_p > 190)                                      // Р’С‹РІРѕРґ РЅР° СЌРєСЂР°РЅ С‚Р°Р±Р»РёС†С‹ РѕС€РёР±РѕРє
+                {
+                  myGLCD.drawLine( x_p + 75, 85, x_p + 75, 190);
+                  x_p += 80;
+                  y_p = 82;
+                }
+              }
+            }
+          }
+        } 	//----------------------- РљРѕРЅРµС† РїСЂРѕРІРµСЂРєРё РЅР° Р·Р°РјС‹РєР°РЅРёРµ -----------------------------------------
+      }
+    }
+    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[30])));
+    if (count_error == 0) myGLCD.print(buffer, CENTER, 120);                  // txt__test_end
+  }
+  else
+  {
+    myGLCD.setColor(VGA_RED);
+    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[22])));
+    myGLCD.print(buffer, CENTER, 82 + 19);                                // txt_error_connect1 РЎРѕРѕР±С‰РёС‚СЊ С‡С‚Рѕ РєР°Р±РµР»СЊ РЅРµ РѕР±РЅР°СЂСѓР¶РµРЅ
+    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[23])));
+    myGLCD.print(buffer, CENTER, 82 + 38);                                // txt_error_connect2
+    myGLCD.setColor(255, 255, 255);                                       // Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ Р±РµР»С‹Р№ С€СЂРёС„С‚
+    delay(3000);
+  }
 }
 void test_cabel_N2_run()
 {
-	byte  _size_block = i2c_eeprom_read_byte(deviceaddress,adr_memN1_2);         // Получить количество выводов проверяемого разъема 
-	pinMode(46, OUTPUT);                                                         // Установить на выход выход коммутаторов U13,U17,U23 (разъемы серии В на задней панели)
-	pinMode(47, INPUT);                                                          // Установить на вход  выход коммутаторов U15,U18,U22 (разъемы серии А на передней панели)
-	digitalWrite(47, HIGH);                                                      // Установить высокий уровень на выводе 47
-	myGLCD.print("                    ",1, 40);                                  // Очистить строчку результатов проверки
-	byte canal_N     = 0;                                                        // Переменная хранения № канала в памяти
-	unsigned int x_A = 1;                                                        // Переменная установления канала А
-	unsigned int x_B = 1;                                                        // Переменная установления канала В
-	int x_p          = 1;                                                        // Определить начало вывода ошибок по Х
-	int y_p          = 82;                                                       // Определить начало вывода ошибок по У
-	int count_error  = 0;                                                        // Счетчик количества ошибок
-	int ware_on      = 0;                                                        // Проверка должно ли быть сединение
-	for(int p = 0;p < 6;p++)                                                     // Очистить поле ошибок на дисплее
-	{
-		myGLCD.print("                    ", x_p, y_p);                          // Очистить 6 строк
-		y_p += 19;
-	}
-	y_p = 82;                                                                    // Восстановить начало вывода ошибок по У
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[24]))); 
-	myGLCD.print(buffer, 50, 65);                                                // txt_error_connect3 "Ошибок нет"    
-	if (search_cabel(1)== 2)                                                     // Проверить корректность подключения кабеля №1
-	{
-		digitalWrite(46, LOW);                                                   // Установить контрольный уровень на коммутаторах U13,U17,U23
-		delay(10);                                                               // Время на переключение вывода 46   
-		                                                                         // Начало проверки
-		for (x_A = 1;x_A < _size_block+1;x_A++)                                  // Последовательное чтение контактов разьемов.
-		{
-			canal_N = i2c_eeprom_read_byte(deviceaddress,adr_memN1_2 + x_A);     // Получить № канала из EEPROM
-			ware_on = i2c_eeprom_read_byte(deviceaddress,adr_memN1_2 + x_A + (_size_block*4)); // Получить из таблицы признак соединения.
-			if (canal_N == 1)                                                    // 40 канал для проверки номера проверяемого разъема
-			{
-				set_komm_mcp('A', 1,'O');                                        // Установить вход коммутатора на контрольный 40 выход
-			}
-		else
-			{
-	    		set_komm_mcp('A', canal_N,'O');                                  // Установить текущий вход коммутатора
-			}
-		                                                                      	 // Последовательно проверить все вывода разьема "В"
-			                                                                     // Проверяем все выхода разьема "В"
-			for (x_B = 1;x_B < _size_block+1;x_B++)                              // Последовательное чтение контактов разьемов "В" .
-			{
-				canal_N = i2c_eeprom_read_byte(deviceaddress,adr_memN1_2 + x_B + _size_block); // Получить из таблицы номер входа коммутатора.
-				if (canal_N == 1)                                                // 40 канал для проверки номера проверяемого разъема
-				{
-					set_komm_mcp('B', 1,'O');                                    // Установить контрольный вход коммутатора
-				}
-				else
-				{
-	    			set_komm_mcp('B', canal_N,'O');                              // Установить текущий вход коммутатора
-				}
-				// ++++++++++++++++++++++++ Проверка на соединение А - В +++++++++++++++++++++++++++++++++++
-				if (x_A == x_B)    
-				{
-					myGLCD.printNumI(x_A, 30, 40); 
-					if(ware_on == 1)myGLCD.print("<->", 66, 40); 
-					else myGLCD.print("<X>", 66, 40); 
-					myGLCD.printNumI(canal_N, 130, 40); 
-					if (digitalRead(47) == LOW && ware_on == 1)
-					{
-						myGLCD.print(" - Pass", 170, 40);
-					}
-					else
-					{
-						if (digitalRead(47) != LOW && ware_on == 0)                  // Должен быть соединен
-		                {
-							myGLCD.print(" - Pass", 170, 40);
-						}
-						else
-						{
-							count_error++;
-							strcpy_P(buffer, (char*)pgm_read_word(&(table_message[25]))); 
-							myGLCD.print(buffer, 50, 65);                            // txt_error_connect4							myGLCD.printNumI(count_error, 190, 65); 
-							myGLCD.printNumI(count_error, 190, 65); 
-							if ( ware_on == 1)
-							{
-								if(x_A < 10)
-								{
-									myGLCD.printNumI(x_A, x_p+13, y_p);              // Перечисление ошибочных контактов
-									myGLCD.print("-", x_p+29, y_p); 
-								}
-								else
-								{
-									myGLCD.printNumI(x_A, x_p, y_p);                 // Перечисление ошибочных контактов
-									myGLCD.print("-", x_p+29, y_p); 
-								}
-								if(canal_N < 10)
-								{
-									myGLCD.printNumI(canal_N, x_p+32+26, y_p);       // Перечисление ошибочных контактов
-								}
-								else
-								{
-									myGLCD.printNumI(canal_N, x_p+32+10, y_p);       // Перечисление ошибочных контактов
-								}
-							}
-							else
-							{
-								if(x_A < 10)
-								{
-									myGLCD.printNumI(x_A, x_p+13, y_p);              // Перечисление ошибочных контактов
-									myGLCD.print("+", x_p+29, y_p); 
-								}
-								else
-								{
-									myGLCD.printNumI(x_A, x_p, y_p);                 // Перечисление ошибочных контактов
-									myGLCD.print("+", x_p+29, y_p); 
-								}
-								if(canal_N < 10)
-								{
-									myGLCD.printNumI(canal_N, x_p+32+26, y_p);       // Перечисление ошибочных контактов
-								}
-								else
-								{
-									myGLCD.printNumI(canal_N, x_p+32+10, y_p);       // Перечисление ошибочных контактов
-								}
-							}
-							y_p += 19;
-							if ( y_p > 190)                                          // Вывод на экран таблицы ошибок
-							{
-								myGLCD.drawLine( x_p+75, 85, x_p+75, 190);
-								x_p +=80;
-								y_p = 82;
-							}
-						}
-					}
-				}
+  byte  _size_block = i2c_eeprom_read_byte(deviceaddress, adr_memN1_2);        // РџРѕР»СѓС‡РёС‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ РІС‹РІРѕРґРѕРІ РїСЂРѕРІРµСЂСЏРµРјРѕРіРѕ СЂР°Р·СЉРµРјР°
+  pinMode(46, OUTPUT);                                                         // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РЅР° РІС‹С…РѕРґ РІС‹С…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂРѕРІ U13,U17,U23 (СЂР°Р·СЉРµРјС‹ СЃРµСЂРёРё Р’ РЅР° Р·Р°РґРЅРµР№ РїР°РЅРµР»Рё)
+  pinMode(47, INPUT);                                                          // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РЅР° РІС…РѕРґ  РІС‹С…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂРѕРІ U15,U18,U22 (СЂР°Р·СЉРµРјС‹ СЃРµСЂРёРё Рђ РЅР° РїРµСЂРµРґРЅРµР№ РїР°РЅРµР»Рё)
+  digitalWrite(47, HIGH);                                                      // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РІС‹СЃРѕРєРёР№ СѓСЂРѕРІРµРЅСЊ РЅР° РІС‹РІРѕРґРµ 47
+  myGLCD.print("                    ", 1, 40);                                 // РћС‡РёСЃС‚РёС‚СЊ СЃС‚СЂРѕС‡РєСѓ СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ РїСЂРѕРІРµСЂРєРё
+  byte canal_N     = 0;                                                        // РџРµСЂРµРјРµРЅРЅР°СЏ С…СЂР°РЅРµРЅРёСЏ в„– РєР°РЅР°Р»Р° РІ РїР°РјСЏС‚Рё
+  unsigned int x_A = 1;                                                        // РџРµСЂРµРјРµРЅРЅР°СЏ СѓСЃС‚Р°РЅРѕРІР»РµРЅРёСЏ РєР°РЅР°Р»Р° Рђ
+  unsigned int x_B = 1;                                                        // РџРµСЂРµРјРµРЅРЅР°СЏ СѓСЃС‚Р°РЅРѕРІР»РµРЅРёСЏ РєР°РЅР°Р»Р° Р’
+  int x_p          = 1;                                                        // РћРїСЂРµРґРµР»РёС‚СЊ РЅР°С‡Р°Р»Рѕ РІС‹РІРѕРґР° РѕС€РёР±РѕРє РїРѕ РҐ
+  int y_p          = 82;                                                       // РћРїСЂРµРґРµР»РёС‚СЊ РЅР°С‡Р°Р»Рѕ РІС‹РІРѕРґР° РѕС€РёР±РѕРє РїРѕ РЈ
+  int count_error  = 0;                                                        // РЎС‡РµС‚С‡РёРє РєРѕР»РёС‡РµСЃС‚РІР° РѕС€РёР±РѕРє
+  int ware_on      = 0;                                                        // РџСЂРѕРІРµСЂРєР° РґРѕР»Р¶РЅРѕ Р»Рё Р±С‹С‚СЊ СЃРµРґРёРЅРµРЅРёРµ
+  for (int p = 0; p < 6; p++)                                                  // РћС‡РёСЃС‚РёС‚СЊ РїРѕР»Рµ РѕС€РёР±РѕРє РЅР° РґРёСЃРїР»РµРµ
+  {
+    myGLCD.print("                    ", x_p, y_p);                          // РћС‡РёСЃС‚РёС‚СЊ 6 СЃС‚СЂРѕРє
+    y_p += 19;
+  }
+  y_p = 82;                                                                    // Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ РЅР°С‡Р°Р»Рѕ РІС‹РІРѕРґР° РѕС€РёР±РѕРє РїРѕ РЈ
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[24])));
+  myGLCD.print(buffer, 50, 65);                                                // txt_error_connect3 "РћС€РёР±РѕРє РЅРµС‚"
+  if (search_cabel(1) == 2)                                                    // РџСЂРѕРІРµСЂРёС‚СЊ РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚СЊ РїРѕРґРєР»СЋС‡РµРЅРёСЏ РєР°Р±РµР»СЏ в„–1
+  {
+    digitalWrite(46, LOW);                                                   // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РєРѕРЅС‚СЂРѕР»СЊРЅС‹Р№ СѓСЂРѕРІРµРЅСЊ РЅР° РєРѕРјРјСѓС‚Р°С‚РѕСЂР°С… U13,U17,U23
+    delay(10);                                                               // Р’СЂРµРјСЏ РЅР° РїРµСЂРµРєР»СЋС‡РµРЅРёРµ РІС‹РІРѕРґР° 46
+    // РќР°С‡Р°Р»Рѕ РїСЂРѕРІРµСЂРєРё
+    for (x_A = 1; x_A < _size_block + 1; x_A++)                              // РџРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕРµ С‡С‚РµРЅРёРµ РєРѕРЅС‚Р°РєС‚РѕРІ СЂР°Р·СЊРµРјРѕРІ.
+    {
+      canal_N = i2c_eeprom_read_byte(deviceaddress, adr_memN1_2 + x_A);    // РџРѕР»СѓС‡РёС‚СЊ в„– РєР°РЅР°Р»Р° РёР· EEPROM
+      ware_on = i2c_eeprom_read_byte(deviceaddress, adr_memN1_2 + x_A + (_size_block * 4)); // РџРѕР»СѓС‡РёС‚СЊ РёР· С‚Р°Р±Р»РёС†С‹ РїСЂРёР·РЅР°Рє СЃРѕРµРґРёРЅРµРЅРёСЏ.
+      if (canal_N == 1)                                                    // 40 РєР°РЅР°Р» РґР»СЏ РїСЂРѕРІРµСЂРєРё РЅРѕРјРµСЂР° РїСЂРѕРІРµСЂСЏРµРјРѕРіРѕ СЂР°Р·СЉРµРјР°
+      {
+        set_komm_mcp('A', 1, 'O');                                       // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РІС…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂР° РЅР° РєРѕРЅС‚СЂРѕР»СЊРЅС‹Р№ 40 РІС‹С…РѕРґ
+      }
+      else
+      {
+        set_komm_mcp('A', canal_N, 'O');                                 // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ С‚РµРєСѓС‰РёР№ РІС…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°
+      }
+      // РџРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕ РїСЂРѕРІРµСЂРёС‚СЊ РІСЃРµ РІС‹РІРѕРґР° СЂР°Р·СЊРµРјР° "Р’"
+      // РџСЂРѕРІРµСЂСЏРµРј РІСЃРµ РІС‹С…РѕРґР° СЂР°Р·СЊРµРјР° "Р’"
+      for (x_B = 1; x_B < _size_block + 1; x_B++)                          // РџРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕРµ С‡С‚РµРЅРёРµ РєРѕРЅС‚Р°РєС‚РѕРІ СЂР°Р·СЊРµРјРѕРІ "Р’" .
+      {
+        canal_N = i2c_eeprom_read_byte(deviceaddress, adr_memN1_2 + x_B + _size_block); // РџРѕР»СѓС‡РёС‚СЊ РёР· С‚Р°Р±Р»РёС†С‹ РЅРѕРјРµСЂ РІС…РѕРґР° РєРѕРјРјСѓС‚Р°С‚РѕСЂР°.
+        if (canal_N == 1)                                                // 40 РєР°РЅР°Р» РґР»СЏ РїСЂРѕРІРµСЂРєРё РЅРѕРјРµСЂР° РїСЂРѕРІРµСЂСЏРµРјРѕРіРѕ СЂР°Р·СЉРµРјР°
+        {
+          set_komm_mcp('B', 1, 'O');                                   // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РєРѕРЅС‚СЂРѕР»СЊРЅС‹Р№ РІС…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°
+        }
+        else
+        {
+          set_komm_mcp('B', canal_N, 'O');                             // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ С‚РµРєСѓС‰РёР№ РІС…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°
+        }
+        // ++++++++++++++++++++++++ РџСЂРѕРІРµСЂРєР° РЅР° СЃРѕРµРґРёРЅРµРЅРёРµ Рђ - Р’ +++++++++++++++++++++++++++++++++++
+        if (x_A == x_B)
+        {
+          myGLCD.printNumI(x_A, 30, 40);
+          if (ware_on == 1)myGLCD.print("<->", 66, 40);
+          else myGLCD.print("<X>", 66, 40);
+          myGLCD.printNumI(canal_N, 130, 40);
+          if (digitalRead(47) == LOW && ware_on == 1)
+          {
+            myGLCD.print(" - Pass", 170, 40);
+          }
+          else
+          {
+            if (digitalRead(47) != LOW && ware_on == 0)                  // Р”РѕР»Р¶РµРЅ Р±С‹С‚СЊ СЃРѕРµРґРёРЅРµРЅ
+            {
+              myGLCD.print(" - Pass", 170, 40);
+            }
+            else
+            {
+              count_error++;
+              strcpy_P(buffer, (char*)pgm_read_word(&(table_message[25])));
+              myGLCD.print(buffer, 50, 65);                            // txt_error_connect4							myGLCD.printNumI(count_error, 190, 65);
+              myGLCD.printNumI(count_error, 190, 65);
+              if ( ware_on == 1)
+              {
+                if (x_A < 10)
+                {
+                  myGLCD.printNumI(x_A, x_p + 13, y_p);            // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                  myGLCD.print("-", x_p + 29, y_p);
+                }
+                else
+                {
+                  myGLCD.printNumI(x_A, x_p, y_p);                 // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                  myGLCD.print("-", x_p + 29, y_p);
+                }
+                if (canal_N < 10)
+                {
+                  myGLCD.printNumI(canal_N, x_p + 32 + 26, y_p);   // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                }
+                else
+                {
+                  myGLCD.printNumI(canal_N, x_p + 32 + 10, y_p);   // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                }
+              }
+              else
+              {
+                if (x_A < 10)
+                {
+                  myGLCD.printNumI(x_A, x_p + 13, y_p);            // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                  myGLCD.print("+", x_p + 29, y_p);
+                }
+                else
+                {
+                  myGLCD.printNumI(x_A, x_p, y_p);                 // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                  myGLCD.print("+", x_p + 29, y_p);
+                }
+                if (canal_N < 10)
+                {
+                  myGLCD.printNumI(canal_N, x_p + 32 + 26, y_p);   // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                }
+                else
+                {
+                  myGLCD.printNumI(canal_N, x_p + 32 + 10, y_p);   // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                }
+              }
+              y_p += 19;
+              if ( y_p > 190)                                          // Р’С‹РІРѕРґ РЅР° СЌРєСЂР°РЅ С‚Р°Р±Р»РёС†С‹ РѕС€РёР±РѕРє
+              {
+                myGLCD.drawLine( x_p + 75, 85, x_p + 75, 190);
+                x_p += 80;
+                y_p = 82;
+              }
+            }
+          }
+        }
 
-				//------------------------ Конец проверки на соединение ---------------------------------------
+        //------------------------ РљРѕРЅРµС† РїСЂРѕРІРµСЂРєРё РЅР° СЃРѕРµРґРёРЅРµРЅРёРµ ---------------------------------------
 
-				
-				//++++++++++++++++++++++++ Проверка остальных проводов на замыкание ---------------------------
-				if (x_A != x_B)                                                      //Проверяемые провода не не должны быть соеденены
-				{
-					if (digitalRead(47) == LOW)                                      // Все таки замкнуты
-					{
-						                                                             // Проверим дополнительную 3 таблицу, возможно должны иметь соединение
-						int canal_N_err = i2c_eeprom_read_byte(deviceaddress,adr_memN1_2 + x_A +(_size_block*2)); // Получить из таблицы номер входа коммутатора.
-						if (x_B != canal_N_err)                                      // Проверяемое соединение не записано в таблицу
-						{
-							                                                         // Проверим дополнительную 4 таблицу
-							int canal_N_err = i2c_eeprom_read_byte(deviceaddress,adr_memN1_2 + x_A +(_size_block*3)); // Получить из таблицы номер входа коммутатора.
-							if (x_B != canal_N_err)                                  // Проверяемое соединение не записано в таблицу
-							{
-								count_error++;
-								strcpy_P(buffer, (char*)pgm_read_word(&(table_message[25]))); 
-								myGLCD.print(buffer, 50, 65);                        // txt_error_connect4
-								myGLCD.printNumI(count_error, 190, 65); 
-								if(x_A < 10)
-								{
-									myGLCD.printNumI(x_A, x_p+13, y_p);              // Перечисление ошибочных контактов
-									myGLCD.print("+", x_p+29, y_p); 
-								}
-								else
-								{
-									myGLCD.printNumI(x_A, x_p, y_p);                 // Перечисление ошибочных контактов
-									myGLCD.print("+", x_p+29, y_p); 
-								}
-								if(canal_N < 10)
-								{
-									myGLCD.printNumI(canal_N, x_p+32+26, y_p);       // Перечисление ошибочных контактов
-								}
-								else
-								{
-									myGLCD.printNumI(canal_N, x_p+32+10, y_p);       // Перечисление ошибочных контактов
-								}
-								y_p += 19;
-								if ( y_p > 190)                                      // Вывод на экран таблицы ошибок
-								{
-									myGLCD.drawLine( x_p+75, 85, x_p+75, 190);
-									x_p +=80;
-									y_p = 82;
-								}
-							}
-						}
-					}
-				}
-			//----------------------- Конец проверки на замыкание -----------------------------------------
-			}
-		}
-    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[30]))); 
-    if(count_error == 0) myGLCD.print(buffer, CENTER, 120);                   // txt__test_end  
-	}
-	else
-	{
-		myGLCD.setColor(VGA_RED);  
-		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[22]))); 
-		myGLCD.print(buffer, CENTER, 82+19);                                  // txt_error_connect1 Сообщить что кабель не обнаружен
-		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[23]))); 
-		myGLCD.print(buffer, CENTER, 82+38);                                  // txt_error_connect2
-		myGLCD.setColor(255, 255, 255);                                       // Восстановить белый шрифт
-		delay(3000);
-	}
+
+        //++++++++++++++++++++++++ РџСЂРѕРІРµСЂРєР° РѕСЃС‚Р°Р»СЊРЅС‹С… РїСЂРѕРІРѕРґРѕРІ РЅР° Р·Р°РјС‹РєР°РЅРёРµ ---------------------------
+        if (x_A != x_B)                                                      //РџСЂРѕРІРµСЂСЏРµРјС‹Рµ РїСЂРѕРІРѕРґР° РЅРµ РЅРµ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ СЃРѕРµРґРµРЅРµРЅС‹
+        {
+          if (digitalRead(47) == LOW)                                      // Р’СЃРµ С‚Р°РєРё Р·Р°РјРєРЅСѓС‚С‹
+          {
+            // РџСЂРѕРІРµСЂРёРј РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅСѓСЋ 3 С‚Р°Р±Р»РёС†Сѓ, РІРѕР·РјРѕР¶РЅРѕ РґРѕР»Р¶РЅС‹ РёРјРµС‚СЊ СЃРѕРµРґРёРЅРµРЅРёРµ
+            int canal_N_err = i2c_eeprom_read_byte(deviceaddress, adr_memN1_2 + x_A + (_size_block * 2)); // РџРѕР»СѓС‡РёС‚СЊ РёР· С‚Р°Р±Р»РёС†С‹ РЅРѕРјРµСЂ РІС…РѕРґР° РєРѕРјРјСѓС‚Р°С‚РѕСЂР°.
+            if (x_B != canal_N_err)                                      // РџСЂРѕРІРµСЂСЏРµРјРѕРµ СЃРѕРµРґРёРЅРµРЅРёРµ РЅРµ Р·Р°РїРёСЃР°РЅРѕ РІ С‚Р°Р±Р»РёС†Сѓ
+            {
+              // РџСЂРѕРІРµСЂРёРј РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅСѓСЋ 4 С‚Р°Р±Р»РёС†Сѓ
+              int canal_N_err = i2c_eeprom_read_byte(deviceaddress, adr_memN1_2 + x_A + (_size_block * 3)); // РџРѕР»СѓС‡РёС‚СЊ РёР· С‚Р°Р±Р»РёС†С‹ РЅРѕРјРµСЂ РІС…РѕРґР° РєРѕРјРјСѓС‚Р°С‚РѕСЂР°.
+              if (x_B != canal_N_err)                                  // РџСЂРѕРІРµСЂСЏРµРјРѕРµ СЃРѕРµРґРёРЅРµРЅРёРµ РЅРµ Р·Р°РїРёСЃР°РЅРѕ РІ С‚Р°Р±Р»РёС†Сѓ
+              {
+                count_error++;
+                strcpy_P(buffer, (char*)pgm_read_word(&(table_message[25])));
+                myGLCD.print(buffer, 50, 65);                        // txt_error_connect4
+                myGLCD.printNumI(count_error, 190, 65);
+                if (x_A < 10)
+                {
+                  myGLCD.printNumI(x_A, x_p + 13, y_p);            // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                  myGLCD.print("+", x_p + 29, y_p);
+                }
+                else
+                {
+                  myGLCD.printNumI(x_A, x_p, y_p);                 // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                  myGLCD.print("+", x_p + 29, y_p);
+                }
+                if (canal_N < 10)
+                {
+                  myGLCD.printNumI(canal_N, x_p + 32 + 26, y_p);   // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                }
+                else
+                {
+                  myGLCD.printNumI(canal_N, x_p + 32 + 10, y_p);   // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                }
+                y_p += 19;
+                if ( y_p > 190)                                      // Р’С‹РІРѕРґ РЅР° СЌРєСЂР°РЅ С‚Р°Р±Р»РёС†С‹ РѕС€РёР±РѕРє
+                {
+                  myGLCD.drawLine( x_p + 75, 85, x_p + 75, 190);
+                  x_p += 80;
+                  y_p = 82;
+                }
+              }
+            }
+          }
+        }
+        //----------------------- РљРѕРЅРµС† РїСЂРѕРІРµСЂРєРё РЅР° Р·Р°РјС‹РєР°РЅРёРµ -----------------------------------------
+      }
+    }
+    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[30])));
+    if (count_error == 0) myGLCD.print(buffer, CENTER, 120);                  // txt__test_end
+  }
+  else
+  {
+    myGLCD.setColor(VGA_RED);
+    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[22])));
+    myGLCD.print(buffer, CENTER, 82 + 19);                                // txt_error_connect1 РЎРѕРѕР±С‰РёС‚СЊ С‡С‚Рѕ РєР°Р±РµР»СЊ РЅРµ РѕР±РЅР°СЂСѓР¶РµРЅ
+    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[23])));
+    myGLCD.print(buffer, CENTER, 82 + 38);                                // txt_error_connect2
+    myGLCD.setColor(255, 255, 255);                                       // Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ Р±РµР»С‹Р№ С€СЂРёС„С‚
+    delay(3000);
+  }
 }
 void test_cabel_N3_run()
 {
- 	byte  _size_block = i2c_eeprom_read_byte(deviceaddress,adr_memN1_3);         // Получить количество выводов проверяемого разъема 
-	pinMode(46, OUTPUT);                                                         // Установить на выход выход коммутаторов U13,U17,U23 (разъемы серии В на задней панели)
-	pinMode(47, INPUT);                                                          // Установить на вход  выход коммутаторов U15,U18,U22 (разъемы серии А на передней панели)
-	digitalWrite(47, HIGH);                                                      // Установить высокий уровень на выводе 47
-	myGLCD.print("                    ",1, 40);                                  // Очистить строчку результатов проверки
-	byte canal_N     = 0;                                                        // Переменная хранения № канала в памяти
-	unsigned int x_A = 1;                                                        // Переменная установления канала А
-	unsigned int x_B = 1;                                                        // Переменная установления канала В
-	int x_p          = 1;                                                        // Определить начало вывода ошибок по Х
-	int y_p          = 82;                                                       // Определить начало вывода ошибок по У
-	int count_error  = 0;                                                        // Счетчик количества ошибок
-	int ware_on      = 0;                                                        // Проверка должно ли быть сединение
-	for(int p = 0;p < 6;p++)                                                     // Очистить поле ошибок на дисплее
-	{
-		myGLCD.print("                    ", x_p, y_p);                          // Очистить 6 строк
-		y_p += 19;
-	}
-	y_p = 82;                                                                    // Восстановить начало вывода ошибок по У
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[24]))); 
-	myGLCD.print(buffer, 50, 65);                                                // txt_error_connect3 "Ошибок нет"    
-	if (search_cabel(39)== 3)                                                    // Проверить корректность подключения кабеля №1
-	{
-		digitalWrite(46, LOW);                                                   // Установить контрольный уровень на коммутаторах U13,U17,U23
-		delay(10);                                                               // Время на переключение вывода 46     
-		for (x_A = 1;x_A < _size_block+1;x_A++)                                  // Последовательное чтение контактов разьемов.
-		{
-			canal_N = i2c_eeprom_read_byte(deviceaddress,adr_memN1_3 + x_A);     // Получить № канала из EEPROM
-			ware_on = i2c_eeprom_read_byte(deviceaddress,adr_memN1_3 + x_A + (_size_block*4)); // Получить из таблицы признак соединения.
+  byte  _size_block = i2c_eeprom_read_byte(deviceaddress, adr_memN1_3);        // РџРѕР»СѓС‡РёС‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ РІС‹РІРѕРґРѕРІ РїСЂРѕРІРµСЂСЏРµРјРѕРіРѕ СЂР°Р·СЉРµРјР°
+  pinMode(46, OUTPUT);                                                         // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РЅР° РІС‹С…РѕРґ РІС‹С…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂРѕРІ U13,U17,U23 (СЂР°Р·СЉРµРјС‹ СЃРµСЂРёРё Р’ РЅР° Р·Р°РґРЅРµР№ РїР°РЅРµР»Рё)
+  pinMode(47, INPUT);                                                          // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РЅР° РІС…РѕРґ  РІС‹С…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂРѕРІ U15,U18,U22 (СЂР°Р·СЉРµРјС‹ СЃРµСЂРёРё Рђ РЅР° РїРµСЂРµРґРЅРµР№ РїР°РЅРµР»Рё)
+  digitalWrite(47, HIGH);                                                      // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РІС‹СЃРѕРєРёР№ СѓСЂРѕРІРµРЅСЊ РЅР° РІС‹РІРѕРґРµ 47
+  myGLCD.print("                    ", 1, 40);                                 // РћС‡РёСЃС‚РёС‚СЊ СЃС‚СЂРѕС‡РєСѓ СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ РїСЂРѕРІРµСЂРєРё
+  byte canal_N     = 0;                                                        // РџРµСЂРµРјРµРЅРЅР°СЏ С…СЂР°РЅРµРЅРёСЏ в„– РєР°РЅР°Р»Р° РІ РїР°РјСЏС‚Рё
+  unsigned int x_A = 1;                                                        // РџРµСЂРµРјРµРЅРЅР°СЏ СѓСЃС‚Р°РЅРѕРІР»РµРЅРёСЏ РєР°РЅР°Р»Р° Рђ
+  unsigned int x_B = 1;                                                        // РџРµСЂРµРјРµРЅРЅР°СЏ СѓСЃС‚Р°РЅРѕРІР»РµРЅРёСЏ РєР°РЅР°Р»Р° Р’
+  int x_p          = 1;                                                        // РћРїСЂРµРґРµР»РёС‚СЊ РЅР°С‡Р°Р»Рѕ РІС‹РІРѕРґР° РѕС€РёР±РѕРє РїРѕ РҐ
+  int y_p          = 82;                                                       // РћРїСЂРµРґРµР»РёС‚СЊ РЅР°С‡Р°Р»Рѕ РІС‹РІРѕРґР° РѕС€РёР±РѕРє РїРѕ РЈ
+  int count_error  = 0;                                                        // РЎС‡РµС‚С‡РёРє РєРѕР»РёС‡РµСЃС‚РІР° РѕС€РёР±РѕРє
+  int ware_on      = 0;                                                        // РџСЂРѕРІРµСЂРєР° РґРѕР»Р¶РЅРѕ Р»Рё Р±С‹С‚СЊ СЃРµРґРёРЅРµРЅРёРµ
+  for (int p = 0; p < 6; p++)                                                  // РћС‡РёСЃС‚РёС‚СЊ РїРѕР»Рµ РѕС€РёР±РѕРє РЅР° РґРёСЃРїР»РµРµ
+  {
+    myGLCD.print("                    ", x_p, y_p);                          // РћС‡РёСЃС‚РёС‚СЊ 6 СЃС‚СЂРѕРє
+    y_p += 19;
+  }
+  y_p = 82;                                                                    // Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ РЅР°С‡Р°Р»Рѕ РІС‹РІРѕРґР° РѕС€РёР±РѕРє РїРѕ РЈ
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[24])));
+  myGLCD.print(buffer, 50, 65);                                                // txt_error_connect3 "РћС€РёР±РѕРє РЅРµС‚"
+  if (search_cabel(39) == 3)                                                   // РџСЂРѕРІРµСЂРёС‚СЊ РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚СЊ РїРѕРґРєР»СЋС‡РµРЅРёСЏ РєР°Р±РµР»СЏ в„–1
+  {
+    digitalWrite(46, LOW);                                                   // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РєРѕРЅС‚СЂРѕР»СЊРЅС‹Р№ СѓСЂРѕРІРµРЅСЊ РЅР° РєРѕРјРјСѓС‚Р°С‚РѕСЂР°С… U13,U17,U23
+    delay(10);                                                               // Р’СЂРµРјСЏ РЅР° РїРµСЂРµРєР»СЋС‡РµРЅРёРµ РІС‹РІРѕРґР° 46
+    for (x_A = 1; x_A < _size_block + 1; x_A++)                              // РџРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕРµ С‡С‚РµРЅРёРµ РєРѕРЅС‚Р°РєС‚РѕРІ СЂР°Р·СЊРµРјРѕРІ.
+    {
+      canal_N = i2c_eeprom_read_byte(deviceaddress, adr_memN1_3 + x_A);    // РџРѕР»СѓС‡РёС‚СЊ в„– РєР°РЅР°Р»Р° РёР· EEPROM
+      ware_on = i2c_eeprom_read_byte(deviceaddress, adr_memN1_3 + x_A + (_size_block * 4)); // РџРѕР»СѓС‡РёС‚СЊ РёР· С‚Р°Р±Р»РёС†С‹ РїСЂРёР·РЅР°Рє СЃРѕРµРґРёРЅРµРЅРёСЏ.
 
-			if (canal_N == 1)                                                    // 40 канал для проверки номера проверяемого разъема
-			{
-				set_komm_mcp('A', 39,'O');                                       // Установить вход коммутатора на контрольный 40 выход
-			}
-	    	else
-			{
-	    		set_komm_mcp('A', canal_N,'O');                                  // Установить текущий вход коммутатора
-			}
-		                                                                      	 // Последовательно проверить все вывода разьема "В"
-			                                                                     // Проверяем все выхода разьема "В"
-			for (x_B = 1;x_B < _size_block+1;x_B++)                              // Последовательное чтение контактов разьемов "В" .
-			{
-				canal_N = i2c_eeprom_read_byte(deviceaddress,adr_memN1_3 + x_B + _size_block); // Получить из таблицы номер входа коммутатора.
+      if (canal_N == 1)                                                    // 40 РєР°РЅР°Р» РґР»СЏ РїСЂРѕРІРµСЂРєРё РЅРѕРјРµСЂР° РїСЂРѕРІРµСЂСЏРµРјРѕРіРѕ СЂР°Р·СЉРµРјР°
+      {
+        set_komm_mcp('A', 39, 'O');                                      // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РІС…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂР° РЅР° РєРѕРЅС‚СЂРѕР»СЊРЅС‹Р№ 40 РІС‹С…РѕРґ
+      }
+      else
+      {
+        set_komm_mcp('A', canal_N, 'O');                                 // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ С‚РµРєСѓС‰РёР№ РІС…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°
+      }
+      // РџРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕ РїСЂРѕРІРµСЂРёС‚СЊ РІСЃРµ РІС‹РІРѕРґР° СЂР°Р·СЊРµРјР° "Р’"
+      // РџСЂРѕРІРµСЂСЏРµРј РІСЃРµ РІС‹С…РѕРґР° СЂР°Р·СЊРµРјР° "Р’"
+      for (x_B = 1; x_B < _size_block + 1; x_B++)                          // РџРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕРµ С‡С‚РµРЅРёРµ РєРѕРЅС‚Р°РєС‚РѕРІ СЂР°Р·СЊРµРјРѕРІ "Р’" .
+      {
+        canal_N = i2c_eeprom_read_byte(deviceaddress, adr_memN1_3 + x_B + _size_block); // РџРѕР»СѓС‡РёС‚СЊ РёР· С‚Р°Р±Р»РёС†С‹ РЅРѕРјРµСЂ РІС…РѕРґР° РєРѕРјРјСѓС‚Р°С‚РѕСЂР°.
 
-				if (canal_N == 1)                                                // 40 канал для проверки номера проверяемого разъема
-				{
-					set_komm_mcp('B', 39,'O');                                   // Установить контрольный вход коммутатора
-				}
-				else
-				{
-	    			set_komm_mcp('B', canal_N,'O');                              // Установить текущий вход коммутатора
-				}
-				// ++++++++++++++++++++++++ Проверка на соединение А - В +++++++++++++++++++++++++++++++++++
-				if (x_A == x_B)    
-				{
-					myGLCD.printNumI(x_A, 30, 40); 
-					if(ware_on == 1)myGLCD.print("<->", 66, 40); 
-					else myGLCD.print("<X>", 66, 40); 
-					myGLCD.printNumI(canal_N, 130, 40); 
-					if (digitalRead(47) == LOW && ware_on == 1)
-					{
-						myGLCD.print(" - Pass", 170, 40);
-					}
-					else
-					{
-						if (digitalRead(47) != LOW && ware_on == 0)                  // Должен быть соединен
-		                {
-							myGLCD.print(" - Pass", 170, 40);
-						}
-						else
-						{
-							count_error++;
-							strcpy_P(buffer, (char*)pgm_read_word(&(table_message[25]))); 
-							myGLCD.print(buffer, 50, 65);                            // txt_error_connect4							myGLCD.printNumI(count_error, 190, 65); 
-							myGLCD.printNumI(count_error, 190, 65); 
-							if ( ware_on == 1)
-							{
-								if(x_A < 10)
-								{
-									myGLCD.printNumI(x_A, x_p+13, y_p);              // Перечисление ошибочных контактов
-									myGLCD.print("-", x_p+29, y_p); 
-								}
-								else
-								{
-									myGLCD.printNumI(x_A, x_p, y_p);                 // Перечисление ошибочных контактов
-									myGLCD.print("-", x_p+29, y_p); 
-								}
-								if(canal_N < 10)
-								{
-									myGLCD.printNumI(canal_N, x_p+32+26, y_p);       // Перечисление ошибочных контактов
-								}
-								else
-								{
-									myGLCD.printNumI(canal_N, x_p+32+10, y_p);       // Перечисление ошибочных контактов
-								}
-							}
-							else
-							{
-								if(x_A < 10)
-								{
-									myGLCD.printNumI(x_A, x_p+13, y_p);              // Перечисление ошибочных контактов
-									myGLCD.print("+", x_p+29, y_p); 
-								}
-								else
-								{
-									myGLCD.printNumI(x_A, x_p, y_p);                 // Перечисление ошибочных контактов
-									myGLCD.print("+", x_p+29, y_p); 
-								}
-								if(canal_N < 10)
-								{
-									myGLCD.printNumI(canal_N, x_p+32+26, y_p);       // Перечисление ошибочных контактов
-								}
-								else
-								{
-									myGLCD.printNumI(canal_N, x_p+32+10, y_p);       // Перечисление ошибочных контактов
-								}
-							}
-							y_p += 19;
-							if ( y_p > 190)                                          // Вывод на экран таблицы ошибок
-							{
-								myGLCD.drawLine( x_p+75, 85, x_p+75, 190);
-								x_p +=80;
-								y_p = 82;
-							}
-						}
-					}
-				}
+        if (canal_N == 1)                                                // 40 РєР°РЅР°Р» РґР»СЏ РїСЂРѕРІРµСЂРєРё РЅРѕРјРµСЂР° РїСЂРѕРІРµСЂСЏРµРјРѕРіРѕ СЂР°Р·СЉРµРјР°
+        {
+          set_komm_mcp('B', 39, 'O');                                  // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РєРѕРЅС‚СЂРѕР»СЊРЅС‹Р№ РІС…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°
+        }
+        else
+        {
+          set_komm_mcp('B', canal_N, 'O');                             // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ С‚РµРєСѓС‰РёР№ РІС…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°
+        }
+        // ++++++++++++++++++++++++ РџСЂРѕРІРµСЂРєР° РЅР° СЃРѕРµРґРёРЅРµРЅРёРµ Рђ - Р’ +++++++++++++++++++++++++++++++++++
+        if (x_A == x_B)
+        {
+          myGLCD.printNumI(x_A, 30, 40);
+          if (ware_on == 1)myGLCD.print("<->", 66, 40);
+          else myGLCD.print("<X>", 66, 40);
+          myGLCD.printNumI(canal_N, 130, 40);
+          if (digitalRead(47) == LOW && ware_on == 1)
+          {
+            myGLCD.print(" - Pass", 170, 40);
+          }
+          else
+          {
+            if (digitalRead(47) != LOW && ware_on == 0)                  // Р”РѕР»Р¶РµРЅ Р±С‹С‚СЊ СЃРѕРµРґРёРЅРµРЅ
+            {
+              myGLCD.print(" - Pass", 170, 40);
+            }
+            else
+            {
+              count_error++;
+              strcpy_P(buffer, (char*)pgm_read_word(&(table_message[25])));
+              myGLCD.print(buffer, 50, 65);                            // txt_error_connect4							myGLCD.printNumI(count_error, 190, 65);
+              myGLCD.printNumI(count_error, 190, 65);
+              if ( ware_on == 1)
+              {
+                if (x_A < 10)
+                {
+                  myGLCD.printNumI(x_A, x_p + 13, y_p);            // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                  myGLCD.print("-", x_p + 29, y_p);
+                }
+                else
+                {
+                  myGLCD.printNumI(x_A, x_p, y_p);                 // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                  myGLCD.print("-", x_p + 29, y_p);
+                }
+                if (canal_N < 10)
+                {
+                  myGLCD.printNumI(canal_N, x_p + 32 + 26, y_p);   // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                }
+                else
+                {
+                  myGLCD.printNumI(canal_N, x_p + 32 + 10, y_p);   // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                }
+              }
+              else
+              {
+                if (x_A < 10)
+                {
+                  myGLCD.printNumI(x_A, x_p + 13, y_p);            // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                  myGLCD.print("+", x_p + 29, y_p);
+                }
+                else
+                {
+                  myGLCD.printNumI(x_A, x_p, y_p);                 // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                  myGLCD.print("+", x_p + 29, y_p);
+                }
+                if (canal_N < 10)
+                {
+                  myGLCD.printNumI(canal_N, x_p + 32 + 26, y_p);   // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                }
+                else
+                {
+                  myGLCD.printNumI(canal_N, x_p + 32 + 10, y_p);   // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                }
+              }
+              y_p += 19;
+              if ( y_p > 190)                                          // Р’С‹РІРѕРґ РЅР° СЌРєСЂР°РЅ С‚Р°Р±Р»РёС†С‹ РѕС€РёР±РѕРє
+              {
+                myGLCD.drawLine( x_p + 75, 85, x_p + 75, 190);
+                x_p += 80;
+                y_p = 82;
+              }
+            }
+          }
+        }
 
-				//------------------------ Конец проверки на соединение ---------------------------------------
-				
-				//++++++++++++++++++++++++ Проверка остальных проводов на замыкание ---------------------------
-				if (x_A != x_B)                                                      //Проверяемые провода не не должны быть соеденены
-				{
-					if (digitalRead(47) == LOW)                                      // Все таки замкнуты
-					{
-						                                                             // Проверим дополнительную 3 таблицу, возможно должны иметь соединение
-						int canal_N_err = i2c_eeprom_read_byte(deviceaddress,adr_memN1_3 + x_A +(_size_block*2)); // Получить из таблицы номер входа коммутатора.
-						if (x_B != canal_N_err)                                      // Проверяемое соединение не записано в таблицу
-						{
-							                                                         // Проверим дополнительную 4 таблицу
-							int canal_N_err = i2c_eeprom_read_byte(deviceaddress,adr_memN1_3 + x_A +(_size_block*3)); // Получить из таблицы номер входа коммутатора.
-							if (x_B != canal_N_err)                                  // Проверяемое соединение не записано в таблицу
-							{
-								count_error++;
-								strcpy_P(buffer, (char*)pgm_read_word(&(table_message[25]))); 
-								myGLCD.print(buffer, 50, 65);                        // txt_error_connect4
-								myGLCD.printNumI(count_error, 190, 65); 
-								if(x_A < 10)
-								{
-									myGLCD.printNumI(x_A, x_p+13, y_p);              // Перечисление ошибочных контактов
-									myGLCD.print("+", x_p+29, y_p); 
-								}
-								else
-								{
-									myGLCD.printNumI(x_A, x_p, y_p);                 // Перечисление ошибочных контактов
-									myGLCD.print("+", x_p+29, y_p); 
-								}
-								if(canal_N < 10)
-								{
-									myGLCD.printNumI(canal_N, x_p+32+26, y_p);       // Перечисление ошибочных контактов
-								}
-								else
-								{
-									myGLCD.printNumI(canal_N, x_p+32+10, y_p);       // Перечисление ошибочных контактов
-								}
-								y_p += 19;
-								if ( y_p > 190)                                      // Вывод на экран таблицы ошибок
-								{
-									myGLCD.drawLine( x_p+75, 85, x_p+75, 190);
-									x_p +=80;
-									y_p = 82;
-								}
-							}
-						}
-					}
-				}	//----------------------- Конец проверки на замыкание -----------------------------------------
-			}
-		}
-    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[30]))); 
-    if(count_error == 0) myGLCD.print(buffer, CENTER, 120);                   // txt__test_end  
-	}
-	else
-	{
-		myGLCD.setColor(VGA_RED);  
-		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[22]))); 
-		myGLCD.print(buffer, CENTER, 82+19);                                  // txt_error_connect1 Сообщить что кабель не обнаружен
-		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[23]))); 
-		myGLCD.print(buffer, CENTER, 82+38);                                  // txt_error_connect2
-		myGLCD.setColor(255, 255, 255);                                       // Восстановить белый шрифт
-		delay(3000);
-	}
+        //------------------------ РљРѕРЅРµС† РїСЂРѕРІРµСЂРєРё РЅР° СЃРѕРµРґРёРЅРµРЅРёРµ ---------------------------------------
+
+        //++++++++++++++++++++++++ РџСЂРѕРІРµСЂРєР° РѕСЃС‚Р°Р»СЊРЅС‹С… РїСЂРѕРІРѕРґРѕРІ РЅР° Р·Р°РјС‹РєР°РЅРёРµ ---------------------------
+        if (x_A != x_B)                                                      //РџСЂРѕРІРµСЂСЏРµРјС‹Рµ РїСЂРѕРІРѕРґР° РЅРµ РЅРµ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ СЃРѕРµРґРµРЅРµРЅС‹
+        {
+          if (digitalRead(47) == LOW)                                      // Р’СЃРµ С‚Р°РєРё Р·Р°РјРєРЅСѓС‚С‹
+          {
+            // РџСЂРѕРІРµСЂРёРј РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅСѓСЋ 3 С‚Р°Р±Р»РёС†Сѓ, РІРѕР·РјРѕР¶РЅРѕ РґРѕР»Р¶РЅС‹ РёРјРµС‚СЊ СЃРѕРµРґРёРЅРµРЅРёРµ
+            int canal_N_err = i2c_eeprom_read_byte(deviceaddress, adr_memN1_3 + x_A + (_size_block * 2)); // РџРѕР»СѓС‡РёС‚СЊ РёР· С‚Р°Р±Р»РёС†С‹ РЅРѕРјРµСЂ РІС…РѕРґР° РєРѕРјРјСѓС‚Р°С‚РѕСЂР°.
+            if (x_B != canal_N_err)                                      // РџСЂРѕРІРµСЂСЏРµРјРѕРµ СЃРѕРµРґРёРЅРµРЅРёРµ РЅРµ Р·Р°РїРёСЃР°РЅРѕ РІ С‚Р°Р±Р»РёС†Сѓ
+            {
+              // РџСЂРѕРІРµСЂРёРј РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅСѓСЋ 4 С‚Р°Р±Р»РёС†Сѓ
+              int canal_N_err = i2c_eeprom_read_byte(deviceaddress, adr_memN1_3 + x_A + (_size_block * 3)); // РџРѕР»СѓС‡РёС‚СЊ РёР· С‚Р°Р±Р»РёС†С‹ РЅРѕРјРµСЂ РІС…РѕРґР° РєРѕРјРјСѓС‚Р°С‚РѕСЂР°.
+              if (x_B != canal_N_err)                                  // РџСЂРѕРІРµСЂСЏРµРјРѕРµ СЃРѕРµРґРёРЅРµРЅРёРµ РЅРµ Р·Р°РїРёСЃР°РЅРѕ РІ С‚Р°Р±Р»РёС†Сѓ
+              {
+                count_error++;
+                strcpy_P(buffer, (char*)pgm_read_word(&(table_message[25])));
+                myGLCD.print(buffer, 50, 65);                        // txt_error_connect4
+                myGLCD.printNumI(count_error, 190, 65);
+                if (x_A < 10)
+                {
+                  myGLCD.printNumI(x_A, x_p + 13, y_p);            // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                  myGLCD.print("+", x_p + 29, y_p);
+                }
+                else
+                {
+                  myGLCD.printNumI(x_A, x_p, y_p);                 // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                  myGLCD.print("+", x_p + 29, y_p);
+                }
+                if (canal_N < 10)
+                {
+                  myGLCD.printNumI(canal_N, x_p + 32 + 26, y_p);   // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                }
+                else
+                {
+                  myGLCD.printNumI(canal_N, x_p + 32 + 10, y_p);   // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                }
+                y_p += 19;
+                if ( y_p > 190)                                      // Р’С‹РІРѕРґ РЅР° СЌРєСЂР°РЅ С‚Р°Р±Р»РёС†С‹ РѕС€РёР±РѕРє
+                {
+                  myGLCD.drawLine( x_p + 75, 85, x_p + 75, 190);
+                  x_p += 80;
+                  y_p = 82;
+                }
+              }
+            }
+          }
+        }	//----------------------- РљРѕРЅРµС† РїСЂРѕРІРµСЂРєРё РЅР° Р·Р°РјС‹РєР°РЅРёРµ -----------------------------------------
+      }
+    }
+    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[30])));
+    if (count_error == 0) myGLCD.print(buffer, CENTER, 120);                  // txt__test_end
+  }
+  else
+  {
+    myGLCD.setColor(VGA_RED);
+    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[22])));
+    myGLCD.print(buffer, CENTER, 82 + 19);                                // txt_error_connect1 РЎРѕРѕР±С‰РёС‚СЊ С‡С‚Рѕ РєР°Р±РµР»СЊ РЅРµ РѕР±РЅР°СЂСѓР¶РµРЅ
+    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[23])));
+    myGLCD.print(buffer, CENTER, 82 + 38);                                // txt_error_connect2
+    myGLCD.setColor(255, 255, 255);                                       // Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ Р±РµР»С‹Р№ С€СЂРёС„С‚
+    delay(3000);
+  }
 }
 void test_cabel_N4_run()
 {
-	byte  _size_block = i2c_eeprom_read_byte(deviceaddress,adr_memN1_4);         // Получить количество выводов проверяемого разъема 
-	pinMode(46, OUTPUT);                                                         // Установить на выход выход коммутаторов U13,U17,U23 (разъемы серии В на задней панели)
-	pinMode(47, INPUT);                                                          // Установить на вход  выход коммутаторов U15,U18,U22 (разъемы серии А на передней панели)
-	digitalWrite(47, HIGH);                                                      // Установить высокий уровень на выводе 47
-	myGLCD.print("                    ",1, 40);                                  // Очистить строчку результатов проверки
-	byte canal_N     = 0;                                                        // Переменная хранения № канала в памяти
-	unsigned int x_A = 1;                                                        // Переменная установления канала А
-	unsigned int x_B = 1;                                                        // Переменная установления канала В
-	int x_p          = 1;                                                        // Определить начало вывода ошибок по Х
-	int y_p          = 82;                                                       // Определить начало вывода ошибок по У
-	int count_error  = 0;                                                        // Счетчик количества ошибок
-	int ware_on      = 0;                                                        // Проверка должно ли быть сединение
-	for(int p = 0;p < 6;p++)                                                     // Очистить поле ошибок на дисплее
-	{
-		myGLCD.print("                    ", x_p, y_p);                          // Очистить 6 строк
-		y_p += 19;
-	}
-	y_p = 82;                                                                    // Восстановить начало вывода ошибок по У
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[24]))); 
-	myGLCD.print(buffer, 50, 65);                                                // txt_error_connect3 "Ошибок нет"    
-	if (search_cabel(41)== 4)                                                    // Проверить корректность подключения кабеля №1
-	{
-		digitalWrite(46, LOW);                                                   // Установить контрольный уровень на коммутаторах U13,U17,U23
-		delay(10);                                                               // Время на переключение вывода 46     
-		for (x_A = 1;x_A < _size_block+1;x_A++)                                  // Последовательное чтение контактов разьемов.
-		{
-			canal_N = i2c_eeprom_read_byte(deviceaddress,adr_memN1_4 + x_A);     // Получить № канала из EEPROM
-			ware_on = i2c_eeprom_read_byte(deviceaddress,adr_memN1_4 + x_A + (_size_block*4)); // Получить из таблицы признак соединения.
-			if (canal_N == 1)                                                    // 40 канал для проверки номера проверяемого разъема
-			{
-				set_komm_mcp('A', 41,'O');                                       // Установить вход коммутатора на контрольный 40 выход
-			}
-		    else
-			{
-	    		set_komm_mcp('A', canal_N,'O');                                  // Установить текущий вход коммутатора
-			}
-		                                                                      	 // Последовательно проверить все вывода разьема "В"
-			                                                                     // Проверяем все выхода разьема "В"
-			for (x_B = 1;x_B < _size_block+1;x_B++)                              // Последовательное чтение контактов разьемов "В" .
-			{
-				canal_N = i2c_eeprom_read_byte(deviceaddress,adr_memN1_4 + x_B + _size_block); // Получить из таблицы номер входа коммутатора.
+  byte  _size_block = i2c_eeprom_read_byte(deviceaddress, adr_memN1_4);        // РџРѕР»СѓС‡РёС‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ РІС‹РІРѕРґРѕРІ РїСЂРѕРІРµСЂСЏРµРјРѕРіРѕ СЂР°Р·СЉРµРјР°
+  pinMode(46, OUTPUT);                                                         // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РЅР° РІС‹С…РѕРґ РІС‹С…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂРѕРІ U13,U17,U23 (СЂР°Р·СЉРµРјС‹ СЃРµСЂРёРё Р’ РЅР° Р·Р°РґРЅРµР№ РїР°РЅРµР»Рё)
+  pinMode(47, INPUT);                                                          // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РЅР° РІС…РѕРґ  РІС‹С…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂРѕРІ U15,U18,U22 (СЂР°Р·СЉРµРјС‹ СЃРµСЂРёРё Рђ РЅР° РїРµСЂРµРґРЅРµР№ РїР°РЅРµР»Рё)
+  digitalWrite(47, HIGH);                                                      // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РІС‹СЃРѕРєРёР№ СѓСЂРѕРІРµРЅСЊ РЅР° РІС‹РІРѕРґРµ 47
+  myGLCD.print("                    ", 1, 40);                                 // РћС‡РёСЃС‚РёС‚СЊ СЃС‚СЂРѕС‡РєСѓ СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ РїСЂРѕРІРµСЂРєРё
+  byte canal_N     = 0;                                                        // РџРµСЂРµРјРµРЅРЅР°СЏ С…СЂР°РЅРµРЅРёСЏ в„– РєР°РЅР°Р»Р° РІ РїР°РјСЏС‚Рё
+  unsigned int x_A = 1;                                                        // РџРµСЂРµРјРµРЅРЅР°СЏ СѓСЃС‚Р°РЅРѕРІР»РµРЅРёСЏ РєР°РЅР°Р»Р° Рђ
+  unsigned int x_B = 1;                                                        // РџРµСЂРµРјРµРЅРЅР°СЏ СѓСЃС‚Р°РЅРѕРІР»РµРЅРёСЏ РєР°РЅР°Р»Р° Р’
+  int x_p          = 1;                                                        // РћРїСЂРµРґРµР»РёС‚СЊ РЅР°С‡Р°Р»Рѕ РІС‹РІРѕРґР° РѕС€РёР±РѕРє РїРѕ РҐ
+  int y_p          = 82;                                                       // РћРїСЂРµРґРµР»РёС‚СЊ РЅР°С‡Р°Р»Рѕ РІС‹РІРѕРґР° РѕС€РёР±РѕРє РїРѕ РЈ
+  int count_error  = 0;                                                        // РЎС‡РµС‚С‡РёРє РєРѕР»РёС‡РµСЃС‚РІР° РѕС€РёР±РѕРє
+  int ware_on      = 0;                                                        // РџСЂРѕРІРµСЂРєР° РґРѕР»Р¶РЅРѕ Р»Рё Р±С‹С‚СЊ СЃРµРґРёРЅРµРЅРёРµ
+  for (int p = 0; p < 6; p++)                                                  // РћС‡РёСЃС‚РёС‚СЊ РїРѕР»Рµ РѕС€РёР±РѕРє РЅР° РґРёСЃРїР»РµРµ
+  {
+    myGLCD.print("                    ", x_p, y_p);                          // РћС‡РёСЃС‚РёС‚СЊ 6 СЃС‚СЂРѕРє
+    y_p += 19;
+  }
+  y_p = 82;                                                                    // Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ РЅР°С‡Р°Р»Рѕ РІС‹РІРѕРґР° РѕС€РёР±РѕРє РїРѕ РЈ
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[24])));
+  myGLCD.print(buffer, 50, 65);                                                // txt_error_connect3 "РћС€РёР±РѕРє РЅРµС‚"
+  if (search_cabel(41) == 4)                                                   // РџСЂРѕРІРµСЂРёС‚СЊ РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚СЊ РїРѕРґРєР»СЋС‡РµРЅРёСЏ РєР°Р±РµР»СЏ в„–1
+  {
+    digitalWrite(46, LOW);                                                   // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РєРѕРЅС‚СЂРѕР»СЊРЅС‹Р№ СѓСЂРѕРІРµРЅСЊ РЅР° РєРѕРјРјСѓС‚Р°С‚РѕСЂР°С… U13,U17,U23
+    delay(10);                                                               // Р’СЂРµРјСЏ РЅР° РїРµСЂРµРєР»СЋС‡РµРЅРёРµ РІС‹РІРѕРґР° 46
+    for (x_A = 1; x_A < _size_block + 1; x_A++)                              // РџРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕРµ С‡С‚РµРЅРёРµ РєРѕРЅС‚Р°РєС‚РѕРІ СЂР°Р·СЊРµРјРѕРІ.
+    {
+      canal_N = i2c_eeprom_read_byte(deviceaddress, adr_memN1_4 + x_A);    // РџРѕР»СѓС‡РёС‚СЊ в„– РєР°РЅР°Р»Р° РёР· EEPROM
+      ware_on = i2c_eeprom_read_byte(deviceaddress, adr_memN1_4 + x_A + (_size_block * 4)); // РџРѕР»СѓС‡РёС‚СЊ РёР· С‚Р°Р±Р»РёС†С‹ РїСЂРёР·РЅР°Рє СЃРѕРµРґРёРЅРµРЅРёСЏ.
+      if (canal_N == 1)                                                    // 40 РєР°РЅР°Р» РґР»СЏ РїСЂРѕРІРµСЂРєРё РЅРѕРјРµСЂР° РїСЂРѕРІРµСЂСЏРµРјРѕРіРѕ СЂР°Р·СЉРµРјР°
+      {
+        set_komm_mcp('A', 41, 'O');                                      // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РІС…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂР° РЅР° РєРѕРЅС‚СЂРѕР»СЊРЅС‹Р№ 40 РІС‹С…РѕРґ
+      }
+      else
+      {
+        set_komm_mcp('A', canal_N, 'O');                                 // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ С‚РµРєСѓС‰РёР№ РІС…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°
+      }
+      // РџРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕ РїСЂРѕРІРµСЂРёС‚СЊ РІСЃРµ РІС‹РІРѕРґР° СЂР°Р·СЊРµРјР° "Р’"
+      // РџСЂРѕРІРµСЂСЏРµРј РІСЃРµ РІС‹С…РѕРґР° СЂР°Р·СЊРµРјР° "Р’"
+      for (x_B = 1; x_B < _size_block + 1; x_B++)                          // РџРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕРµ С‡С‚РµРЅРёРµ РєРѕРЅС‚Р°РєС‚РѕРІ СЂР°Р·СЊРµРјРѕРІ "Р’" .
+      {
+        canal_N = i2c_eeprom_read_byte(deviceaddress, adr_memN1_4 + x_B + _size_block); // РџРѕР»СѓС‡РёС‚СЊ РёР· С‚Р°Р±Р»РёС†С‹ РЅРѕРјРµСЂ РІС…РѕРґР° РєРѕРјРјСѓС‚Р°С‚РѕСЂР°.
 
-				if (canal_N == 1)                                                // 40 канал для проверки номера проверяемого разъема
-				{
-					set_komm_mcp('B', 41,'O');                                   // Установить контрольный вход коммутатора
-				}
-				else
-				{
-	    			set_komm_mcp('B', canal_N,'O');                              // Установить текущий вход коммутатора
-				}
-				// ++++++++++++++++++++++++ Проверка на соединение А - В +++++++++++++++++++++++++++++++++++
-				if (x_A == x_B)    
-				{
-					myGLCD.printNumI(x_A, 30, 40); 
-					if(ware_on == 1)myGLCD.print("<->", 66, 40); 
-					else myGLCD.print("<X>", 66, 40); 
-					myGLCD.printNumI(canal_N, 130, 40); 
-					if (digitalRead(47) == LOW && ware_on == 1)
-					{
-						myGLCD.print(" - Pass", 170, 40);
-					}
-					else
-					{
-						if (digitalRead(47) != LOW && ware_on == 0)                  // Должен быть соединен
-		                {
-							myGLCD.print(" - Pass", 170, 40);
-						}
-						else
-						{
-							count_error++;
-							strcpy_P(buffer, (char*)pgm_read_word(&(table_message[25]))); 
-							myGLCD.print(buffer, 50, 65);                            // txt_error_connect4
-							myGLCD.printNumI(count_error, 190, 65); 
+        if (canal_N == 1)                                                // 40 РєР°РЅР°Р» РґР»СЏ РїСЂРѕРІРµСЂРєРё РЅРѕРјРµСЂР° РїСЂРѕРІРµСЂСЏРµРјРѕРіРѕ СЂР°Р·СЉРµРјР°
+        {
+          set_komm_mcp('B', 41, 'O');                                  // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РєРѕРЅС‚СЂРѕР»СЊРЅС‹Р№ РІС…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°
+        }
+        else
+        {
+          set_komm_mcp('B', canal_N, 'O');                             // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ С‚РµРєСѓС‰РёР№ РІС…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°
+        }
+        // ++++++++++++++++++++++++ РџСЂРѕРІРµСЂРєР° РЅР° СЃРѕРµРґРёРЅРµРЅРёРµ Рђ - Р’ +++++++++++++++++++++++++++++++++++
+        if (x_A == x_B)
+        {
+          myGLCD.printNumI(x_A, 30, 40);
+          if (ware_on == 1)myGLCD.print("<->", 66, 40);
+          else myGLCD.print("<X>", 66, 40);
+          myGLCD.printNumI(canal_N, 130, 40);
+          if (digitalRead(47) == LOW && ware_on == 1)
+          {
+            myGLCD.print(" - Pass", 170, 40);
+          }
+          else
+          {
+            if (digitalRead(47) != LOW && ware_on == 0)                  // Р”РѕР»Р¶РµРЅ Р±С‹С‚СЊ СЃРѕРµРґРёРЅРµРЅ
+            {
+              myGLCD.print(" - Pass", 170, 40);
+            }
+            else
+            {
+              count_error++;
+              strcpy_P(buffer, (char*)pgm_read_word(&(table_message[25])));
+              myGLCD.print(buffer, 50, 65);                            // txt_error_connect4
+              myGLCD.printNumI(count_error, 190, 65);
 
-							if ( ware_on == 1)
-							{
-								if(x_A < 10)
-								{
-									myGLCD.printNumI(x_A, x_p+13, y_p);              // Перечисление ошибочных контактов
-									myGLCD.print("-", x_p+29, y_p); 
-								}
-								else
-								{
-									myGLCD.printNumI(x_A, x_p, y_p);                 // Перечисление ошибочных контактов
-									myGLCD.print("-", x_p+29, y_p); 
-								}
-								if(canal_N < 10)
-								{
-									myGLCD.printNumI(canal_N, x_p+32+26, y_p);       // Перечисление ошибочных контактов
-								}
-								else
-								{
-									myGLCD.printNumI(canal_N, x_p+32+10, y_p);       // Перечисление ошибочных контактов
-								}
-							}
-							else
-							{
-								if(x_A < 10)
-								{
-									myGLCD.printNumI(x_A, x_p+13, y_p);              // Перечисление ошибочных контактов
-									myGLCD.print("+", x_p+29, y_p); 
-								}
-								else
-								{
-									myGLCD.printNumI(x_A, x_p, y_p);                 // Перечисление ошибочных контактов
-									myGLCD.print("+", x_p+29, y_p); 
-								}
-								if(canal_N < 10)
-								{
-									myGLCD.printNumI(canal_N, x_p+32+26, y_p);       // Перечисление ошибочных контактов
-								}
-								else
-								{
-									myGLCD.printNumI(canal_N, x_p+32+10, y_p);       // Перечисление ошибочных контактов
-								}
-							}
-							y_p += 19;
-							if ( y_p > 190)                                          // Вывод на экран таблицы ошибок
-							{
-								myGLCD.drawLine( x_p+75, 85, x_p+75, 190);
-								x_p +=80;
-								y_p = 82;
-							}
-						}
-					}
-				}
+              if ( ware_on == 1)
+              {
+                if (x_A < 10)
+                {
+                  myGLCD.printNumI(x_A, x_p + 13, y_p);            // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                  myGLCD.print("-", x_p + 29, y_p);
+                }
+                else
+                {
+                  myGLCD.printNumI(x_A, x_p, y_p);                 // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                  myGLCD.print("-", x_p + 29, y_p);
+                }
+                if (canal_N < 10)
+                {
+                  myGLCD.printNumI(canal_N, x_p + 32 + 26, y_p);   // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                }
+                else
+                {
+                  myGLCD.printNumI(canal_N, x_p + 32 + 10, y_p);   // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                }
+              }
+              else
+              {
+                if (x_A < 10)
+                {
+                  myGLCD.printNumI(x_A, x_p + 13, y_p);            // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                  myGLCD.print("+", x_p + 29, y_p);
+                }
+                else
+                {
+                  myGLCD.printNumI(x_A, x_p, y_p);                 // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                  myGLCD.print("+", x_p + 29, y_p);
+                }
+                if (canal_N < 10)
+                {
+                  myGLCD.printNumI(canal_N, x_p + 32 + 26, y_p);   // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                }
+                else
+                {
+                  myGLCD.printNumI(canal_N, x_p + 32 + 10, y_p);   // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                }
+              }
+              y_p += 19;
+              if ( y_p > 190)                                          // Р’С‹РІРѕРґ РЅР° СЌРєСЂР°РЅ С‚Р°Р±Р»РёС†С‹ РѕС€РёР±РѕРє
+              {
+                myGLCD.drawLine( x_p + 75, 85, x_p + 75, 190);
+                x_p += 80;
+                y_p = 82;
+              }
+            }
+          }
+        }
 
-				//------------------------ Конец проверки на соединение ---------------------------------------
+        //------------------------ РљРѕРЅРµС† РїСЂРѕРІРµСЂРєРё РЅР° СЃРѕРµРґРёРЅРµРЅРёРµ ---------------------------------------
 
-				//++++++++++++++++++++++++ Проверка остальных проводов на замыкание ---------------------------
-				if (x_A != x_B)                                                      //Проверяемые провода не не должны быть соеденены
-				{
-					if (digitalRead(47) == LOW)                                      // Все таки замкнуты
-					{
-						                                                             // Проверим дополнительную 3 таблицу, возможно должны иметь соединение
-						int canal_N_err = i2c_eeprom_read_byte(deviceaddress,adr_memN1_4 + x_A +(_size_block*2)); // Получить из таблицы номер входа коммутатора.
-						if (x_B != canal_N_err)                                      // Проверяемое соединение не записано в таблицу
-						{
-							                                                         // Проверим дополнительную 4 таблицу
-							int canal_N_err = i2c_eeprom_read_byte(deviceaddress,adr_memN1_4 + x_A +(_size_block*3)); // Получить из таблицы номер входа коммутатора.
-							if (x_B != canal_N_err)                                  // Проверяемое соединение не записано в таблицу
-							{
-								count_error++;
-								strcpy_P(buffer, (char*)pgm_read_word(&(table_message[25]))); 
-								myGLCD.print(buffer, 50, 65);                        // txt_error_connect4
-								myGLCD.printNumI(count_error, 190, 65); 
-								if(x_A < 10)
-								{
-									myGLCD.printNumI(x_A, x_p+13, y_p);              // Перечисление ошибочных контактов
-									myGLCD.print("+", x_p+29, y_p); 
-								}
-								else
-								{
-									myGLCD.printNumI(x_A, x_p, y_p);                 // Перечисление ошибочных контактов
-									myGLCD.print("+", x_p+29, y_p); 
-								}
-								if(canal_N < 10)
-								{
-									myGLCD.printNumI(canal_N, x_p+32+26, y_p);       // Перечисление ошибочных контактов
-								}
-								else
-								{
-									myGLCD.printNumI(canal_N, x_p+32+10, y_p);       // Перечисление ошибочных контактов
-								}
-								y_p += 19;
-								if ( y_p > 190)                                      // Вывод на экран таблицы ошибок
-								{
-									myGLCD.drawLine( x_p+75, 85, x_p+75, 190);
-									x_p +=80;
-									y_p = 82;
-								}
-							}
-						}
-					}
-				}  //----------------------- Конец проверки на замыкание -----------------------------------------
-			}
-		}
-    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[30]))); 
-    if(count_error == 0) myGLCD.print(buffer, CENTER, 120);                   // txt__test_end  
-	}
-	else
-	{
-		myGLCD.setColor(VGA_RED);  
-		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[22]))); 
-		myGLCD.print(buffer, CENTER, 82+19);                                  // txt_error_connect1 Сообщить что кабель не обнаружен
-		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[23]))); 
-		myGLCD.print(buffer, CENTER, 82+38);                                  // txt_error_connect2
-		myGLCD.setColor(255, 255, 255);                                       // Восстановить белый шрифт
-		delay(3000);
-	}
+        //++++++++++++++++++++++++ РџСЂРѕРІРµСЂРєР° РѕСЃС‚Р°Р»СЊРЅС‹С… РїСЂРѕРІРѕРґРѕРІ РЅР° Р·Р°РјС‹РєР°РЅРёРµ ---------------------------
+        if (x_A != x_B)                                                      //РџСЂРѕРІРµСЂСЏРµРјС‹Рµ РїСЂРѕРІРѕРґР° РЅРµ РЅРµ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ СЃРѕРµРґРµРЅРµРЅС‹
+        {
+          if (digitalRead(47) == LOW)                                      // Р’СЃРµ С‚Р°РєРё Р·Р°РјРєРЅСѓС‚С‹
+          {
+            // РџСЂРѕРІРµСЂРёРј РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅСѓСЋ 3 С‚Р°Р±Р»РёС†Сѓ, РІРѕР·РјРѕР¶РЅРѕ РґРѕР»Р¶РЅС‹ РёРјРµС‚СЊ СЃРѕРµРґРёРЅРµРЅРёРµ
+            int canal_N_err = i2c_eeprom_read_byte(deviceaddress, adr_memN1_4 + x_A + (_size_block * 2)); // РџРѕР»СѓС‡РёС‚СЊ РёР· С‚Р°Р±Р»РёС†С‹ РЅРѕРјРµСЂ РІС…РѕРґР° РєРѕРјРјСѓС‚Р°С‚РѕСЂР°.
+            if (x_B != canal_N_err)                                      // РџСЂРѕРІРµСЂСЏРµРјРѕРµ СЃРѕРµРґРёРЅРµРЅРёРµ РЅРµ Р·Р°РїРёСЃР°РЅРѕ РІ С‚Р°Р±Р»РёС†Сѓ
+            {
+              // РџСЂРѕРІРµСЂРёРј РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅСѓСЋ 4 С‚Р°Р±Р»РёС†Сѓ
+              int canal_N_err = i2c_eeprom_read_byte(deviceaddress, adr_memN1_4 + x_A + (_size_block * 3)); // РџРѕР»СѓС‡РёС‚СЊ РёР· С‚Р°Р±Р»РёС†С‹ РЅРѕРјРµСЂ РІС…РѕРґР° РєРѕРјРјСѓС‚Р°С‚РѕСЂР°.
+              if (x_B != canal_N_err)                                  // РџСЂРѕРІРµСЂСЏРµРјРѕРµ СЃРѕРµРґРёРЅРµРЅРёРµ РЅРµ Р·Р°РїРёСЃР°РЅРѕ РІ С‚Р°Р±Р»РёС†Сѓ
+              {
+                count_error++;
+                strcpy_P(buffer, (char*)pgm_read_word(&(table_message[25])));
+                myGLCD.print(buffer, 50, 65);                        // txt_error_connect4
+                myGLCD.printNumI(count_error, 190, 65);
+                if (x_A < 10)
+                {
+                  myGLCD.printNumI(x_A, x_p + 13, y_p);            // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                  myGLCD.print("+", x_p + 29, y_p);
+                }
+                else
+                {
+                  myGLCD.printNumI(x_A, x_p, y_p);                 // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                  myGLCD.print("+", x_p + 29, y_p);
+                }
+                if (canal_N < 10)
+                {
+                  myGLCD.printNumI(canal_N, x_p + 32 + 26, y_p);   // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                }
+                else
+                {
+                  myGLCD.printNumI(canal_N, x_p + 32 + 10, y_p);   // РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РѕС€РёР±РѕС‡РЅС‹С… РєРѕРЅС‚Р°РєС‚РѕРІ
+                }
+                y_p += 19;
+                if ( y_p > 190)                                      // Р’С‹РІРѕРґ РЅР° СЌРєСЂР°РЅ С‚Р°Р±Р»РёС†С‹ РѕС€РёР±РѕРє
+                {
+                  myGLCD.drawLine( x_p + 75, 85, x_p + 75, 190);
+                  x_p += 80;
+                  y_p = 82;
+                }
+              }
+            }
+          }
+        }  //----------------------- РљРѕРЅРµС† РїСЂРѕРІРµСЂРєРё РЅР° Р·Р°РјС‹РєР°РЅРёРµ -----------------------------------------
+      }
+    }
+    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[30])));
+    if (count_error == 0) myGLCD.print(buffer, CENTER, 120);                  // txt__test_end
+  }
+  else
+  {
+    myGLCD.setColor(VGA_RED);
+    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[22])));
+    myGLCD.print(buffer, CENTER, 82 + 19);                                // txt_error_connect1 РЎРѕРѕР±С‰РёС‚СЊ С‡С‚Рѕ РєР°Р±РµР»СЊ РЅРµ РѕР±РЅР°СЂСѓР¶РµРЅ
+    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[23])));
+    myGLCD.print(buffer, CENTER, 82 + 38);                                // txt_error_connect2
+    myGLCD.setColor(255, 255, 255);                                       // Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ Р±РµР»С‹Р№ С€СЂРёС„С‚
+    delay(3000);
+  }
 }
 void test_panel_N1run()
 {
-	mcp_Out1.digitalWrite(8,  HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  1E1  U13
-	mcp_Out1.digitalWrite(9,  HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  1E2  U17
-	mcp_Out1.digitalWrite(10, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  1E3  U23
-	mcp_Out1.digitalWrite(11, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  1E4  U14
-	mcp_Out1.digitalWrite(12, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  1E5  U19 
-	mcp_Out1.digitalWrite(13, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  1E6  U21 
+  mcp_Out1.digitalWrite(8,  HIGH);                                // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E1  U13
+  mcp_Out1.digitalWrite(9,  HIGH);                                // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E2  U17
+  mcp_Out1.digitalWrite(10, HIGH);                                // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E3  U23
+  mcp_Out1.digitalWrite(11, HIGH);                                // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E4  U14
+  mcp_Out1.digitalWrite(12, HIGH);                                // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E5  U19
+  mcp_Out1.digitalWrite(13, HIGH);                                // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E6  U21
 
-	mcp_Out2.digitalWrite(8,  HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  2E1  U15
-	mcp_Out2.digitalWrite(9,  HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  2E2  U18 
-	mcp_Out2.digitalWrite(10, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  2E3  U22
-	mcp_Out2.digitalWrite(11, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  2E4  U16
-	mcp_Out2.digitalWrite(12, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  2E5  U20 
-	mcp_Out2.digitalWrite(13, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  2E6  U24
-	digitalWrite(48,HIGH);                                          // Отключить оптрон U11 канал №1
-	digitalWrite(49,HIGH);                                          // Отключить оптрон U11 канал №2
-// ------------------------- Очистить экран от предыдущих сообщений ----------------------------------
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[32])));   // 
-	myGLCD.print(buffer, LEFT, 20); 
-	myGLCD.print(buffer, LEFT, 38);   
-	myGLCD.print(buffer, LEFT, 70);                                 // Линия 1
-	myGLCD.print(buffer, LEFT, 85);                                 // Линия 2 
-	myGLCD.print(buffer, LEFT, 100);                                // Линия 3  
-	myGLCD.print(buffer, LEFT, 115);                                // Линия 4  
-	myGLCD.print(buffer, LEFT, 130);                                // Линия 5  
-	myGLCD.print(buffer, LEFT, 145);                                // Линия 6  
-	myGLCD.print(buffer, LEFT, 160);                                // Линия 7  
-	myGLCD.print(buffer, LEFT, 175);                                // Линия 8 
-//-----------------------------------------------------------------------------------------------------------
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[31])));   // Вывод сообщения "Тест светодиодов"
-	myGLCD.print(buffer, CENTER, 20);                               // Вывод сообщения "Тест светодиодов"
-	myGLCD.setBackColor( 0, 0, 0);                                  //  
-	pinMode(led_disp, OUTPUT);                                      //  
-	pinMode(led_instr, OUTPUT);                                     //  
-	digitalWrite(led_disp,HIGH);
-	digitalWrite(led_instr,HIGH);
-	mcp_Out2.digitalWrite(14, HIGH);                            // Включить реле. Подать +12в на вывод 2 разъема J12(b2-12)  №1А на передней панели
-//------------------------- Проверка светодиодов на передней панели диспетчера/инструктора ---------------------------------------------
-		for (int i=0;i<4;i++)                                        
-		{
-			digitalWrite(led_disp,LOW);
-			delay(250);
-			digitalWrite(led_disp,HIGH);
-			delay(250);
-			digitalWrite(led_instr,LOW);
-			delay(250);
-			digitalWrite(led_instr,HIGH);
-			delay(250);
-		}
-	pinMode(led_disp, INPUT);                                              //  Вернуть вывода в исходное состояние
-	pinMode(led_instr, INPUT);                                             //  
-	delay(1000);
-//------------------------------------------------------------------------------------------------------------------------------
+  mcp_Out2.digitalWrite(8,  HIGH);                                // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E1  U15
+  mcp_Out2.digitalWrite(9,  HIGH);                                // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E2  U18
+  mcp_Out2.digitalWrite(10, HIGH);                                // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E3  U22
+  mcp_Out2.digitalWrite(11, HIGH);                                // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E4  U16
+  mcp_Out2.digitalWrite(12, HIGH);                                // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E5  U20
+  mcp_Out2.digitalWrite(13, HIGH);                                // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E6  U24
+  digitalWrite(48, HIGH);                                         // РћС‚РєР»СЋС‡РёС‚СЊ РѕРїС‚СЂРѕРЅ U11 РєР°РЅР°Р» в„–1
+  digitalWrite(49, HIGH);                                         // РћС‚РєР»СЋС‡РёС‚СЊ РѕРїС‚СЂРѕРЅ U11 РєР°РЅР°Р» в„–2
+  // ------------------------- РћС‡РёСЃС‚РёС‚СЊ СЌРєСЂР°РЅ РѕС‚ РїСЂРµРґС‹РґСѓС‰РёС… СЃРѕРѕР±С‰РµРЅРёР№ ----------------------------------
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[32])));   //
+  myGLCD.print(buffer, LEFT, 20);
+  myGLCD.print(buffer, LEFT, 38);
+  myGLCD.print(buffer, LEFT, 70);                                 // Р›РёРЅРёСЏ 1
+  myGLCD.print(buffer, LEFT, 85);                                 // Р›РёРЅРёСЏ 2
+  myGLCD.print(buffer, LEFT, 100);                                // Р›РёРЅРёСЏ 3
+  myGLCD.print(buffer, LEFT, 115);                                // Р›РёРЅРёСЏ 4
+  myGLCD.print(buffer, LEFT, 130);                                // Р›РёРЅРёСЏ 5
+  myGLCD.print(buffer, LEFT, 145);                                // Р›РёРЅРёСЏ 6
+  myGLCD.print(buffer, LEFT, 160);                                // Р›РёРЅРёСЏ 7
+  myGLCD.print(buffer, LEFT, 175);                                // Р›РёРЅРёСЏ 8
+  //-----------------------------------------------------------------------------------------------------------
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[31])));   // Р’С‹РІРѕРґ СЃРѕРѕР±С‰РµРЅРёСЏ "РўРµСЃС‚ СЃРІРµС‚РѕРґРёРѕРґРѕРІ"
+  myGLCD.print(buffer, CENTER, 20);                               // Р’С‹РІРѕРґ СЃРѕРѕР±С‰РµРЅРёСЏ "РўРµСЃС‚ СЃРІРµС‚РѕРґРёРѕРґРѕРІ"
+  myGLCD.setBackColor( 0, 0, 0);                                  //
+  pinMode(led_disp, OUTPUT);                                      //
+  pinMode(led_instr, OUTPUT);                                     //
+  digitalWrite(led_disp, HIGH);
+  digitalWrite(led_instr, HIGH);
+  mcp_Out2.digitalWrite(14, HIGH);                            // Р’РєР»СЋС‡РёС‚СЊ СЂРµР»Рµ. РџРѕРґР°С‚СЊ +12РІ РЅР° РІС‹РІРѕРґ 2 СЂР°Р·СЉРµРјР° J12(b2-12)  в„–1Рђ РЅР° РїРµСЂРµРґРЅРµР№ РїР°РЅРµР»Рё
+  //------------------------- РџСЂРѕРІРµСЂРєР° СЃРІРµС‚РѕРґРёРѕРґРѕРІ РЅР° РїРµСЂРµРґРЅРµР№ РїР°РЅРµР»Рё РґРёСЃРїРµС‚С‡РµСЂР°/РёРЅСЃС‚СЂСѓРєС‚РѕСЂР° ---------------------------------------------
+  for (int i = 0; i < 4; i++)
+  {
+    digitalWrite(led_disp, LOW);
+    delay(250);
+    digitalWrite(led_disp, HIGH);
+    delay(250);
+    digitalWrite(led_instr, LOW);
+    delay(250);
+    digitalWrite(led_instr, HIGH);
+    delay(250);
+  }
+  pinMode(led_disp, INPUT);                                              //  Р’РµСЂРЅСѓС‚СЊ РІС‹РІРѕРґР° РІ РёСЃС…РѕРґРЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
+  pinMode(led_instr, INPUT);                                             //
+  delay(1000);
+  //------------------------------------------------------------------------------------------------------------------------------
 
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[32])));          // Очистить экран
-	myGLCD.print(buffer, CENTER, 20);                                      // 
-	myGLCD.setBackColor( 0, 0, 0);        
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[32])));          // РћС‡РёСЃС‚РёС‚СЊ СЌРєСЂР°РЅ
+  myGLCD.print(buffer, CENTER, 20);                                      //
+  myGLCD.setBackColor( 0, 0, 0);
 
-	pinMode(46,INPUT);                                                     // Установить выход коммутатора на ввод
-	digitalWrite(46,HIGH);                                                 // Подключить резистор к входу
-	pinMode(47,INPUT);                                                     // Установить выход коммутатора на ввод
-	digitalWrite(47,HIGH);                                                 // Подключить резистор к входу
-	// Проверка МТГ диспетчера
+  pinMode(46, INPUT);                                                    // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РІС‹С…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂР° РЅР° РІРІРѕРґ
+  digitalWrite(46, HIGH);                                                // РџРѕРґРєР»СЋС‡РёС‚СЊ СЂРµР·РёСЃС‚РѕСЂ Рє РІС…РѕРґСѓ
+  pinMode(47, INPUT);                                                    // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РІС‹С…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂР° РЅР° РІРІРѕРґ
+  digitalWrite(47, HIGH);                                                // РџРѕРґРєР»СЋС‡РёС‚СЊ СЂРµР·РёСЃС‚РѕСЂ Рє РІС…РѕРґСѓ
+  // РџСЂРѕРІРµСЂРєР° РњРўР“ РґРёСЃРїРµС‚С‡РµСЂР°
 
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[33])));          // Вывод сообщения "Тест диспетчера"
-	myGLCD.print(buffer, CENTER, 20);                                      // Вывод сообщения "Тест диспетчера"
-	myGLCD.setBackColor( 0, 0, 0);                                         //  
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[33])));          // Р’С‹РІРѕРґ СЃРѕРѕР±С‰РµРЅРёСЏ "РўРµСЃС‚ РґРёСЃРїРµС‚С‡РµСЂР°"
+  myGLCD.print(buffer, CENTER, 20);                                      // Р’С‹РІРѕРґ СЃРѕРѕР±С‰РµРЅРёСЏ "РўРµСЃС‚ РґРёСЃРїРµС‚С‡РµСЂР°"
+  myGLCD.setBackColor( 0, 0, 0);                                         //
 
-	set_komm_mcp('A', 34,'O');                                             // Подключить коммутатор к выводу 9 разъема  
-	delay(200);
-	if(digitalRead(46)== LOW)                                              // Проверяем подключение разъема
-	{
-      	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[36])));      // Вывод сообщения "Кабель дисп. подкл."
-		myGLCD.print(buffer, CENTER, 38);                                  // RIGHT
+  set_komm_mcp('A', 34, 'O');                                            // РџРѕРґРєР»СЋС‡РёС‚СЊ РєРѕРјРјСѓС‚Р°С‚РѕСЂ Рє РІС‹РІРѕРґСѓ 9 СЂР°Р·СЉРµРјР°
+  delay(200);
+  if (digitalRead(46) == LOW)                                            // РџСЂРѕРІРµСЂСЏРµРј РїРѕРґРєР»СЋС‡РµРЅРёРµ СЂР°Р·СЉРµРјР°
+  {
+    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[36])));      // Р’С‹РІРѕРґ СЃРѕРѕР±С‰РµРЅРёСЏ "РљР°Р±РµР»СЊ РґРёСЃРї. РїРѕРґРєР»."
+    myGLCD.print(buffer, CENTER, 38);                                  // RIGHT
 
-		//+++++++++++++++++++++ Проверяем контакт №2 линия дисп 70 +++++++++++++++++++++++++++++++++++++++++++ 
-		set_komm_mcp('A', 32,'O');                                              // Подключить коммутатор к выводу  
-		delay(200);
-		if(digitalRead(46)== HIGH)                                              // Проверяем подключение разъема
-		{
-			set_komm_mcp('B', 5,'G');                                           // Подключить коммутатор к выводу 
-			delay(200);
-			if(digitalRead(46)== LOW)                                           // Проверяем подключение разъема
-			{
-      			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[42])));  // Кабель дисп. подкл.
-				myGLCD.print(buffer, LEFT, 70);     
-			}
-			else
-			{
-      			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[52])));  // Кабель дисп. откл.
-				myGLCD.print(buffer, LEFT, 70);      
-			}
+    //+++++++++++++++++++++ РџСЂРѕРІРµСЂСЏРµРј РєРѕРЅС‚Р°РєС‚ в„–2 Р»РёРЅРёСЏ РґРёСЃРї 70 +++++++++++++++++++++++++++++++++++++++++++
+    set_komm_mcp('A', 32, 'O');                                             // РџРѕРґРєР»СЋС‡РёС‚СЊ РєРѕРјРјСѓС‚Р°С‚РѕСЂ Рє РІС‹РІРѕРґСѓ
+    delay(200);
+    if (digitalRead(46) == HIGH)                                            // РџСЂРѕРІРµСЂСЏРµРј РїРѕРґРєР»СЋС‡РµРЅРёРµ СЂР°Р·СЉРµРјР°
+    {
+      set_komm_mcp('B', 5, 'G');                                          // РџРѕРґРєР»СЋС‡РёС‚СЊ РєРѕРјРјСѓС‚Р°С‚РѕСЂ Рє РІС‹РІРѕРґСѓ
+      delay(200);
+      if (digitalRead(46) == LOW)                                         // РџСЂРѕРІРµСЂСЏРµРј РїРѕРґРєР»СЋС‡РµРЅРёРµ СЂР°Р·СЉРµРјР°
+      {
+        strcpy_P(buffer, (char*)pgm_read_word(&(table_message[42])));  // РљР°Р±РµР»СЊ РґРёСЃРї. РїРѕРґРєР».
+        myGLCD.print(buffer, LEFT, 70);
+      }
+      else
+      {
+        strcpy_P(buffer, (char*)pgm_read_word(&(table_message[52])));  // РљР°Р±РµР»СЊ РґРёСЃРї. РѕС‚РєР».
+        myGLCD.print(buffer, LEFT, 70);
+      }
 
-		}
-		else
-		{
-			// Вывод замыкает на общий
-      		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[52])));     // Кабель дисп. откл.
-			myGLCD.print(buffer, CENTER, 70);                          
-		}
+    }
+    else
+    {
+      // Р’С‹РІРѕРґ Р·Р°РјС‹РєР°РµС‚ РЅР° РѕР±С‰РёР№
+      strcpy_P(buffer, (char*)pgm_read_word(&(table_message[52])));     // РљР°Р±РµР»СЊ РґРёСЃРї. РѕС‚РєР».
+      myGLCD.print(buffer, CENTER, 70);
+    }
 
-		//+++++++++++++++++++++ Проверяем контакт №3 линия дисп 85 +++++++++++++++++++++++++++++++++++++++++++ 
-		set_komm_mcp('B', 40,'O');                                              // Подключить коммутатор к выводу  
-		delay(200);
-		if(digitalRead(47)== HIGH)                                              // Проверяем подключение разъема
-		{
-			set_komm_mcp('A', 31,'G');                                           // Подключить коммутатор к выводу 
-			delay(200);
-			if(digitalRead(47)== LOW)                                           // Проверяем подключение разъема
-			{
-      			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[43])));  // Кабель дисп. подкл.
-				myGLCD.print(buffer, LEFT, 85);     
-			}
-			else
-			{
-      			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[53])));  // Кабель дисп. откл.
-				myGLCD.print(buffer, LEFT, 85);      
-			}
+    //+++++++++++++++++++++ РџСЂРѕРІРµСЂСЏРµРј РєРѕРЅС‚Р°РєС‚ в„–3 Р»РёРЅРёСЏ РґРёСЃРї 85 +++++++++++++++++++++++++++++++++++++++++++
+    set_komm_mcp('B', 40, 'O');                                             // РџРѕРґРєР»СЋС‡РёС‚СЊ РєРѕРјРјСѓС‚Р°С‚РѕСЂ Рє РІС‹РІРѕРґСѓ
+    delay(200);
+    if (digitalRead(47) == HIGH)                                            // РџСЂРѕРІРµСЂСЏРµРј РїРѕРґРєР»СЋС‡РµРЅРёРµ СЂР°Р·СЉРµРјР°
+    {
+      set_komm_mcp('A', 31, 'G');                                          // РџРѕРґРєР»СЋС‡РёС‚СЊ РєРѕРјРјСѓС‚Р°С‚РѕСЂ Рє РІС‹РІРѕРґСѓ
+      delay(200);
+      if (digitalRead(47) == LOW)                                         // РџСЂРѕРІРµСЂСЏРµРј РїРѕРґРєР»СЋС‡РµРЅРёРµ СЂР°Р·СЉРµРјР°
+      {
+        strcpy_P(buffer, (char*)pgm_read_word(&(table_message[43])));  // РљР°Р±РµР»СЊ РґРёСЃРї. РїРѕРґРєР».
+        myGLCD.print(buffer, LEFT, 85);
+      }
+      else
+      {
+        strcpy_P(buffer, (char*)pgm_read_word(&(table_message[53])));  // РљР°Р±РµР»СЊ РґРёСЃРї. РѕС‚РєР».
+        myGLCD.print(buffer, LEFT, 85);
+      }
 
-		}
-		else
-		{
-			// Вывод замыкает на общий
-      		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[53])));     // Кабель дисп. откл.
-			myGLCD.print(buffer, CENTER, 85);                          
-		}
-
-
-		/*
-	 	set_komm_mcp('A', 31,'O');                                              // Подключить коммутатор к выводу  
-		delay(200);
-		if(digitalRead(46)== HIGH)                                              // Проверяем подключение разъема
-		{
-			set_komm_mcp('B', 1,'G');                                           // Подключить коммутатор к выводу 
-			delay(200);
-			if(digitalRead(46)== LOW)                                           // Проверяем подключение разъема
-			{
-      			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[43])));  // Кабель дисп. подкл.
-				myGLCD.print(buffer, LEFT, 85);     
-			}
-			else
-			{
-      			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[53])));  // Кабель дисп. откл.
-				myGLCD.print(buffer, LEFT, 85);      
-			}
-
-		}
-		else
-		{
-			// Вывод замыкает на общий
-      		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[53])));     // Кабель дисп. откл.
-			myGLCD.print(buffer, CENTER, 85);                          
-		}
-		*/
-		//+++++++++++++++++++++ Проверяем контакт №4 линия дисп 100 +++++++++++++++++++++++++++++++++++++++++++ 
-		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[44])));        // Вывод сообщения "Кабель дисп. подкл."
-		myGLCD.print(buffer, LEFT, 100);           
+    }
+    else
+    {
+      // Р’С‹РІРѕРґ Р·Р°РјС‹РєР°РµС‚ РЅР° РѕР±С‰РёР№
+      strcpy_P(buffer, (char*)pgm_read_word(&(table_message[53])));     // РљР°Р±РµР»СЊ РґРёСЃРї. РѕС‚РєР».
+      myGLCD.print(buffer, CENTER, 85);
+    }
 
 
-		//+++++++++++++++++++++ Проверяем контакт №6 линия дисп 115 +++++++++++++++++++++++++++++++++++++++++++ 
-		set_komm_mcp('A', 35,'O');                                              // Подключить коммутатор к выводу  
-		delay(200);
-		if(digitalRead(46)== HIGH)                                              // Проверяем подключение разъема
-		{
-			set_komm_mcp('B', 6,'G');                                           // Подключить коммутатор к выводу 
-			delay(200);
-			if(digitalRead(46)== LOW)                                           // Проверяем подключение разъема
-			{
-      			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[46])));  // Кабель дисп. подкл.
-				myGLCD.print(buffer, LEFT, 115);     
-			}
-			else
-			{
-      			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[56])));  // Кабель дисп. откл.
-				myGLCD.print(buffer, LEFT, 115);      
-			}
+    /*
+      set_komm_mcp('A', 31,'O');                                              // РџРѕРґРєР»СЋС‡РёС‚СЊ РєРѕРјРјСѓС‚Р°С‚РѕСЂ Рє РІС‹РІРѕРґСѓ
+      delay(200);
+      if(digitalRead(46)== HIGH)                                              // РџСЂРѕРІРµСЂСЏРµРј РїРѕРґРєР»СЋС‡РµРЅРёРµ СЂР°Р·СЉРµРјР°
+      {
+    	set_komm_mcp('B', 1,'G');                                           // РџРѕРґРєР»СЋС‡РёС‚СЊ РєРѕРјРјСѓС‚Р°С‚РѕСЂ Рє РІС‹РІРѕРґСѓ
+    	delay(200);
+    	if(digitalRead(46)== LOW)                                           // РџСЂРѕРІРµСЂСЏРµРј РїРѕРґРєР»СЋС‡РµРЅРёРµ СЂР°Р·СЉРµРјР°
+    	{
+      			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[43])));  // РљР°Р±РµР»СЊ РґРёСЃРї. РїРѕРґРєР».
+    		myGLCD.print(buffer, LEFT, 85);
+    	}
+    	else
+    	{
+      			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[53])));  // РљР°Р±РµР»СЊ РґРёСЃРї. РѕС‚РєР».
+    		myGLCD.print(buffer, LEFT, 85);
+    	}
 
-		}
-		else
-		{
-			// Вывод замыкает на общий
-      		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[56])));     // Кабель дисп. откл.
-			myGLCD.print(buffer, CENTER, 115);                          
-		}
+      }
+      else
+      {
+    	// Р’С‹РІРѕРґ Р·Р°РјС‹РєР°РµС‚ РЅР° РѕР±С‰РёР№
+      		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[53])));     // РљР°Р±РµР»СЊ РґРёСЃРї. РѕС‚РєР».
+    	myGLCD.print(buffer, CENTER, 85);
+      }
+    */
+    //+++++++++++++++++++++ РџСЂРѕРІРµСЂСЏРµРј РєРѕРЅС‚Р°РєС‚ в„–4 Р»РёРЅРёСЏ РґРёСЃРї 100 +++++++++++++++++++++++++++++++++++++++++++
+    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[44])));        // Р’С‹РІРѕРґ СЃРѕРѕР±С‰РµРЅРёСЏ "РљР°Р±РµР»СЊ РґРёСЃРї. РїРѕРґРєР»."
+    myGLCD.print(buffer, LEFT, 100);
 
 
-	    //+++++++++++++++++++++ Проверяем контакт №7 линия дисп 130 +++++++++++++++++++++++++++++++++++++++++++ 
-		set_komm_mcp('A', 33,'O');                                       // Подключить коммутатор к выводу  зел
-		delay(200);
-		if(digitalRead(46)== HIGH)                                              // Проверяем подключение разъема
-		{
-			set_komm_mcp('B', 3,'G');                                           // Подключить коммутатор к выводу 
-			delay(200);
-			if(digitalRead(46)== LOW)                                           // Проверяем подключение разъема
-			{
-      			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[47])));  // Кабель дисп. подкл.
-				myGLCD.print(buffer, LEFT, 130);     
-			}
-			else
-			{
-      			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[57])));  // Кабель дисп. откл.
-				myGLCD.print(buffer, LEFT, 130);      
-			}
+    //+++++++++++++++++++++ РџСЂРѕРІРµСЂСЏРµРј РєРѕРЅС‚Р°РєС‚ в„–6 Р»РёРЅРёСЏ РґРёСЃРї 115 +++++++++++++++++++++++++++++++++++++++++++
+    set_komm_mcp('A', 35, 'O');                                             // РџРѕРґРєР»СЋС‡РёС‚СЊ РєРѕРјРјСѓС‚Р°С‚РѕСЂ Рє РІС‹РІРѕРґСѓ
+    delay(200);
+    if (digitalRead(46) == HIGH)                                            // РџСЂРѕРІРµСЂСЏРµРј РїРѕРґРєР»СЋС‡РµРЅРёРµ СЂР°Р·СЉРµРјР°
+    {
+      set_komm_mcp('B', 6, 'G');                                          // РџРѕРґРєР»СЋС‡РёС‚СЊ РєРѕРјРјСѓС‚Р°С‚РѕСЂ Рє РІС‹РІРѕРґСѓ
+      delay(200);
+      if (digitalRead(46) == LOW)                                         // РџСЂРѕРІРµСЂСЏРµРј РїРѕРґРєР»СЋС‡РµРЅРёРµ СЂР°Р·СЉРµРјР°
+      {
+        strcpy_P(buffer, (char*)pgm_read_word(&(table_message[46])));  // РљР°Р±РµР»СЊ РґРёСЃРї. РїРѕРґРєР».
+        myGLCD.print(buffer, LEFT, 115);
+      }
+      else
+      {
+        strcpy_P(buffer, (char*)pgm_read_word(&(table_message[56])));  // РљР°Р±РµР»СЊ РґРёСЃРї. РѕС‚РєР».
+        myGLCD.print(buffer, LEFT, 115);
+      }
 
-		}
-		else
-		{
-			// Вывод замыкает на общий
-      		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[57])));     // Кабель дисп. откл.
-			myGLCD.print(buffer, CENTER, 130);                          
-		}
+    }
+    else
+    {
+      // Р’С‹РІРѕРґ Р·Р°РјС‹РєР°РµС‚ РЅР° РѕР±С‰РёР№
+      strcpy_P(buffer, (char*)pgm_read_word(&(table_message[56])));     // РљР°Р±РµР»СЊ РґРёСЃРї. РѕС‚РєР».
+      myGLCD.print(buffer, CENTER, 115);
+    }
 
-	    //+++++++++++++++++++++ Проверяем контакт №8 линия дисп 145 +++++++++++++++++++++++++++++++++++++++++++ 
-		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[48])));      // Вывод сообщения "Кабель дисп. подкл."
-		myGLCD.print(buffer, LEFT, 145);          
-		
-		//+++++++++++++++++++++ Проверяем контакт №9 линия дисп 160 +++++++++++++++++++++++++++++++++++++++++++ 
 
-		set_komm_mcp('A', 44,'O');                                         // Подключить коммутатор к выводу 7 разъема J40   
-		delay(200);
-		if(digitalRead(46)== LOW)                                          // Проверяем подключение разъема
-		{
-      		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[49])));  // Кабель дисп. подкл.
-			myGLCD.print(buffer, LEFT, 160);     //RIGHT
-		}
-		else
-		{
-      		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[59])));  // Кабель дисп. откл.
-			myGLCD.print(buffer, LEFT, 160);      
-		}
-       //----------------------------------------------------------------------
+    //+++++++++++++++++++++ РџСЂРѕРІРµСЂСЏРµРј РєРѕРЅС‚Р°РєС‚ в„–7 Р»РёРЅРёСЏ РґРёСЃРї 130 +++++++++++++++++++++++++++++++++++++++++++
+    set_komm_mcp('A', 33, 'O');                                      // РџРѕРґРєР»СЋС‡РёС‚СЊ РєРѕРјРјСѓС‚Р°С‚РѕСЂ Рє РІС‹РІРѕРґСѓ  Р·РµР»
+    delay(200);
+    if (digitalRead(46) == HIGH)                                            // РџСЂРѕРІРµСЂСЏРµРј РїРѕРґРєР»СЋС‡РµРЅРёРµ СЂР°Р·СЉРµРјР°
+    {
+      set_komm_mcp('B', 3, 'G');                                          // РџРѕРґРєР»СЋС‡РёС‚СЊ РєРѕРјРјСѓС‚Р°С‚РѕСЂ Рє РІС‹РІРѕРґСѓ
+      delay(200);
+      if (digitalRead(46) == LOW)                                         // РџСЂРѕРІРµСЂСЏРµРј РїРѕРґРєР»СЋС‡РµРЅРёРµ СЂР°Р·СЉРµРјР°
+      {
+        strcpy_P(buffer, (char*)pgm_read_word(&(table_message[47])));  // РљР°Р±РµР»СЊ РґРёСЃРї. РїРѕРґРєР».
+        myGLCD.print(buffer, LEFT, 130);
+      }
+      else
+      {
+        strcpy_P(buffer, (char*)pgm_read_word(&(table_message[57])));  // РљР°Р±РµР»СЊ РґРёСЃРї. РѕС‚РєР».
+        myGLCD.print(buffer, LEFT, 130);
+      }
 
-		//set_komm_mcp('B', 3,'G');                                        // Подключить коммутатор к выводу 
-		//if(digitalRead(46)== LOW)                                        // Проверяем подключение разъема
-		//{
-  //    		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[36]))); // Кабель дисп. подкл.
-		//	myGLCD.print(buffer, LEFT, 145);     
-		//}
-		//else
-		//{
-  //    		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[37]))); // Кабель дисп. откл.
-		//	myGLCD.print(buffer, LEFT, 145);      
-		//}
+    }
+    else
+    {
+      // Р’С‹РІРѕРґ Р·Р°РјС‹РєР°РµС‚ РЅР° РѕР±С‰РёР№
+      strcpy_P(buffer, (char*)pgm_read_word(&(table_message[57])));     // РљР°Р±РµР»СЊ РґРёСЃРї. РѕС‚РєР».
+      myGLCD.print(buffer, CENTER, 130);
+    }
 
-		
+    //+++++++++++++++++++++ РџСЂРѕРІРµСЂСЏРµРј РєРѕРЅС‚Р°РєС‚ в„–8 Р»РёРЅРёСЏ РґРёСЃРї 145 +++++++++++++++++++++++++++++++++++++++++++
+    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[48])));      // Р’С‹РІРѕРґ СЃРѕРѕР±С‰РµРЅРёСЏ "РљР°Р±РµР»СЊ РґРёСЃРї. РїРѕРґРєР»."
+    myGLCD.print(buffer, LEFT, 145);
 
-	}
-	else  // Закончить проверку. Кабель не подключен!!
-	{
-      	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[37])));         // Кабель дисп. откл.
-		myGLCD.print(buffer, CENTER, 38);                                     //
-	}
+    //+++++++++++++++++++++ РџСЂРѕРІРµСЂСЏРµРј РєРѕРЅС‚Р°РєС‚ в„–9 Р»РёРЅРёСЏ РґРёСЃРї 160 +++++++++++++++++++++++++++++++++++++++++++
 
-//-----------------------------------------------------------------------
-	/*
-		// Проверка МТГ инструктора
-	set_komm_mcp('A', 39,'O');                                        // Подключить коммутатор к выводу 3 разъема J39   
-	if(digitalRead(46)== LOW)                                         // Проверяем подключение разъема
-	{
-      	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[38]))); // Кабель инстр. подкл.
-		myGLCD.print(buffer, LEFT, 85);     
-	}
-	else
-	{
-      	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[39]))); // Кабель инстр. откл.
-		myGLCD.print(buffer, LEFT, 85);      
-	}
-	set_komm_mcp('A', 41,'O');                                       // Подключить коммутатор к выводу 7 разъема J39   
-	if(digitalRead(46)== LOW)                                        // Проверяем подключение разъема
-	{
-      	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[38]))); // Кабель инстр. подкл.
-		myGLCD.print(buffer, LEFT, 115);     
-	}
-	else
-	{
-      	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[39]))); // Кабель инстр. откл.
-		myGLCD.print(buffer, LEFT, 115);      
-	}
+    set_komm_mcp('A', 44, 'O');                                        // РџРѕРґРєР»СЋС‡РёС‚СЊ РєРѕРјРјСѓС‚Р°С‚РѕСЂ Рє РІС‹РІРѕРґСѓ 7 СЂР°Р·СЉРµРјР° J40
+    delay(200);
+    if (digitalRead(46) == LOW)                                        // РџСЂРѕРІРµСЂСЏРµРј РїРѕРґРєР»СЋС‡РµРЅРёРµ СЂР°Р·СЉРµРјР°
+    {
+      strcpy_P(buffer, (char*)pgm_read_word(&(table_message[49])));  // РљР°Р±РµР»СЊ РґРёСЃРї. РїРѕРґРєР».
+      myGLCD.print(buffer, LEFT, 160);     //RIGHT
+    }
+    else
+    {
+      strcpy_P(buffer, (char*)pgm_read_word(&(table_message[59])));  // РљР°Р±РµР»СЊ РґРёСЃРї. РѕС‚РєР».
+      myGLCD.print(buffer, LEFT, 160);
+    }
+    //----------------------------------------------------------------------
+
+    //set_komm_mcp('B', 3,'G');                                        // РџРѕРґРєР»СЋС‡РёС‚СЊ РєРѕРјРјСѓС‚Р°С‚РѕСЂ Рє РІС‹РІРѕРґСѓ
+    //if(digitalRead(46)== LOW)                                        // РџСЂРѕРІРµСЂСЏРµРј РїРѕРґРєР»СЋС‡РµРЅРёРµ СЂР°Р·СЉРµРјР°
+    //{
+    //    		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[36]))); // РљР°Р±РµР»СЊ РґРёСЃРї. РїРѕРґРєР».
+    //	myGLCD.print(buffer, LEFT, 145);
+    //}
+    //else
+    //{
+    //    		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[37]))); // РљР°Р±РµР»СЊ РґРёСЃРї. РѕС‚РєР».
+    //	myGLCD.print(buffer, LEFT, 145);
+    //}
 
 
 
-	*/
+  }
+  else  // Р—Р°РєРѕРЅС‡РёС‚СЊ РїСЂРѕРІРµСЂРєСѓ. РљР°Р±РµР»СЊ РЅРµ РїРѕРґРєР»СЋС‡РµРЅ!!
+  {
+    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[37])));         // РљР°Р±РµР»СЊ РґРёСЃРї. РѕС‚РєР».
+    myGLCD.print(buffer, CENTER, 38);                                     //
+  }
+
+  //-----------------------------------------------------------------------
+  /*
+  	// РџСЂРѕРІРµСЂРєР° РњРўР“ РёРЅСЃС‚СЂСѓРєС‚РѕСЂР°
+    set_komm_mcp('A', 39,'O');                                        // РџРѕРґРєР»СЋС‡РёС‚СЊ РєРѕРјРјСѓС‚Р°С‚РѕСЂ Рє РІС‹РІРѕРґСѓ 3 СЂР°Р·СЉРµРјР° J39
+    if(digitalRead(46)== LOW)                                         // РџСЂРѕРІРµСЂСЏРµРј РїРѕРґРєР»СЋС‡РµРЅРёРµ СЂР°Р·СЉРµРјР°
+    {
+      	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[38]))); // РљР°Р±РµР»СЊ РёРЅСЃС‚СЂ. РїРѕРґРєР».
+  	myGLCD.print(buffer, LEFT, 85);
+    }
+    else
+    {
+      	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[39]))); // РљР°Р±РµР»СЊ РёРЅСЃС‚СЂ. РѕС‚РєР».
+  	myGLCD.print(buffer, LEFT, 85);
+    }
+    set_komm_mcp('A', 41,'O');                                       // РџРѕРґРєР»СЋС‡РёС‚СЊ РєРѕРјРјСѓС‚Р°С‚РѕСЂ Рє РІС‹РІРѕРґСѓ 7 СЂР°Р·СЉРµРјР° J39
+    if(digitalRead(46)== LOW)                                        // РџСЂРѕРІРµСЂСЏРµРј РїРѕРґРєР»СЋС‡РµРЅРёРµ СЂР°Р·СЉРµРјР°
+    {
+      	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[38]))); // РљР°Р±РµР»СЊ РёРЅСЃС‚СЂ. РїРѕРґРєР».
+  	myGLCD.print(buffer, LEFT, 115);
+    }
+    else
+    {
+      	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[39]))); // РљР°Р±РµР»СЊ РёРЅСЃС‚СЂ. РѕС‚РєР».
+  	myGLCD.print(buffer, LEFT, 115);
+    }
+
+
+
+  */
 
 
 
 
-	//delay(3000);
-	digitalWrite(48,HIGH);
-	digitalWrite(49,HIGH);
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[32])));   // 
-	//myGLCD.print(buffer, CENTER, 25);                               // 
-	myGLCD.setBackColor( 0, 0, 0);        
+  //delay(3000);
+  digitalWrite(48, HIGH);
+  digitalWrite(49, HIGH);
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[32])));   //
+  //myGLCD.print(buffer, CENTER, 25);                               //
+  myGLCD.setBackColor( 0, 0, 0);
 
 
-	delay(1000);
+  delay(1000);
 
-	mcp_Out2.digitalWrite(14, LOW);                 // Отключить реле
+  mcp_Out2.digitalWrite(14, LOW);                                 // РћС‚РєР»СЋС‡РёС‚СЊ СЂРµР»Рµ
 }
 void test_panel_N2run()
 {
-	mcp_Out1.digitalWrite(8,  HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  1E1  U13
-	mcp_Out1.digitalWrite(9,  HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  1E2  U17
-	mcp_Out1.digitalWrite(10, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  1E3  U23
-	mcp_Out1.digitalWrite(11, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  1E4  U14
-	mcp_Out1.digitalWrite(12, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  1E5  U19 
-	mcp_Out1.digitalWrite(13, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  1E6  U21 
+  mcp_Out1.digitalWrite(8,  HIGH);                                // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E1  U13
+  mcp_Out1.digitalWrite(9,  HIGH);                                // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E2  U17
+  mcp_Out1.digitalWrite(10, HIGH);                                // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E3  U23
+  mcp_Out1.digitalWrite(11, HIGH);                                // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E4  U14
+  mcp_Out1.digitalWrite(12, HIGH);                                // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E5  U19
+  mcp_Out1.digitalWrite(13, HIGH);                                // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  1E6  U21
 
-	mcp_Out2.digitalWrite(8,  HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  2E1  U15
-	mcp_Out2.digitalWrite(9,  HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  2E2  U18 
-	mcp_Out2.digitalWrite(10, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  2E3  U22
-	mcp_Out2.digitalWrite(11, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  2E4  U16
-	mcp_Out2.digitalWrite(12, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  2E5  U20 
-	mcp_Out2.digitalWrite(13, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  2E6  U24
-	digitalWrite(48,HIGH);                                          // Отключить оптрон U11 канал №1
-	digitalWrite(49,HIGH);                                          // Отключить оптрон U11 канал №2                                      // 
-// ------------------------- Очистить экран от предыдущих сообщений ----------------------------------
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[32])));   // 
-	myGLCD.print(buffer, LEFT, 20); 
-	myGLCD.print(buffer, LEFT, 38);   
-	myGLCD.print(buffer, LEFT, 70);                                 // Линия 1
-	myGLCD.print(buffer, LEFT, 85);                                 // Линия 2 
-	myGLCD.print(buffer, LEFT, 100);                                // Линия 3  
-	myGLCD.print(buffer, LEFT, 115);                                // Линия 4  
-	myGLCD.print(buffer, LEFT, 130);                                // Линия 5  
-	myGLCD.print(buffer, LEFT, 145);                                // Линия 6  
-	myGLCD.print(buffer, LEFT, 160);                                // Линия 7  
-	myGLCD.print(buffer, LEFT, 175);                                // Линия 8 
-//-----------------------------------------------------------------------------------------------------------
+  mcp_Out2.digitalWrite(8,  HIGH);                                // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E1  U15
+  mcp_Out2.digitalWrite(9,  HIGH);                                // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E2  U18
+  mcp_Out2.digitalWrite(10, HIGH);                                // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E3  U22
+  mcp_Out2.digitalWrite(11, HIGH);                                // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E4  U16
+  mcp_Out2.digitalWrite(12, HIGH);                                // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E5  U20
+  mcp_Out2.digitalWrite(13, HIGH);                                // РЎР±СЂРѕСЃ РІС‹Р±РѕСЂР° EN РјРёРєСЂРѕСЃС…РµРјС‹ Р°РЅР°Р»РѕРІРѕРіРѕ РєРѕРјРјСѓС‚Р°С‚РѕСЂР°  2E6  U24
+  digitalWrite(48, HIGH);                                         // РћС‚РєР»СЋС‡РёС‚СЊ РѕРїС‚СЂРѕРЅ U11 РєР°РЅР°Р» в„–1
+  digitalWrite(49, HIGH);                                         // РћС‚РєР»СЋС‡РёС‚СЊ РѕРїС‚СЂРѕРЅ U11 РєР°РЅР°Р» в„–2                                      //
+  // ------------------------- РћС‡РёСЃС‚РёС‚СЊ СЌРєСЂР°РЅ РѕС‚ РїСЂРµРґС‹РґСѓС‰РёС… СЃРѕРѕР±С‰РµРЅРёР№ ----------------------------------
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[32])));   // РЎС‚СЂРѕРєР° РѕС‡РёСЃС‚РєРё СЃС‚СЂРѕРє С‚РµРєСЃС‚Р°
+  myGLCD.print(buffer, LEFT, 20);
+  myGLCD.print(buffer, LEFT, 38);
+  myGLCD.print(buffer, LEFT, 70);                                 // Р›РёРЅРёСЏ 1
+  myGLCD.print(buffer, LEFT, 85);                                 // Р›РёРЅРёСЏ 2
+  myGLCD.print(buffer, LEFT, 100);                                // Р›РёРЅРёСЏ 3
+  myGLCD.print(buffer, LEFT, 115);                                // Р›РёРЅРёСЏ 4
+  myGLCD.print(buffer, LEFT, 130);                                // Р›РёРЅРёСЏ 5
+  myGLCD.print(buffer, LEFT, 145);                                // Р›РёРЅРёСЏ 6
+  myGLCD.print(buffer, LEFT, 160);                                // Р›РёРЅРёСЏ 7
+  myGLCD.print(buffer, LEFT, 175);                                // Р›РёРЅРёСЏ 8
+  //-----------------------------------------------------------------------------------------------------------
 
-	pinMode(led_disp, OUTPUT);                                      //  
-	pinMode(led_instr, OUTPUT);                                     //  
-	digitalWrite(led_disp,HIGH);
-	digitalWrite(led_instr,HIGH);
-	mcp_Out2.digitalWrite(14, HIGH);                            // Включить реле. Подать +12в на вывод 2 разъема J12(b2-12)  №1А на передней панели
+  pinMode(led_disp, OUTPUT);                                      // РЎРІРµС‚РѕРґРёРѕРґ РЅР° РїР°РЅРµР»Рё РґРёСЃРїРµС‚С‡РµСЂР°/РёРЅСЃС‚СЂСѓРєС‚РѕСЂР°
+  pinMode(led_instr, OUTPUT);                                     // РЎРІРµС‚РѕРґРёРѕРґ РЅР° РїР°РЅРµР»Рё РґРёСЃРїРµС‚С‡РµСЂР°/РёРЅСЃС‚СЂСѓРєС‚РѕСЂР°
+  digitalWrite(led_disp, HIGH);                                   // РЈРїСЂР°РІР»РµРЅРёРµ СЃРІРµС‚РѕРґРёРѕРґРѕРј РЅР° РїР°РЅРµР»Рё РґРёСЃРїРµС‚С‡РµСЂР°/РёРЅСЃС‚СЂСѓРєС‚РѕСЂР°
+  digitalWrite(led_instr, HIGH);                                  // РЈРїСЂР°РІР»РµРЅРёРµ СЃРІРµС‚РѕРґРёРѕРґРѕРј РЅР° РїР°РЅРµР»Рё РґРёСЃРїРµС‚С‡РµСЂР°/РёРЅСЃС‚СЂСѓРєС‚РѕСЂР°
+  mcp_Out2.digitalWrite(14, HIGH);                                // Р’РєР»СЋС‡РёС‚СЊ СЂРµР»Рµ. РџРѕРґР°С‚СЊ +12РІ РЅР° РІС‹РІРѕРґ 2 СЂР°Р·СЉРµРјР° J12(b2-12)  в„–1Рђ РЅР° РїРµСЂРµРґРЅРµР№ РїР°РЅРµР»Рё
 
-	delay(1000);
-//------------------------------------------------------------------------------------------------------------------------------
+  delay(1000);
+  //------------------------------------------------------------------------------------------------------------------------------
 
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[32])));          // Очистить экран
-	myGLCD.print(buffer, CENTER, 20);                                      // 
-	myGLCD.setBackColor( 0, 0, 0);        
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[32])));          // РћС‡РёСЃС‚РёС‚СЊ СЌРєСЂР°РЅ
+  myGLCD.print(buffer, CENTER, 20);                                      // РћС‡РёСЃС‚РёС‚СЊ СЌРєСЂР°РЅ
+  myGLCD.setBackColor( 0, 0, 0);
 
-	pinMode(46,INPUT);                                                     // Установить выход коммутатора на ввод
-	//digitalWrite(46,HIGH);                                                 // Подключить резистор к входу
-	pinMode(47,INPUT);                                                     // Установить выход коммутатора на ввод
-	//digitalWrite(47,HIGH);                                                 // Подключить резистор к входу
-	// Проверка МТГ диспетчера
+  pinMode(46, INPUT);                                                    // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РІС‹С…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂР° РЅР° РІРІРѕРґ
+  //digitalWrite(46,HIGH);                                               // РџРѕРґРєР»СЋС‡РёС‚СЊ СЂРµР·РёСЃС‚РѕСЂ Рє РІС…РѕРґСѓ
+  pinMode(47, INPUT);                                                    // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РІС‹С…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂР° РЅР° РІРІРѕРґ
+  //digitalWrite(47,HIGH);                                               // РџРѕРґРєР»СЋС‡РёС‚СЊ СЂРµР·РёСЃС‚РѕСЂ Рє РІС…РѕРґСѓ
+  // РџСЂРѕРІРµСЂРєР° РњРўР“ РґРёСЃРїРµС‚С‡РµСЂР°
 
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[33])));          // Вывод сообщения "Тест диспетчера"
-	myGLCD.print(buffer, CENTER, 20);                                      // Вывод сообщения "Тест диспетчера"
-	myGLCD.setBackColor( 0, 0, 0);                                         //  
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[33])));          // Р’С‹РІРѕРґ СЃРѕРѕР±С‰РµРЅРёСЏ "РўРµСЃС‚ РґРёСЃРїРµС‚С‡РµСЂР°"
+  myGLCD.print(buffer, CENTER, 20);                                      // Р’С‹РІРѕРґ СЃРѕРѕР±С‰РµРЅРёСЏ "РўРµСЃС‚ РґРёСЃРїРµС‚С‡РµСЂР°"
+  myGLCD.setBackColor( 0, 0, 0);                                         //
 
-		set_komm_mcp('B', 40,'O');                                              // Подключить коммутатор к выводу  
-		delay(200);
-        Serial.println(analogRead(A9));
-		if(analogRead(A9)> 512)                                              // Проверяем подключение разъема
-		{
-			set_komm_mcp('A', 31,'G');                                           // Подключить коммутатор к выводу 
-			delay(2500);
-			Serial.println(analogRead(A9));
-			if(analogRead(A9)< 512)                                           // Проверяем подключение разъема
-			{
-      			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[43])));  // Кабель дисп. подкл.
-				myGLCD.print(buffer, LEFT, 85);     
-			}
-			else
-			{
-      			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[53])));  // Кабель дисп. откл.
-				myGLCD.print(buffer, LEFT, 85);      
-			}
+  set_komm_mcp('B', 40, 'O');                                            // РџРѕРґРєР»СЋС‡РёС‚СЊ РєРѕРјРјСѓС‚Р°С‚РѕСЂ Рє РІС‹РІРѕРґСѓ
+  delay(200);
+  Serial.println(analogRead(A9));
+  if (analogRead(A9) > 512)                                              // РџСЂРѕРІРµСЂСЏРµРј РїРѕРґРєР»СЋС‡РµРЅРёРµ СЂР°Р·СЉРµРјР°
+  {
+    set_komm_mcp('A', 31, 'G');                                          // РџРѕРґРєР»СЋС‡РёС‚СЊ РєРѕРјРјСѓС‚Р°С‚РѕСЂ Рє РІС‹РІРѕРґСѓ
+    delay(2500);
+    Serial.println(analogRead(A9));
+    if (analogRead(A9) < 512)                                            // РџСЂРѕРІРµСЂСЏРµРј РїРѕРґРєР»СЋС‡РµРЅРёРµ СЂР°Р·СЉРµРјР°
+    {
+      strcpy_P(buffer, (char*)pgm_read_word(&(table_message[43])));      // РљР°Р±РµР»СЊ РґРёСЃРї. РїРѕРґРєР».
+      myGLCD.print(buffer, LEFT, 85);
+    }
+    else
+    {
+      strcpy_P(buffer, (char*)pgm_read_word(&(table_message[53])));      // РљР°Р±РµР»СЊ РґРёСЃРї. РѕС‚РєР».
+      myGLCD.print(buffer, LEFT, 85);
+    }
 
-		}
-		else
-		{
-			// Вывод замыкает на общий
-      		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[53])));     // Кабель дисп. откл.
-			myGLCD.print(buffer, CENTER, 85);                          
-		}
-	//delay(3000);
-	digitalWrite(48,HIGH);
-	digitalWrite(49,HIGH);
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[32])));   // 
-	//myGLCD.print(buffer, CENTER, 25);                               // 
-	myGLCD.setBackColor( 0, 0, 0);        
+  }
+  else
+  {
+    // Р’С‹РІРѕРґ Р·Р°РјС‹РєР°РµС‚ РЅР° РѕР±С‰РёР№
+    strcpy_P(buffer, (char*)pgm_read_word(&(table_message[53])));       // РљР°Р±РµР»СЊ РґРёСЃРї. РѕС‚РєР».
+    myGLCD.print(buffer, CENTER, 85);
+  }
+  //delay(3000);
+  digitalWrite(48, HIGH);
+  digitalWrite(49, HIGH);
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[32])));         //
+  //myGLCD.print(buffer, CENTER, 25);                                   //
+  myGLCD.setBackColor( 0, 0, 0);
 
 
-	delay(1000);
+  delay(1000);
 
-//	mcp_Out2.digitalWrite(14, LOW);                 // Отключить реле
+  //	mcp_Out2.digitalWrite(14, LOW);                                 // РћС‚РєР»СЋС‡РёС‚СЊ СЂРµР»Рµ
 }
 void test_panel_N3run()
- {
-   mcp_Out2.digitalWrite(14, LOW);                 // Отключить реле
- }
+{
+  mcp_Out2.digitalWrite(14, LOW);                                       // РћС‚РєР»СЋС‡РёС‚СЊ СЂРµР»Рµ
+}
 
 
 void test_all_pin()
 {
-	myGLCD.clrScr();
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[17]))); 
-	myGLCD.print(buffer, CENTER, 20);                                           // txt_test_all
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[18]))); 
-	myGLCD.print(buffer, CENTER, 180);                                          // txt_test_all_exit1
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[19]))); 
-	myGLCD.print(buffer, CENTER, 200);                                          // txt_test_all_exit2
-	byte canal_N = 0;
-	pinMode(47, INPUT);                                                         // Установить на вход  выход коммутаторов U15,U18,U22 (разъемы серии А на передней панели)
-	pinMode(46, INPUT);                                                         // Установить на вход  выход коммутаторов U13,U17,U23 (разъемы серии В на задней панели)
-	digitalWrite(47, HIGH);                                                     // Установить высокий уровень на выводе 47
-	digitalWrite(46, HIGH);                                                     // Установить высокий уровень на выводе 46
-	int i_step = 1;
+  myGLCD.clrScr();
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[17])));
+  myGLCD.print(buffer, CENTER, 20);                                           // txt_test_all
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[18])));
+  myGLCD.print(buffer, CENTER, 180);                                          // txt_test_all_exit1
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[19])));
+  myGLCD.print(buffer, CENTER, 200);                                          // txt_test_all_exit2
+  byte canal_N = 0;
+  pinMode(47, INPUT);                                                         // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РЅР° РІС…РѕРґ  РІС‹С…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂРѕРІ U15,U18,U22 (СЂР°Р·СЉРµРјС‹ СЃРµСЂРёРё Рђ РЅР° РїРµСЂРµРґРЅРµР№ РїР°РЅРµР»Рё)
+  pinMode(46, INPUT);                                                         // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РЅР° РІС…РѕРґ  РІС‹С…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂРѕРІ U13,U17,U23 (СЂР°Р·СЉРµРјС‹ СЃРµСЂРёРё Р’ РЅР° Р·Р°РґРЅРµР№ РїР°РЅРµР»Рё)
+  digitalWrite(47, HIGH);                                                     // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РІС‹СЃРѕРєРёР№ СѓСЂРѕРІРµРЅСЊ РЅР° РІС‹РІРѕРґРµ 47
+  digitalWrite(46, HIGH);                                                     // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РІС‹СЃРѕРєРёР№ СѓСЂРѕРІРµРЅСЊ РЅР° РІС‹РІРѕРґРµ 46
+  int i_step = 1;
 
-	while (true)
-	  {
-		if (myTouch.dataAvailable())
-		{
-		  myTouch.read();
-		  x=myTouch.getX();
-		  y=myTouch.getY();
-		
-		if (((y>=1) && (y<=150)) && ((x>=10) && (x<=319))) //Возврат
-		  {
-			myGLCD.setFont(BigFont);
-			break;
-		  }
-		}
-	    set_komm_mcp('A', i_step,'O');                                          // Переключить коммутатор разъемов серии "А" на вход
-		set_komm_mcp('B', i_step,'O');                                          // Переключить коммутатор разъемов серии "В" на вход
-		delay(10);
-		if (digitalRead(47) == LOW) 
-			{
-				myGLCD.print("A", CENTER, 80);
-				myGLCD.print("  ", CENTER, 105);
-				if (i_step == 39 ||i_step == 40 ||  i_step == 41)
-				{
-					myGLCD.print("1", CENTER, 105);
-				}
-				else
-				{
-					myGLCD.printNumI(i_step, CENTER, 105);
-				}
-			}
-		else if (digitalRead(46) == LOW) 
-			{
-				myGLCD.print("B", CENTER, 80);
-				myGLCD.print("  ", CENTER, 105);
-				if (i_step == 39 ||i_step == 40 ||  i_step == 41)
-				{
-					myGLCD.print("1", CENTER, 105);
-				}
-				else
-				{
-					myGLCD.printNumI(i_step, CENTER, 105);
-				}
-			}
-		  i_step++;
-		  if (i_step == 42) i_step = 1;
-	  }
+  while (true)
+  {
+    if (myTouch.dataAvailable())
+    {
+      myTouch.read();
+      x = myTouch.getX();
+      y = myTouch.getY();
+
+      if (((y >= 1) && (y <= 150)) && ((x >= 10) && (x <= 319))) //Р’РѕР·РІСЂР°С‚
+      {
+        myGLCD.setFont(BigFont);
+        break;
+      }
+    }
+    set_komm_mcp('A', i_step, 'O');                                         // РџРµСЂРµРєР»СЋС‡РёС‚СЊ РєРѕРјРјСѓС‚Р°С‚РѕСЂ СЂР°Р·СЉРµРјРѕРІ СЃРµСЂРёРё "Рђ" РЅР° РІС…РѕРґ
+    set_komm_mcp('B', i_step, 'O');                                         // РџРµСЂРµРєР»СЋС‡РёС‚СЊ РєРѕРјРјСѓС‚Р°С‚РѕСЂ СЂР°Р·СЉРµРјРѕРІ СЃРµСЂРёРё "Р’" РЅР° РІС…РѕРґ
+    delay(10);
+    if (digitalRead(47) == LOW)
+    {
+      myGLCD.print("A", CENTER, 80);
+      myGLCD.print("  ", CENTER, 105);
+      if (i_step == 39 || i_step == 40 ||  i_step == 41)
+      {
+        myGLCD.print("1", CENTER, 105);
+      }
+      else
+      {
+        myGLCD.printNumI(i_step, CENTER, 105);
+      }
+    }
+    else if (digitalRead(46) == LOW)
+    {
+      myGLCD.print("B", CENTER, 80);
+      myGLCD.print("  ", CENTER, 105);
+      if (i_step == 39 || i_step == 40 ||  i_step == 41)
+      {
+        myGLCD.print("1", CENTER, 105);
+      }
+      else
+      {
+        myGLCD.printNumI(i_step, CENTER, 105);
+      }
+    }
+    i_step++;
+    if (i_step == 42) i_step = 1;
+  }
 }
 
-//+++++++++++++++++++++ Осциллограф +++++++++++++++++++++++++++++
+//+++++++++++++++++++++ РћСЃС†РёР»Р»РѕРіСЂР°С„ +++++++++++++++++++++++++++++
 
 
-ISR(ADC_vect)  
-{  
-  // PORTB = B00000000; // пин 12 переводим в состояние LOW
- // PORTB = B01000000; // пин 12 переводим в состояние HIGH
+ISR(ADC_vect)
+{
+  // PORTB = B00000000; // РїРёРЅ 12 РїРµСЂРµРІРѕРґРёРј РІ СЃРѕСЃС‚РѕСЏРЅРёРµ LOW
+  // PORTB = B01000000; // РїРёРЅ 12 РїРµСЂРµРІРѕРґРёРј РІ СЃРѕСЃС‚РѕСЏРЅРёРµ HIGH
 
-   unsigned int	 analogValue = ADCL; // сохраняем младший байт результата АЦП
-    analogValue += ADCH << 8; // сохраняем старший байт АЦП
-	Sample_osc[i_osc][0] =  analogValue;
-//	Sample_osc[i_osc][0] = (ADCL|ADCH << 8);   // Считываем  ADC; 
-    i_osc++; 
+  unsigned int	 analogValue = ADCL; // СЃРѕС…СЂР°РЅСЏРµРј РјР»Р°РґС€РёР№ Р±Р°Р№С‚ СЂРµР·СѓР»СЊС‚Р°С‚Р° РђР¦Рџ
+  analogValue += ADCH << 8; // СЃРѕС…СЂР°РЅСЏРµРј СЃС‚Р°СЂС€РёР№ Р±Р°Р№С‚ РђР¦Рџ
+  Sample_osc[i_osc][0] =  analogValue;
+  //	Sample_osc[i_osc][0] = (ADCL|ADCH << 8);   // РЎС‡РёС‚С‹РІР°РµРј  ADC;
+  i_osc++;
 
-	 if(i_osc>=240)
-	 {
-      ADCSRA &= ~(1 << ADIE); //Выключить
- 	  ADC_end = true;
-	  i_osc=0;
-	 }
-   // PORTB = B01000000; // пин 12 переводим в состояние HIGH
+  if (i_osc >= 240)
+  {
+    ADCSRA &= ~(1 << ADIE); //Р’С‹РєР»СЋС‡РёС‚СЊ
+    ADC_end = true;
+    i_osc = 0;
+  }
+  // PORTB = B01000000; // РїРёРЅ 12 РїРµСЂРµРІРѕРґРёРј РІ СЃРѕСЃС‚РѕСЏРЅРёРµ HIGH
 
 
-	/*
-  // Read ADC data.
-#if RECORD_EIGHT_BITS
-  uint8_t d = ADCH;
-#else  // RECORD_EIGHT_BITS
-  // This will access ADCL first. 
-  uint16_t d = ADC;
-#endif  // RECORD_EIGHT_BITS
+  /*
+    // Read ADC data.
+    #if RECORD_EIGHT_BITS
+    uint8_t d = ADCH;
+    #else  // RECORD_EIGHT_BITS
+    // This will access ADCL first.
+    uint16_t d = ADC;
+    #endif  // RECORD_EIGHT_BITS
 
-  if (isrBufNeeded && emptyHead == emptyTail) {
+    if (isrBufNeeded && emptyHead == emptyTail) {
     // no buffers - count overrun
     if (isrOver < 0XFFFF) isrOver++;
-    
+
     // Avoid missed timer error.
     timerFlag = false;
     return;
-  }
-  // Start ADC
-  if (PIN_COUNT > 1) {
+    }
+    // Start ADC
+    if (PIN_COUNT > 1) {
     ADMUX = adcmux[adcindex];
     ADCSRB = adcsrb[adcindex];
     ADCSRA = adcsra[adcindex];
     if (adcindex == 0) timerFlag = false;
     adcindex =  adcindex < (PIN_COUNT - 1) ? adcindex + 1 : 0;
-  } else {
+    } else {
     timerFlag = false;
-  }
-  // Check for buffer needed.
-  if (isrBufNeeded) {   
+    }
+    // Check for buffer needed.
+    if (isrBufNeeded) {
     // Remove buffer from empty queue.
     isrBuf = emptyQueue[emptyTail];
     emptyTail = queueNext(emptyTail);
     isrBuf->count = 0;
     isrBuf->overrun = isrOver;
-    isrBufNeeded = false;    
-  }
-  // Store ADC data.
-  isrBuf->data[isrBuf->count++] = d;
+    isrBufNeeded = false;
+    }
+    // Store ADC data.
+    isrBuf->data[isrBuf->count++] = d;
 
-  // Check for buffer full.
-  if (isrBuf->count >= PIN_COUNT*SAMPLES_PER_BLOCK) {
-    // Put buffer isrIn full queue.  
+    // Check for buffer full.
+    if (isrBuf->count >= PIN_COUNT*SAMPLES_PER_BLOCK) {
+    // Put buffer isrIn full queue.
     uint8_t tmp = fullHead;  // Avoid extra fetch of volatile fullHead.
     fullQueue[tmp] = (block_t*)isrBuf;
     fullHead = queueNext(tmp);
-   
+
     // Set buffer needed and clear overruns.
     isrBufNeeded = true;
     isrOver = 0;
-  }
+    }
   */
 
-  // int  d  = (ADCL|ADCH << 8);      // Считываем  ADC; 
+  // int  d  = (ADCL|ADCH << 8);      // РЎС‡РёС‚С‹РІР°РµРј  ADC;
 
- //  Sample_osc[i_osc][0] = (ADCL|ADCH << 8);   // Считываем  ADC; 
+  //  Sample_osc[i_osc][0] = (ADCL|ADCH << 8);   // РЎС‡РёС‚С‹РІР°РµРј  ADC;
 
- //   i_osc++; 
+  //   i_osc++;
 
 
 
- /* if(i_osc==240)  
-      { */
-//        UART_SendByte(170); 
-//        UART_SendByte(204); 
-//        UART_SendByte(195); 
-//        for (i=0; i<800; i++)  UART_SendByte(MyBuff[i]);  
-//		  cli(); // Глобально запрещаем прерывания
+  /* if(i_osc==240)
+       { */
+  //        UART_SendByte(170);
+  //        UART_SendByte(204);
+  //        UART_SendByte(195);
+  //        for (i=0; i<800; i++)  UART_SendByte(MyBuff[i]);
+  //		  cli(); // Р“Р»РѕР±Р°Р»СЊРЅРѕ Р·Р°РїСЂРµС‰Р°РµРј РїСЂРµСЂС‹РІР°РЅРёСЏ
 
-	//	ADCSRA |=   (0 << ADIE);
-/*        ADC_end = true;
-        i_osc=0; 
-      }   */     
-}  
+  //	ADCSRA |=   (0 << ADIE);
+  /*        ADC_end = true;
+          i_osc=0;
+        }   */
+}
 
-/*** Настройка АЦП ***/
-//ADCSRA |= (1 << ADEN) // Включение АЦП
-//             |(1 << ADPS1)|(1 << ADPS0);    // предделитель преобразователя на 8
-//ADMUX |= (0 << REFS1)|(0 << REFS0) // внешний ИОН
-//            |(0 << MUX0)|(0 << MUX1)|(0 << MUX2)|(0 << MUX3); // вход PC0
- 
-//ADCSRA |= (1 << ADSC);    // Начинаем преобразование
-//while ((ADCSRA&(1 << ADIF))== 0); // Ждем флага окончания преобразования    
-//  
-//u = (ADCL|ADCH << 8); // Считываем  ADC
+/*** РќР°СЃС‚СЂРѕР№РєР° РђР¦Рџ ***/
+//ADCSRA |= (1 << ADEN) // Р’РєР»СЋС‡РµРЅРёРµ РђР¦Рџ
+//             |(1 << ADPS1)|(1 << ADPS0);    // РїСЂРµРґРґРµР»РёС‚РµР»СЊ РїСЂРµРѕР±СЂР°Р·РѕРІР°С‚РµР»СЏ РЅР° 8
+//ADMUX |= (0 << REFS1)|(0 << REFS0) // РІРЅРµС€РЅРёР№ РРћРќ
+//            |(0 << MUX0)|(0 << MUX1)|(0 << MUX2)|(0 << MUX3); // РІС…РѕРґ PC0
+
+//ADCSRA |= (1 << ADSC);    // РќР°С‡РёРЅР°РµРј РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ
+//while ((ADCSRA&(1 << ADIF))== 0); // Р–РґРµРј С„Р»Р°РіР° РѕРєРѕРЅС‡Р°РЅРёСЏ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ
+//
+//u = (ADCL|ADCH << 8); // РЎС‡РёС‚С‹РІР°РµРј  ADC
 /*
   7     6     5    4     3    2   1    0
-REFS1|REFS0|ADLAR|MUX4|MUX3|MUX2|MUX1|MUX0|
+  REFS1|REFS0|ADLAR|MUX4|MUX3|MUX2|MUX1|MUX0|
 
-MUX4...0  | Вход АЦП   Mega
-00000     | ADC0        A0
-00001     | ADC1        A1
-00010     | ADC2        A2
-00011     | ADC3        A3
-00100     | ADC4        A4
-00101     | ADC5        A5
-00110     | ADC6        A6
-00111     | ADC7        A7
+  MUX4...0  | Р’С…РѕРґ РђР¦Рџ   Mega
+  00000     | ADC0        A0
+  00001     | ADC1        A1
+  00010     | ADC2        A2
+  00011     | ADC3        A3
+  00100     | ADC4        A4
+  00101     | ADC5        A5
+  00110     | ADC6        A6
+  00111     | ADC7        A7
 
-Использование всех аналоговых входов
+  РСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ РІСЃРµС… Р°РЅР°Р»РѕРіРѕРІС‹С… РІС…РѕРґРѕРІ
 
 
-010000    | ADC0  
-010001    | ADC1  
-010010    | ADC2  
-010011    | ADC3 
-010100    | ADC4 
-010101    | ADC5 
-010110    | ADC6 
-010111    | ADC7  
+  010000    | ADC0
+  010001    | ADC1
+  010010    | ADC2
+  010011    | ADC3
+  010100    | ADC4
+  010101    | ADC5
+  010110    | ADC6
+  010111    | ADC7
 
-ADCSRB – ADC Control and Status Register B
+  ADCSRB вЂ“ ADC Control and Status Register B
    Bit   7     6    5   4    3       2       1       0
-(0x7B) | – | ACME | – | – | MUX5 | ADTS2 | ADTS1 | ADTS0       ADCSRB
-Bit 3 – MUX5: Analog Channel and Gain Selection Bit
+  (0x7B) | вЂ“ | ACME | вЂ“ | вЂ“ | MUX5 | ADTS2 | ADTS1 | ADTS0       ADCSRB
+  Bit 3 вЂ“ MUX5: Analog Channel and Gain Selection Bit
 
-100000    | ADC8
-100001    | ADC9
-100010    | ADC10
-100011    | ADC11
-100100    | ADC12
-100101    | ADC13
-100110    | ADC14
-100111    | ADC15
+  100000    | ADC8
+  100001    | ADC9
+  100010    | ADC10
+  100011    | ADC11
+  100100    | ADC12
+  100101    | ADC13
+  100110    | ADC14
+  100111    | ADC15
 
 */
 
 //------------------------------------------------------------------------------
 // timer1 interrupt to clear OCF1B
-ISR(TIMER1_COMPB_vect) 
+ISR(TIMER1_COMPB_vect)
 {
-	digitalWrite(ledPin13, !digitalRead(ledPin13));      
+  digitalWrite(ledPin13, !digitalRead(ledPin13));
   // Make sure ADC ISR responded to timer event.
   if (timerFlag) timerError = true;
   timerFlag = true;
@@ -4057,14 +4058,14 @@ ISR(TIMER1_COMPB_vect)
 // Error messages stored in flash.
 #define error(msg) error_P(PSTR(msg))
 //------------------------------------------------------------------------------
-void error_P(const char* msg) 
+void error_P(const char* msg)
 {
-//  sd.errorPrint_P(msg);
+  //  sd.errorPrint_P(msg);
   fatalBlink();
 }
 //------------------------------------------------------------------------------
 //
-void fatalBlink() 
+void fatalBlink()
 {
   while (true) {
     if (ERROR_LED_PIN >= 0) {
@@ -4081,38 +4082,38 @@ void fatalBlink()
 #endif
 //------------------------------------------------------------------------------
 // initialize ADC and timer1
-void adcInit(metadata_t* meta) 
+void adcInit(metadata_t* meta)
 {
   uint8_t adps;  // prescaler bits for ADCSRA
-  uint32_t ticks = F_CPU*SAMPLE_INTERVAL + 0.5;  // Sample interval cpu cycles.
+  uint32_t ticks = F_CPU * SAMPLE_INTERVAL + 0.5; // Sample interval cpu cycles.
 
-  if (ADC_REF & ~((1 << REFS0) | (1 << REFS1))) 
+  if (ADC_REF & ~((1 << REFS0) | (1 << REFS1)))
   {
     //error("Invalid ADC reference");
   }
 #ifdef ADC_PRESCALER
-  if (ADC_PRESCALER > 7 || ADC_PRESCALER < 2) 
+  if (ADC_PRESCALER > 7 || ADC_PRESCALER < 2)
   {
-   // error("Invalid ADC prescaler");
+    // error("Invalid ADC prescaler");
   }
   adps = ADC_PRESCALER;
 #else  // ADC_PRESCALER
   // Allow extra cpu cycles to change ADC settings if more than one pin.
-  int32_t adcCycles = (ticks - ISR_TIMER0)/PIN_COUNT;
+  int32_t adcCycles = (ticks - ISR_TIMER0) / PIN_COUNT;
   - (PIN_COUNT > 1 ? ISR_SETUP_ADC : 0);
 
-  for (adps = 7; adps > 0; adps--) 
+  for (adps = 7; adps > 0; adps--)
   {
-    if (adcCycles >= (MIN_ADC_CYCLES << adps)) 
-	{
+    if (adcCycles >= (MIN_ADC_CYCLES << adps))
+    {
       break;
     }
   }
 #endif  // ADC_PRESCALER
   meta->adcFrequency = F_CPU >> adps;
-  if (meta->adcFrequency > (RECORD_EIGHT_BITS ? 2000000 : 1000000)) 
+  if (meta->adcFrequency > (RECORD_EIGHT_BITS ? 2000000 : 1000000))
   {
-   // error("Sample Rate Too High");
+    // error("Sample Rate Too High");
   }
 #if ROUND_SAMPLE_INTERVAL
   // Round so interval is multiple of ADC clock.
@@ -4121,77 +4122,77 @@ void adcInit(metadata_t* meta)
   ticks <<= adps;
 #endif  // ROUND_SAMPLE_INTERVAL
 
-  if (PIN_COUNT > sizeof(meta->pinNumber)/sizeof(meta->pinNumber[0])) 
+  if (PIN_COUNT > sizeof(meta->pinNumber) / sizeof(meta->pinNumber[0]))
   {
-   // error("Too many pins");
+    // error("Too many pins");
   }
   meta->pinCount = PIN_COUNT;
   meta->recordEightBits = RECORD_EIGHT_BITS;
 
-  for (int i = 0; i < PIN_COUNT; i++) 
+  for (int i = 0; i < PIN_COUNT; i++)
   {
-	uint8_t pin = PIN_LIST[i];
-	if (pin >= NUM_ANALOG_INPUTS) 
-		{
-		  //error("Invalid Analog pin number");
-		}
-		meta->pinNumber[i] = pin;
+    uint8_t pin = PIN_LIST[i];
+    if (pin >= NUM_ANALOG_INPUTS)
+    {
+      //error("Invalid Analog pin number");
+    }
+    meta->pinNumber[i] = pin;
 
-		// Set ADC reference and low three bits of analog pin number.
-		adcmux[i] = (pin & 7) | ADC_REF;
-		if (RECORD_EIGHT_BITS)
-		{
-		  adcmux[i] |= 1 << ADLAR;
-		}
+    // Set ADC reference and low three bits of analog pin number.
+    adcmux[i] = (pin & 7) | ADC_REF;
+    if (RECORD_EIGHT_BITS)
+    {
+      adcmux[i] |= 1 << ADLAR;
+    }
 
-		// If this is the first pin, trigger on timer/counter 1 compare match B.
-		adcsrb[i] = i == 0 ? (1 << ADTS2) | (1 << ADTS0) : 0;
-	#ifdef MUX5
-		if (pin > 7) 
-		{
-		  adcsrb[i] |= (1 << MUX5);
-		}
-	#endif  // MUX5
-		adcsra[i] = (1 << ADEN) | (1 << ADIE) | adps;
-		adcsra[i] |= i == 0 ? 1 << ADATE : 1 << ADSC;
+    // If this is the first pin, trigger on timer/counter 1 compare match B.
+    adcsrb[i] = i == 0 ? (1 << ADTS2) | (1 << ADTS0) : 0;
+#ifdef MUX5
+    if (pin > 7)
+    {
+      adcsrb[i] |= (1 << MUX5);
+    }
+#endif  // MUX5
+    adcsra[i] = (1 << ADEN) | (1 << ADIE) | adps;
+    adcsra[i] |= i == 0 ? 1 << ADATE : 1 << ADSC;
   }
 
   // Setup timer1
   TCCR1A = 0;
   uint8_t tshift;
-  if (ticks < 0X10000) 
+  if (ticks < 0X10000)
   {
     // no prescale, CTC mode
     TCCR1B = (1 << WGM13) | (1 << WGM12) | (1 << CS10);
     tshift = 0;
   }
-  else if (ticks < 0X10000*8) 
+  else if (ticks < 0X10000 * 8)
   {
     // prescale 8, CTC mode
     TCCR1B = (1 << WGM13) | (1 << WGM12) | (1 << CS11);
     tshift = 3;
-  } 
-  else if (ticks < 0X10000*64) 
+  }
+  else if (ticks < 0X10000 * 64)
   {
     // prescale 64, CTC mode
     TCCR1B = (1 << WGM13) | (1 << WGM12) | (1 << CS11) | (1 << CS10);
     tshift = 6;
   }
-  else if (ticks < 0X10000*256) 
+  else if (ticks < 0X10000 * 256)
   {
     // prescale 256, CTC mode
     TCCR1B = (1 << WGM13) | (1 << WGM12) | (1 << CS12);
     tshift = 8;
-  } 
-  else if (ticks < 0X10000*1024) 
+  }
+  else if (ticks < 0X10000 * 1024)
   {
     // prescale 1024, CTC mode
     TCCR1B = (1 << WGM13) | (1 << WGM12) | (1 << CS12) | (1 << CS10);
     tshift = 10;
   }
-  else 
+  else
   {
-   // error("Sample Rate Too Slow");
+    // error("Sample Rate Too Slow");
   }
   // divide by prescaler
   ticks >>= tshift;
@@ -4206,9 +4207,9 @@ void adcInit(metadata_t* meta)
   // Sample interval in CPU clock ticks.
   meta->sampleInterval = ticks;
   meta->cpuFrequency = F_CPU;
-  float sampleRate = (float)meta->cpuFrequency/meta->sampleInterval;
+  float sampleRate = (float)meta->cpuFrequency / meta->sampleInterval;
   Serial.print(F("Sample pins:"));
-  for (int i = 0; i < meta->pinCount; i++) 
+  for (int i = 0; i < meta->pinCount; i++)
   {
     Serial.print(' ');
     Serial.print(meta->pinNumber[i], DEC);
@@ -4217,17 +4218,17 @@ void adcInit(metadata_t* meta)
   Serial.print(F("ADC bits: "));
   Serial.println(meta->recordEightBits ? 8 : 10);
   Serial.print(F("ADC clock kHz: "));
-  Serial.println(meta->adcFrequency/1000);
+  Serial.println(meta->adcFrequency / 1000);
   Serial.print(F("Sample Rate: "));
   Serial.println(sampleRate);
   Serial.print(F("Sample interval usec: "));
-  Serial.println(1000000.0/sampleRate, 4);
+  Serial.println(1000000.0 / sampleRate, 4);
 }
 //------------------------------------------------------------------------------
 // enable ADC and timer1 interrupts
-void adcStart() 
+void adcStart()
 {
- // initialize ISR
+  // initialize ISR
   isrBufNeeded = true;
   isrOver = 0;
   adcindex = 1;
@@ -4258,1536 +4259,1764 @@ void adcStop()
 // log data
 // max number of blocks to erase per erase call
 uint32_t const ERASE_SIZE = 262144L;
-void logData() 
+void logData()
 {
-	myGLCD.clrScr();
-	myGLCD.setBackColor( 0, 0, 0);
-	delay(500);
-	myGLCD.clrScr();
-	buttons_right();
-	buttons_channel();
-	myGLCD.setBackColor( 0, 0, 0);
-	myGLCD.setFont( BigFont);
-	myGLCD.setColor(VGA_LIME);
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[15]))); 
-	myGLCD.print(buffer,LEFT, 180);                                  // txt_info29
-	mode1 = 2;
-	int x_dTime;
-	int xpos;
-	int ypos1;
-	int ypos2;
+  myGLCD.clrScr();
+  myGLCD.setBackColor( 0, 0, 0);
+  delay(500);
+  myGLCD.clrScr();
+  buttons_right();
+  buttons_channel();
+  myGLCD.setBackColor( 0, 0, 0);
+  myGLCD.setFont( BigFont);
+  myGLCD.setColor(VGA_LIME);
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[15])));
+  myGLCD.print(buffer, LEFT, 180);                                 // txt_info29
+  mode1 = 2;
+  int x_dTime;
+  int xpos;
+  int ypos1;
+  int ypos2;
 
-	int ypos_osc1_0;
-	int ypos_osc1_1;
-	int ypos_osc1_2;
-	int ypos_osc1_3;
+  int ypos_osc1_0;
+  int ypos_osc1_1;
+  int ypos_osc1_2;
+  int ypos_osc1_3;
 
-	int ypos_osc2_0;
-	int ypos_osc2_1;
-	int ypos_osc2_2;
-	int ypos_osc2_3;
+  int ypos_osc2_0;
+  int ypos_osc2_1;
+  int ypos_osc2_2;
+  int ypos_osc2_3;
 
-	ADC_end = false;
+  ADC_end = false;
 
-			ADCSRA |=(1 << ADEN);                                // Разрешение АЦП
-			ADCSRA |=(1 << ADATE);                               // Непрерывный режим работы АЦП З
-	//		ADCSRA |=(1 << ADIE);                                // Разрешение прерывания от АЦП
-	//		ADCSRA |=(0 << ADIF);                                // Флаг прерывания в "0"
-			ADCSRA |=(1 << ADPS2)|(0 << ADPS1)|(0 << ADPS0);     // Предделитель на 
-			ADCSRA |=(0 << ADSC) ;                               // ADC Start Conversion запрещаем
+  ADCSRA |= (1 << ADEN);                               // Р Р°Р·СЂРµС€РµРЅРёРµ РђР¦Рџ
+  ADCSRA |= (1 << ADATE);                              // РќРµРїСЂРµСЂС‹РІРЅС‹Р№ СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ РђР¦Рџ Р—
+  //		ADCSRA |=(1 << ADIE);                                // Р Р°Р·СЂРµС€РµРЅРёРµ РїСЂРµСЂС‹РІР°РЅРёСЏ РѕС‚ РђР¦Рџ
+  //		ADCSRA |=(0 << ADIF);                                // Р¤Р»Р°Рі РїСЂРµСЂС‹РІР°РЅРёСЏ РІ "0"
+  ADCSRA |= (1 << ADPS2) | (0 << ADPS1) | (0 << ADPS0); // РџСЂРµРґРґРµР»РёС‚РµР»СЊ РЅР°
+  ADCSRA |= (0 << ADSC) ;                              // ADC Start Conversion Р·Р°РїСЂРµС‰Р°РµРј
 
-			ADMUX   =(0<<ADLAR)                                 // результат преобразования выравнивается по правой границе 
-					|(0<<REFS1)|(1<<REFS0)                      // Установить источник опорного напряжения  5в.   
-					|(0 << MUX4) |(0 << MUX3) | (1 << MUX2) | (1 << MUX1) | (0 << MUX0) ; //  Установлен вход А14
-			ADCSRB|= (1 << MUX5);                               //  Установлен вход А14
-
-
-	for( xpos = 0; xpos < 239;	xpos ++) // Стереть старые данные
-
-		{
-			OldSample_osc[xpos][0] = 0;
-			OldSample_osc[xpos][1] = 0;
-		}
-
-	while(1) 
-	{
-		 DrawGrid();
-		 if (myTouch.dataAvailable())
-			{
-				delay(10);
-				myTouch.read();
-				x_osc=myTouch.getX();
-				y_osc=myTouch.getY();
-
-				if ((x_osc>=2) && (x_osc<=240))  //  Область экрана
-					{
-						if ((y_osc>=1) && (y_osc<=160))  // Delay row
-						{
-							break;
-						} 
-					}
-
-				myGLCD.setBackColor( 0, 0, 255);
-				myGLCD.setFont( SmallFont);
-				myGLCD.setColor (255, 255,255);
-				myGLCD.drawRoundRect (250, 1, 318, 40);
-				myGLCD.drawRoundRect (250, 45, 318, 85);
-				myGLCD.drawRoundRect (250, 90, 318, 130);
-				myGLCD.drawRoundRect (250, 135, 318, 175);
-
-			if ((x_osc>=250) && (x_osc<=284))  // Боковые кнопки
-			  {
-				  if ((y_osc>=1) && (y_osc<=40))  // Первая  период
-				  {
-					waitForIt(250, 1, 318, 40);
-					mode -- ;
-					if (mode < 0) mode = 0;   
-					// Select delay times you can change values to suite your needs
-					if (mode == 0) {dTime = 1;    x_dTime = 282;}
-					if (mode == 1) {dTime = 10;   x_dTime = 278;}
-					if (mode == 2) {dTime = 20;   x_dTime = 278;}
-					if (mode == 3) {dTime = 50;   x_dTime = 278;}
-					if (mode == 4) {dTime = 100;  x_dTime = 274;}
-					if (mode == 5) {dTime = 200;  x_dTime = 274;}
-					if (mode == 6) {dTime = 300;  x_dTime = 274;}
-					if (mode == 7) {dTime = 500;  x_dTime = 274;}
-					if (mode == 8) {dTime = 1000; x_dTime = 270;}
-					if (mode == 9) {dTime = 5000; x_dTime = 270;}
-					myGLCD.print("    ", 270, 22);
-					myGLCD.printNumI(dTime, x_dTime, 22);
-				  }
-
-			 if ((y_osc>=45) && (y_osc<=85))  // Вторая - триггер
-				 {
-					waitForIt(250, 45, 318, 85);
-					tmode --;
-					if (tmode < 0)tmode = 0;
-					if (tmode == 1){ Trigger = MinAnalog+10; myGLCD.print(" 0%  ", 268, 65);}
-					if (tmode == 2){ Trigger = MaxAnalog/2;  myGLCD.print(" 50% ", 266, 65);}
-					if (tmode == 3){ Trigger = MaxAnalog-10; myGLCD.print("100%", 270, 65);}
-					if (tmode == 0)myGLCD.print(" Off ", 268, 65);
-				 }
-			 if ((y_osc>=90) && (y_osc<=130))  // Третья - делитель
-				 {
-					waitForIt(250, 90, 318, 130);
-					mode1 -- ;
-					myGLCD.setColor( 0, 0, 0);
-					myGLCD.fillRoundRect (1, 1,239, 159);
-					myGLCD.setColor (255, 255, 255);
-					myGLCD.setBackColor( 0, 0, 255);
-					myGLCD.setFont( SmallFont);
-					if (mode1 < 0) mode1 = 0;   
-					if (mode1 == 0){ koeff_h = 7.759*4; myGLCD.print(" 1  ", 275, 110);}
-					if (mode1 == 1){ koeff_h = 3.879*4; myGLCD.print("0.5 ", 275, 110);}
-					if (mode1 == 2){ koeff_h = 1.939*4; myGLCD.print("0.25", 275, 110);}
-					if (mode1 == 3){ koeff_h = 0.969*4; myGLCD.print("0.1 ", 275, 110);}
-				 }
-			 if ((y_osc>=135) && (y_osc<=175))  // Четвертая разрешение
-				 {
-
-				 }
-		   }
-		
-			if ((x_osc>=284) && (x_osc<=318))  // Боковые кнопки
-			  {
-				  if ((y_osc>=1) && (y_osc<=40))  // Первая  период
-				  {
-					waitForIt(250, 1, 318, 40);
-					mode ++ ;
-					if (mode > 9) mode = 9;   
-					if (mode == 0) {dTime = 1;    x_dTime = 282;}
-					if (mode == 1) {dTime = 10;   x_dTime = 278;}
-					if (mode == 2) {dTime = 20;   x_dTime = 278;}
-					if (mode == 3) {dTime = 50;   x_dTime = 278;}
-					if (mode == 4) {dTime = 100;  x_dTime = 274;}
-					if (mode == 5) {dTime = 200;  x_dTime = 274;}
-					if (mode == 6) {dTime = 300;  x_dTime = 274;}
-					if (mode == 7) {dTime = 500;  x_dTime = 274;}
-					if (mode == 8) {dTime = 1000; x_dTime = 270;}
-					if (mode == 9) {dTime = 5000; x_dTime = 270;}
-					myGLCD.print("    ", 270, 22);
-					myGLCD.printNumI(dTime, x_dTime, 22);
-				  }
-
-			 if ((y_osc>=45) && (y_osc<=85))  // Вторая - триггер
-				 {
-					waitForIt(250, 45, 318, 85);
-					tmode ++;
-					if (tmode > 3)tmode = 3;
-					if (tmode == 1){ Trigger = MinAnalog+10; myGLCD.print(" 0%  ", 268, 65);}
-					if (tmode == 2){ Trigger = MaxAnalog/2;  myGLCD.print(" 50% ", 266, 65);}
-					if (tmode == 3){ Trigger = MaxAnalog-10; myGLCD.print("100%", 270, 65);}
-					if (tmode == 0)myGLCD.print(" Off ", 268, 65);
-				 }
-			 if ((y_osc>=90) && (y_osc<=130))  // Третья - делитель
-				 {
-					waitForIt(250, 90, 318, 130);
-					mode1 ++ ;
-					myGLCD.setColor( 0, 0, 0);
-					myGLCD.fillRoundRect (1, 1,239, 159);
-					myGLCD.setColor (255, 255, 255);
-					myGLCD.setBackColor( 0, 0, 255);
-					myGLCD.setFont( SmallFont);
-					if (mode1 > 3) mode1 = 3;   
-					if (mode1 == 0){ koeff_h = 7.759*4; myGLCD.print(" 1  ", 275, 110);}
-					if (mode1 == 1){ koeff_h = 3.879*4; myGLCD.print("0.5 ", 275, 110);}
-					if (mode1 == 2){ koeff_h = 1.939*4; myGLCD.print("0.25", 275, 110);}
-					if (mode1 == 3){ koeff_h = 0.969*4; myGLCD.print("0.1 ", 275, 110);}
-				 }
-			 if ((y_osc>=135) && (y_osc<=175))  // Четвертая разрешение
-				 {
-					waitForIt(250, 135, 318, 175);
-				 }
-		   }
-
-		if ((x_osc>=250) && (x_osc<=318))  
-
-			{
-			if ((y_osc>=200) && (y_osc<=239))  //   Нижние кнопки  
-				{
-					waitForIt(250, 200, 318, 238);
-					Channel_trig = 0;
-					t_in_mode ++;
-						if (t_in_mode > 3)
-							{
-								t_in_mode = 0;
-							}
-						switch_trig(t_in_mode);
-						myGLCD.setBackColor( 0, 0, 255);
-						myGLCD.setColor (255, 255,255);
-						myGLCD.printNumI(t_in_mode, 282, 214);
-				}
-		  }
-
-			 if ((y_osc>=205) && (y_osc<=239))  // Нижние кнопки переключения входов
-					{
-						 touch_osc();
-					}
-		}
-
-		// trig_min_max(t_in_mode);
-		// if (tmode>0) trigger();
-		//    trigger();
-			//ADCSRA |=(1 << ADEN);                                // Разрешение АЦП
-			//ADCSRA |=(1 << ADATE);                               // Непрерывный режим работы АЦП
-			ADCSRA |=(1 << ADIE);                                  // Разрешение прерывания от АЦП
-		//	ADCSRA |=(0 << ADIF);                                  // Флаг прерывания в "0"
-		//    PORTB = B00000000; // пин 12 переводим в состояние LOW
- // PORTB = B01000000; // пин 12 переводим в состояние HIGH
-
-			//ADCSRA |=(1 << ADPS2)|(0 << ADPS1)|(0 << ADPS0);     // Предделитель на 
-			//ADCSRA  |=(1 << ADSC) ;                              // ADC Start Conversion
-
-			//ADMUX   =(0<<ADLAR)                                 // результат преобразования выравнивается по правой границе 
-			//		|(0<<REFS1)|(1<<REFS0)                      // Установить источник опорного напряжения  5в.   
-			//		|(0 << MUX4) |(0 << MUX3) | (1 << MUX2) | (1 << MUX1) | (0 << MUX0) ; //  Установлен вход А14
-			//ADCSRB|= (1 << MUX5);                               //  Установлен вход А14
+  ADMUX   = (0 << ADLAR)                              // СЂРµР·СѓР»СЊС‚Р°С‚ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ РІС‹СЂР°РІРЅРёРІР°РµС‚СЃСЏ РїРѕ РїСЂР°РІРѕР№ РіСЂР°РЅРёС†Рµ
+            | (0 << REFS1) | (1 << REFS0)               // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РёСЃС‚РѕС‡РЅРёРє РѕРїРѕСЂРЅРѕРіРѕ РЅР°РїСЂСЏР¶РµРЅРёСЏ  5РІ.
+            | (0 << MUX4) | (0 << MUX3) | (1 << MUX2) | (1 << MUX1) | (0 << MUX0) ; //  РЈСЃС‚Р°РЅРѕРІР»РµРЅ РІС…РѕРґ Рђ14
+  ADCSRB |= (1 << MUX5);                              //  РЈСЃС‚Р°РЅРѕРІР»РµРЅ РІС…РѕРґ Рђ14
 
 
-		    ADCSRA  |=(1 << ADSC) ;  // ADC Start Conversion
+  for ( xpos = 0; xpos < 239;	xpos ++) // РЎС‚РµСЂРµС‚СЊ СЃС‚Р°СЂС‹Рµ РґР°РЅРЅС‹Рµ
 
-		//	while(!ADIF){}
-			//if (ADIF) PORTB = B01000000; // пин 12 переводим в состояние HIGH
-			while(ADC_end){}
-	
-			ADC_end = false;
-		// Записать аналоговый сигнал в блок памяти
-		StartSample = micros();
+  {
+    OldSample_osc[xpos][0] = 0;
+    OldSample_osc[xpos][1] = 0;
+  }
+
+  while (1)
+  {
+    DrawGrid();
+    if (myTouch.dataAvailable())
+    {
+      delay(10);
+      myTouch.read();
+      x_osc = myTouch.getX();
+      y_osc = myTouch.getY();
+
+      if ((x_osc >= 2) && (x_osc <= 240)) //  РћР±Р»Р°СЃС‚СЊ СЌРєСЂР°РЅР°
+      {
+        if ((y_osc >= 1) && (y_osc <= 160)) // Delay row
+        {
+          break;
+        }
+      }
+
+      myGLCD.setBackColor( 0, 0, 255);
+      myGLCD.setFont( SmallFont);
+      myGLCD.setColor (255, 255, 255);
+      myGLCD.drawRoundRect (250, 1, 318, 40);
+      myGLCD.drawRoundRect (250, 45, 318, 85);
+      myGLCD.drawRoundRect (250, 90, 318, 130);
+      myGLCD.drawRoundRect (250, 135, 318, 175);
+
+      if ((x_osc >= 250) && (x_osc <= 284)) // Р‘РѕРєРѕРІС‹Рµ РєРЅРѕРїРєРё
+      {
+        if ((y_osc >= 1) && (y_osc <= 40)) // РџРµСЂРІР°СЏ  РїРµСЂРёРѕРґ
+        {
+          waitForIt(250, 1, 318, 40);
+          mode -- ;
+          if (mode < 0) mode = 0;
+          // Select delay times you can change values to suite your needs
+          if (mode == 0) {
+            dTime = 1;
+            x_dTime = 282;
+          }
+          if (mode == 1) {
+            dTime = 10;
+            x_dTime = 278;
+          }
+          if (mode == 2) {
+            dTime = 20;
+            x_dTime = 278;
+          }
+          if (mode == 3) {
+            dTime = 50;
+            x_dTime = 278;
+          }
+          if (mode == 4) {
+            dTime = 100;
+            x_dTime = 274;
+          }
+          if (mode == 5) {
+            dTime = 200;
+            x_dTime = 274;
+          }
+          if (mode == 6) {
+            dTime = 300;
+            x_dTime = 274;
+          }
+          if (mode == 7) {
+            dTime = 500;
+            x_dTime = 274;
+          }
+          if (mode == 8) {
+            dTime = 1000;
+            x_dTime = 270;
+          }
+          if (mode == 9) {
+            dTime = 5000;
+            x_dTime = 270;
+          }
+          myGLCD.print("    ", 270, 22);
+          myGLCD.printNumI(dTime, x_dTime, 22);
+        }
+
+        if ((y_osc >= 45) && (y_osc <= 85)) // Р’С‚РѕСЂР°СЏ - С‚СЂРёРіРіРµСЂ
+        {
+          waitForIt(250, 45, 318, 85);
+          tmode --;
+          if (tmode < 0)tmode = 0;
+          if (tmode == 1) {
+            Trigger = MinAnalog + 10;
+            myGLCD.print(" 0%  ", 268, 65);
+          }
+          if (tmode == 2) {
+            Trigger = MaxAnalog / 2;
+            myGLCD.print(" 50% ", 266, 65);
+          }
+          if (tmode == 3) {
+            Trigger = MaxAnalog - 10;
+            myGLCD.print("100%", 270, 65);
+          }
+          if (tmode == 0)myGLCD.print(" Off ", 268, 65);
+        }
+        if ((y_osc >= 90) && (y_osc <= 130)) // РўСЂРµС‚СЊСЏ - РґРµР»РёС‚РµР»СЊ
+        {
+          waitForIt(250, 90, 318, 130);
+          mode1 -- ;
+          myGLCD.setColor( 0, 0, 0);
+          myGLCD.fillRoundRect (1, 1, 239, 159);
+          myGLCD.setColor (255, 255, 255);
+          myGLCD.setBackColor( 0, 0, 255);
+          myGLCD.setFont( SmallFont);
+          if (mode1 < 0) mode1 = 0;
+          if (mode1 == 0) {
+            koeff_h = 7.759 * 4;
+            myGLCD.print(" 1  ", 275, 110);
+          }
+          if (mode1 == 1) {
+            koeff_h = 3.879 * 4;
+            myGLCD.print("0.5 ", 275, 110);
+          }
+          if (mode1 == 2) {
+            koeff_h = 1.939 * 4;
+            myGLCD.print("0.25", 275, 110);
+          }
+          if (mode1 == 3) {
+            koeff_h = 0.969 * 4;
+            myGLCD.print("0.1 ", 275, 110);
+          }
+        }
+        if ((y_osc >= 135) && (y_osc <= 175)) // Р§РµС‚РІРµСЂС‚Р°СЏ СЂР°Р·СЂРµС€РµРЅРёРµ
+        {
+
+        }
+      }
+
+      if ((x_osc >= 284) && (x_osc <= 318)) // Р‘РѕРєРѕРІС‹Рµ РєРЅРѕРїРєРё
+      {
+        if ((y_osc >= 1) && (y_osc <= 40)) // РџРµСЂРІР°СЏ  РїРµСЂРёРѕРґ
+        {
+          waitForIt(250, 1, 318, 40);
+          mode ++ ;
+          if (mode > 9) mode = 9;
+          if (mode == 0) {
+            dTime = 1;
+            x_dTime = 282;
+          }
+          if (mode == 1) {
+            dTime = 10;
+            x_dTime = 278;
+          }
+          if (mode == 2) {
+            dTime = 20;
+            x_dTime = 278;
+          }
+          if (mode == 3) {
+            dTime = 50;
+            x_dTime = 278;
+          }
+          if (mode == 4) {
+            dTime = 100;
+            x_dTime = 274;
+          }
+          if (mode == 5) {
+            dTime = 200;
+            x_dTime = 274;
+          }
+          if (mode == 6) {
+            dTime = 300;
+            x_dTime = 274;
+          }
+          if (mode == 7) {
+            dTime = 500;
+            x_dTime = 274;
+          }
+          if (mode == 8) {
+            dTime = 1000;
+            x_dTime = 270;
+          }
+          if (mode == 9) {
+            dTime = 5000;
+            x_dTime = 270;
+          }
+          myGLCD.print("    ", 270, 22);
+          myGLCD.printNumI(dTime, x_dTime, 22);
+        }
+
+        if ((y_osc >= 45) && (y_osc <= 85)) // Р’С‚РѕСЂР°СЏ - С‚СЂРёРіРіРµСЂ
+        {
+          waitForIt(250, 45, 318, 85);
+          tmode ++;
+          if (tmode > 3)tmode = 3;
+          if (tmode == 1) {
+            Trigger = MinAnalog + 10;
+            myGLCD.print(" 0%  ", 268, 65);
+          }
+          if (tmode == 2) {
+            Trigger = MaxAnalog / 2;
+            myGLCD.print(" 50% ", 266, 65);
+          }
+          if (tmode == 3) {
+            Trigger = MaxAnalog - 10;
+            myGLCD.print("100%", 270, 65);
+          }
+          if (tmode == 0)myGLCD.print(" Off ", 268, 65);
+        }
+        if ((y_osc >= 90) && (y_osc <= 130)) // РўСЂРµС‚СЊСЏ - РґРµР»РёС‚РµР»СЊ
+        {
+          waitForIt(250, 90, 318, 130);
+          mode1 ++ ;
+          myGLCD.setColor( 0, 0, 0);
+          myGLCD.fillRoundRect (1, 1, 239, 159);
+          myGLCD.setColor (255, 255, 255);
+          myGLCD.setBackColor( 0, 0, 255);
+          myGLCD.setFont( SmallFont);
+          if (mode1 > 3) mode1 = 3;
+          if (mode1 == 0) {
+            koeff_h = 7.759 * 4;
+            myGLCD.print(" 1  ", 275, 110);
+          }
+          if (mode1 == 1) {
+            koeff_h = 3.879 * 4;
+            myGLCD.print("0.5 ", 275, 110);
+          }
+          if (mode1 == 2) {
+            koeff_h = 1.939 * 4;
+            myGLCD.print("0.25", 275, 110);
+          }
+          if (mode1 == 3) {
+            koeff_h = 0.969 * 4;
+            myGLCD.print("0.1 ", 275, 110);
+          }
+        }
+        if ((y_osc >= 135) && (y_osc <= 175)) // Р§РµС‚РІРµСЂС‚Р°СЏ СЂР°Р·СЂРµС€РµРЅРёРµ
+        {
+          waitForIt(250, 135, 318, 175);
+        }
+      }
+
+      if ((x_osc >= 250) && (x_osc <= 318))
+
+      {
+        if ((y_osc >= 200) && (y_osc <= 239)) //   РќРёР¶РЅРёРµ РєРЅРѕРїРєРё
+        {
+          waitForIt(250, 200, 318, 238);
+          Channel_trig = 0;
+          t_in_mode ++;
+          if (t_in_mode > 3)
+          {
+            t_in_mode = 0;
+          }
+          switch_trig(t_in_mode);
+          myGLCD.setBackColor( 0, 0, 255);
+          myGLCD.setColor (255, 255, 255);
+          myGLCD.printNumI(t_in_mode, 282, 214);
+        }
+      }
+
+      if ((y_osc >= 205) && (y_osc <= 239)) // РќРёР¶РЅРёРµ РєРЅРѕРїРєРё РїРµСЂРµРєР»СЋС‡РµРЅРёСЏ РІС…РѕРґРѕРІ
+      {
+        touch_osc();
+      }
+    }
+
+    // trig_min_max(t_in_mode);
+    // if (tmode>0) trigger();
+    //    trigger();
+    //ADCSRA |=(1 << ADEN);                                // Р Р°Р·СЂРµС€РµРЅРёРµ РђР¦Рџ
+    //ADCSRA |=(1 << ADATE);                               // РќРµРїСЂРµСЂС‹РІРЅС‹Р№ СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ РђР¦Рџ
+    ADCSRA |= (1 << ADIE);                                 // Р Р°Р·СЂРµС€РµРЅРёРµ РїСЂРµСЂС‹РІР°РЅРёСЏ РѕС‚ РђР¦Рџ
+    //	ADCSRA |=(0 << ADIF);                                  // Р¤Р»Р°Рі РїСЂРµСЂС‹РІР°РЅРёСЏ РІ "0"
+    //    PORTB = B00000000; // РїРёРЅ 12 РїРµСЂРµРІРѕРґРёРј РІ СЃРѕСЃС‚РѕСЏРЅРёРµ LOW
+    // PORTB = B01000000; // РїРёРЅ 12 РїРµСЂРµРІРѕРґРёРј РІ СЃРѕСЃС‚РѕСЏРЅРёРµ HIGH
+
+    //ADCSRA |=(1 << ADPS2)|(0 << ADPS1)|(0 << ADPS0);     // РџСЂРµРґРґРµР»РёС‚РµР»СЊ РЅР°
+    //ADCSRA  |=(1 << ADSC) ;                              // ADC Start Conversion
+
+    //ADMUX   =(0<<ADLAR)                                 // СЂРµР·СѓР»СЊС‚Р°С‚ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ РІС‹СЂР°РІРЅРёРІР°РµС‚СЃСЏ РїРѕ РїСЂР°РІРѕР№ РіСЂР°РЅРёС†Рµ
+    //		|(0<<REFS1)|(1<<REFS0)                      // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РёСЃС‚РѕС‡РЅРёРє РѕРїРѕСЂРЅРѕРіРѕ РЅР°РїСЂСЏР¶РµРЅРёСЏ  5РІ.
+    //		|(0 << MUX4) |(0 << MUX3) | (1 << MUX2) | (1 << MUX1) | (0 << MUX0) ; //  РЈСЃС‚Р°РЅРѕРІР»РµРЅ РІС…РѕРґ Рђ14
+    //ADCSRB|= (1 << MUX5);                               //  РЈСЃС‚Р°РЅРѕРІР»РµРЅ РІС…РѕРґ Рђ14
 
 
-		EndSample = micros();
-		DrawGrid();
- 
-		for( int xpos = 0; xpos < 238;	xpos ++)
-			{
-				//  Стереть предыдущий экран
-				myGLCD.setColor( 0, 0, 0);
-			
-				if (Channel0 | osc_line_off0)
-					{
-						ypos_osc1_0 = 255-(OldSample_osc[ xpos + 1][0]/koeff_h) - hpos; 
-						ypos_osc2_0 = 255-(OldSample_osc[ xpos + 2][0]/koeff_h) - hpos;
-						if(ypos_osc1_0 < 0) ypos_osc1_0 = 0;
-						if(ypos_osc2_0 < 0) ypos_osc2_0 = 0;
-						if(ypos_osc1_0 > 220) ypos_osc1_0 = 220;
-						if(ypos_osc2_0 > 220) ypos_osc2_0 = 220;
-						myGLCD.drawLine (xpos + 1, ypos_osc1_0, xpos + 2, ypos_osc2_0);
-						myGLCD.drawLine (xpos + 2, ypos_osc1_0+1, xpos + 3, ypos_osc2_0+1);
+    ADCSRA  |= (1 << ADSC) ; // ADC Start Conversion
 
-						if (xpos > 237 & Channel0 == false )
-							{
-								osc_line_off0 = false;
-							}
-					}
-			
-				if (Channel1|osc_line_off1)
-					{
-						ypos_osc1_1 = 255-(OldSample_osc[ xpos + 1][1]/koeff_h) - hpos; 
-						ypos_osc2_1 = 255-(OldSample_osc[ xpos + 2][1]/koeff_h) - hpos;
-						if(ypos_osc1_1 < 0) ypos_osc1_1 = 0;
-						if(ypos_osc2_1 < 0) ypos_osc2_1 = 0;
-						if(ypos_osc1_1 > 220) ypos_osc1_1 = 220;
-						if(ypos_osc2_1 > 220) ypos_osc2_1 = 220;
-						myGLCD.drawLine (xpos + 1, ypos_osc1_1, xpos + 2, ypos_osc2_1);
-						myGLCD.drawLine (xpos + 2, ypos_osc1_1+1, xpos + 3, ypos_osc2_1+1);
-						if (xpos > 237 & Channel1 == false )
-							{
-								osc_line_off1 = false;
-							}
-					}
+    //	while(!ADIF){}
+    //if (ADIF) PORTB = B01000000; // РїРёРЅ 12 РїРµСЂРµРІРѕРґРёРј РІ СЃРѕСЃС‚РѕСЏРЅРёРµ HIGH
+    while (ADC_end) {}
 
-					if (xpos == 0)
-						{
-							myGLCD.drawLine (xpos + 1, 1, xpos + 1, 220);
-							myGLCD.drawLine (xpos + 2, 1, xpos + 2, 220);
-						}
-					
-				if (Channel0)
-					{
-						myGLCD.setColor( 255, 255, 255);
-						ypos_osc1_0 = 255-(Sample_osc[ xpos][0]/koeff_h) - hpos;
-						ypos_osc2_0 = 255-(Sample_osc[ xpos + 1][0]/koeff_h)- hpos;
-						if(ypos_osc1_0 < 0) ypos_osc1_0 = 0;
-						if(ypos_osc2_0 < 0) ypos_osc2_0 = 0;
-						if(ypos_osc1_0 > 220) ypos_osc1_0  = 220;
-						if(ypos_osc2_0 > 220) ypos_osc2_0 = 220;
-						myGLCD.drawLine (xpos, ypos_osc1_0, xpos + 1, ypos_osc2_0);
-						myGLCD.drawLine (xpos+1, ypos_osc1_0+1, xpos + 2, ypos_osc2_0+1);
-					}
+    ADC_end = false;
+    // Р—Р°РїРёСЃР°С‚СЊ Р°РЅР°Р»РѕРіРѕРІС‹Р№ СЃРёРіРЅР°Р» РІ Р±Р»РѕРє РїР°РјСЏС‚Рё
+    StartSample = micros();
 
-				if (Channel1)
-					{
-						myGLCD.setColor( VGA_YELLOW);
-						ypos_osc1_1 = 255-(Sample_osc[ xpos][1]/koeff_h) - hpos;
-						ypos_osc2_1 = 255-(Sample_osc[ xpos + 1][1]/koeff_h)- hpos;
-						if(ypos_osc1_1 < 0) ypos_osc1_1 = 0;
-						if(ypos_osc2_1 < 0) ypos_osc2_1 = 0;
-						if(ypos_osc1_1 > 220) ypos_osc1_1  = 220;
-						if(ypos_osc2_1 > 220) ypos_osc2_1 = 220;
-						myGLCD.drawLine (xpos, ypos_osc1_1, xpos + 1, ypos_osc2_1);
-						myGLCD.drawLine (xpos+1, ypos_osc1_1+1, xpos + 2, ypos_osc2_1+1);
-					}
 
-					OldSample_osc[xpos][0] = Sample_osc[xpos][0];
-					OldSample_osc[xpos][1] = Sample_osc[xpos][1];
-			}
+    EndSample = micros();
+    DrawGrid();
 
-		    ADC_end = false;
-	}
-koeff_h = 7.759*4;
-mode1 = 2;
-Trigger = 0;
-StartSample = millis();
-myGLCD.setFont( BigFont);
-while (myTouch.dataAvailable()){}
+    for ( int xpos = 0; xpos < 238;	xpos ++)
+    {
+      //  РЎС‚РµСЂРµС‚СЊ РїСЂРµРґС‹РґСѓС‰РёР№ СЌРєСЂР°РЅ
+      myGLCD.setColor( 0, 0, 0);
+
+      if (Channel0 | osc_line_off0)
+      {
+        ypos_osc1_0 = 255 - (OldSample_osc[ xpos + 1][0] / koeff_h) - hpos;
+        ypos_osc2_0 = 255 - (OldSample_osc[ xpos + 2][0] / koeff_h) - hpos;
+        if (ypos_osc1_0 < 0) ypos_osc1_0 = 0;
+        if (ypos_osc2_0 < 0) ypos_osc2_0 = 0;
+        if (ypos_osc1_0 > 220) ypos_osc1_0 = 220;
+        if (ypos_osc2_0 > 220) ypos_osc2_0 = 220;
+        myGLCD.drawLine (xpos + 1, ypos_osc1_0, xpos + 2, ypos_osc2_0);
+        myGLCD.drawLine (xpos + 2, ypos_osc1_0 + 1, xpos + 3, ypos_osc2_0 + 1);
+
+        if (xpos > 237 & Channel0 == false )
+        {
+          osc_line_off0 = false;
+        }
+      }
+
+      if (Channel1 | osc_line_off1)
+      {
+        ypos_osc1_1 = 255 - (OldSample_osc[ xpos + 1][1] / koeff_h) - hpos;
+        ypos_osc2_1 = 255 - (OldSample_osc[ xpos + 2][1] / koeff_h) - hpos;
+        if (ypos_osc1_1 < 0) ypos_osc1_1 = 0;
+        if (ypos_osc2_1 < 0) ypos_osc2_1 = 0;
+        if (ypos_osc1_1 > 220) ypos_osc1_1 = 220;
+        if (ypos_osc2_1 > 220) ypos_osc2_1 = 220;
+        myGLCD.drawLine (xpos + 1, ypos_osc1_1, xpos + 2, ypos_osc2_1);
+        myGLCD.drawLine (xpos + 2, ypos_osc1_1 + 1, xpos + 3, ypos_osc2_1 + 1);
+        if (xpos > 237 & Channel1 == false )
+        {
+          osc_line_off1 = false;
+        }
+      }
+
+      if (xpos == 0)
+      {
+        myGLCD.drawLine (xpos + 1, 1, xpos + 1, 220);
+        myGLCD.drawLine (xpos + 2, 1, xpos + 2, 220);
+      }
+
+      if (Channel0)
+      {
+        myGLCD.setColor( 255, 255, 255);
+        ypos_osc1_0 = 255 - (Sample_osc[ xpos][0] / koeff_h) - hpos;
+        ypos_osc2_0 = 255 - (Sample_osc[ xpos + 1][0] / koeff_h) - hpos;
+        if (ypos_osc1_0 < 0) ypos_osc1_0 = 0;
+        if (ypos_osc2_0 < 0) ypos_osc2_0 = 0;
+        if (ypos_osc1_0 > 220) ypos_osc1_0  = 220;
+        if (ypos_osc2_0 > 220) ypos_osc2_0 = 220;
+        myGLCD.drawLine (xpos, ypos_osc1_0, xpos + 1, ypos_osc2_0);
+        myGLCD.drawLine (xpos + 1, ypos_osc1_0 + 1, xpos + 2, ypos_osc2_0 + 1);
+      }
+
+      if (Channel1)
+      {
+        myGLCD.setColor( VGA_YELLOW);
+        ypos_osc1_1 = 255 - (Sample_osc[ xpos][1] / koeff_h) - hpos;
+        ypos_osc2_1 = 255 - (Sample_osc[ xpos + 1][1] / koeff_h) - hpos;
+        if (ypos_osc1_1 < 0) ypos_osc1_1 = 0;
+        if (ypos_osc2_1 < 0) ypos_osc2_1 = 0;
+        if (ypos_osc1_1 > 220) ypos_osc1_1  = 220;
+        if (ypos_osc2_1 > 220) ypos_osc2_1 = 220;
+        myGLCD.drawLine (xpos, ypos_osc1_1, xpos + 1, ypos_osc2_1);
+        myGLCD.drawLine (xpos + 1, ypos_osc1_1 + 1, xpos + 2, ypos_osc2_1 + 1);
+      }
+
+      OldSample_osc[xpos][0] = Sample_osc[xpos][0];
+      OldSample_osc[xpos][1] = Sample_osc[xpos][1];
+    }
+
+    ADC_end = false;
+  }
+  koeff_h = 7.759 * 4;
+  mode1 = 2;
+  Trigger = 0;
+  StartSample = millis();
+  myGLCD.setFont( BigFont);
+  while (myTouch.dataAvailable()) {}
 }
 //------------------------------------------------------------------------------
 void test_ADC()
 {
-	ADC_end = false;
+  ADC_end = false;
 
-	ADCSRA = (1 << ADEN)   // Разрешение АЦП
-	            |(1 << ADATE)  // Непрерывный режим работы АЦП
-	            |(1 << ADPS2)|(0 << ADPS1)|(0 << ADPS0); // Предделитель на 64 (частота АЦП 125kHz)
+  ADCSRA = (1 << ADEN)   // Р Р°Р·СЂРµС€РµРЅРёРµ РђР¦Рџ
+           | (1 << ADATE) // РќРµРїСЂРµСЂС‹РІРЅС‹Р№ СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ РђР¦Рџ
+           | (1 << ADPS2) | (0 << ADPS1) | (0 << ADPS0); // РџСЂРµРґРґРµР»РёС‚РµР»СЊ РЅР° 64 (С‡Р°СЃС‚РѕС‚Р° РђР¦Рџ 125kHz)
 
-    ADMUX  =(0<<ADLAR)
-		   |(0<<REFS1)|(1<<REFS0)
-		   |(0 << MUX4) |(0 << MUX3) | (1 << MUX2) | (1 << MUX1) | (0 << MUX0) ;       // Установить источник опорного напряжения и результат преобразования выравнивается по левой границе 
-    ADCSRB|= (1 << MUX5);
-	i_osc=0;
+  ADMUX  = (0 << ADLAR)
+           | (0 << REFS1) | (1 << REFS0)
+           | (0 << MUX4) | (0 << MUX3) | (1 << MUX2) | (1 << MUX1) | (0 << MUX0) ;     // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РёСЃС‚РѕС‡РЅРёРє РѕРїРѕСЂРЅРѕРіРѕ РЅР°РїСЂСЏР¶РµРЅРёСЏ Рё СЂРµР·СѓР»СЊС‚Р°С‚ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ РІС‹СЂР°РІРЅРёРІР°РµС‚СЃСЏ РїРѕ Р»РµРІРѕР№ РіСЂР°РЅРёС†Рµ
+  ADCSRB |= (1 << MUX5);
+  i_osc = 0;
 
-	ADCSRA  |=(1 << ADSC)   // ADC Start Conversion
-	         |(1 << ADIE);  // Включить прерывание  Разрешение прерывания от АЦП
+  ADCSRA  |= (1 << ADSC)  // ADC Start Conversion
+             | (1 << ADIE); // Р’РєР»СЋС‡РёС‚СЊ РїСЂРµСЂС‹РІР°РЅРёРµ  Р Р°Р·СЂРµС€РµРЅРёРµ РїСЂРµСЂС‹РІР°РЅРёСЏ РѕС‚ РђР¦Рџ
 
-	while (ADC_end){};
+  while (ADC_end) {};
 
-	Serial.print("i_osc - ");
-	Serial.println(i_osc);
-	i_osc = 0;
-	for(int i = 0;i<239;i++)
-	{
-      // Serial.println(analogRead(14));
-	   Serial.println(Sample_osc[i][0]);
-	}
-	ADC_end = false;
-	//adcStart() ;
-	//delay(4000);
+  Serial.print("i_osc - ");
+  Serial.println(i_osc);
+  i_osc = 0;
+  for (int i = 0; i < 239; i++)
+  {
+    // Serial.println(analogRead(14));
+    Serial.println(Sample_osc[i][0]);
+  }
+  ADC_end = false;
+  //adcStart() ;
+  //delay(4000);
 
- //   ADCSRA &= ~(1 << ADIE); //Выключить
+  //   ADCSRA &= ~(1 << ADIE); //Р’С‹РєР»СЋС‡РёС‚СЊ
 }
 
 void trigger()
 {
-	int tr = 0;
+  int tr = 0;
 
-	int Input = 0;
-	//Serial.println("trig");
-	for(tr = 0; tr < 1000; tr++)
-	{
-		Input = analogRead(14);
-		if (Input< 100) break;
-	}
-	//Serial.println("min");
-		for(tr = 0; tr < 1000; tr++)
-	{
-		Input = analogRead(14);
-		if (Input>500) break;
-	}
-    Serial.println(tr);
-	Serial.println(Input);
+  int Input = 0;
+  //Serial.println("trig");
+  for (tr = 0; tr < 1000; tr++)
+  {
+    Input = analogRead(14);
+    if (Input < 100) break;
+  }
+  //Serial.println("min");
+  for (tr = 0; tr < 1000; tr++)
+  {
+    Input = analogRead(14);
+    if (Input > 500) break;
+  }
+  Serial.println(tr);
+  Serial.println(Input);
 
-	/*
-	 ADC_CHER = Channel_trig;
+  /*
+    ADC_CHER = Channel_trig;
 
-	for(int tr = 0; tr < 1000; tr++)
-	{
-		ADC_CR = ADC_START ; 	// Запустить преобразование
-		while (!(ADC_ISR_DRDY));
-		switch (t_in_mode) 
-			{
-				case 1:
-					Input = ADC->ADC_CDR[6];
-					break;
-				case 2:
-					Input = ADC->ADC_CDR[5];
-					break;
-				case 3:
-					Input = ADC->ADC_CDR[4];
-					break;
-				default: 
-					Input = ADC->ADC_CDR[7];
-			}
-		// if (Input<Trigger) break;
-		 if (Input< 15) break;
-	}
-	//delayMicroseconds(2);
+    for(int tr = 0; tr < 1000; tr++)
+    {
+  	ADC_CR = ADC_START ; 	// Р—Р°РїСѓСЃС‚РёС‚СЊ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ
+  	while (!(ADC_ISR_DRDY));
+  	switch (t_in_mode)
+  		{
+  			case 1:
+  				Input = ADC->ADC_CDR[6];
+  				break;
+  			case 2:
+  				Input = ADC->ADC_CDR[5];
+  				break;
+  			case 3:
+  				Input = ADC->ADC_CDR[4];
+  				break;
+  			default:
+  				Input = ADC->ADC_CDR[7];
+  		}
+  	// if (Input<Trigger) break;
+  	 if (Input< 15) break;
+    }
+    //delayMicroseconds(2);
 
-	for(int tr = 0; tr < 1000; tr++)
-	{
-		 ADC_CR = ADC_START ; 	// Запустить преобразование
-		 while (!(ADC_ISR_DRDY));
-		 switch (t_in_mode) 
-			{
-				case 1:
-					Input = ADC->ADC_CDR[6];
-					break;
-				case 2:
-					Input = ADC->ADC_CDR[5];
-					break;
-				case 3:
-					Input = ADC->ADC_CDR[4];
-					break;
-				default: 
-					Input = ADC->ADC_CDR[7];
-			}
-	
-		if (Input>Trigger) break;
-		
-	}
-	*/
+    for(int tr = 0; tr < 1000; tr++)
+    {
+  	 ADC_CR = ADC_START ; 	// Р—Р°РїСѓСЃС‚РёС‚СЊ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ
+  	 while (!(ADC_ISR_DRDY));
+  	 switch (t_in_mode)
+  		{
+  			case 1:
+  				Input = ADC->ADC_CDR[6];
+  				break;
+  			case 2:
+  				Input = ADC->ADC_CDR[5];
+  				break;
+  			case 3:
+  				Input = ADC->ADC_CDR[4];
+  				break;
+  			default:
+  				Input = ADC->ADC_CDR[7];
+  		}
+
+  	if (Input>Trigger) break;
+
+    }
+  */
 }
-void oscilloscope()  // просмотр в реальном времени на большой скорости
+void oscilloscope()  // РїСЂРѕСЃРјРѕС‚СЂ РІ СЂРµР°Р»СЊРЅРѕРј РІСЂРµРјРµРЅРё РЅР° Р±РѕР»СЊС€РѕР№ СЃРєРѕСЂРѕСЃС‚Рё
 {
-	uint32_t bgnBlock, endBlock;
-	block_t block[BUFFER_BLOCK_COUNT];
-	myGLCD.clrScr();
-	myGLCD.setBackColor( 0, 0, 0);
-	delay(500);
-	myGLCD.clrScr();
-	buttons_right();
-	buttons_channel();
-	myGLCD.setBackColor( 0, 0, 0);
-	myGLCD.setFont( BigFont);
-	myGLCD.setColor(VGA_LIME);
-	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[15]))); 
-	myGLCD.print(buffer,LEFT, 180);                                  // txt_info29
-	int x_dTime;
-	int xpos;
-	int ypos1;
-	int ypos2;
+  uint32_t bgnBlock, endBlock;
+  block_t block[BUFFER_BLOCK_COUNT];
+  myGLCD.clrScr();
+  myGLCD.setBackColor( 0, 0, 0);
+  delay(500);
+  myGLCD.clrScr();
+  buttons_right();
+  buttons_channel();
+  myGLCD.setBackColor( 0, 0, 0);
+  myGLCD.setFont( BigFont);
+  myGLCD.setColor(VGA_LIME);
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[15])));
+  myGLCD.print(buffer, LEFT, 180);                                 // txt_info29
+  int x_dTime;
+  int xpos;
+  int ypos1;
+  int ypos2;
 
-	int ypos_osc1_0;
-	int ypos_osc1_1;
-	int ypos_osc1_2;
-	int ypos_osc1_3;
+  int ypos_osc1_0;
+  int ypos_osc1_1;
+  int ypos_osc1_2;
+  int ypos_osc1_3;
 
-	int ypos_osc2_0;
-	int ypos_osc2_1;
-	int ypos_osc2_2;
-	int ypos_osc2_3;
+  int ypos_osc2_0;
+  int ypos_osc2_1;
+  int ypos_osc2_2;
+  int ypos_osc2_3;
 
-	ADC_end = false;
+  ADC_end = false;
 
-	ADCSRA = (1 << ADEN)         // Разрешение АЦП
-	            |(1 << ADATE)    // Непрерывный режим работы АЦП
-	            |(1 << ADPS2)|(0 << ADPS1)|(0 << ADPS0); // Предделитель на 
+  ADCSRA = (1 << ADEN)         // Р Р°Р·СЂРµС€РµРЅРёРµ РђР¦Рџ
+           | (1 << ADATE)   // РќРµРїСЂРµСЂС‹РІРЅС‹Р№ СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ РђР¦Рџ
+           | (1 << ADPS2) | (0 << ADPS1) | (0 << ADPS0); // РџСЂРµРґРґРµР»РёС‚РµР»СЊ РЅР°
 
-    ADMUX  =(0<<ADLAR)
-		   |(0<<REFS1)|(1<<REFS0)
-		   |(0 << MUX4) |(0 << MUX3) | (1 << MUX2) | (1 << MUX1) | (0 << MUX0) ;       // Установить источник опорного напряжения и результат преобразования выравнивается по левой границе 
-    ADCSRB|= (1 << MUX5);
+  ADMUX  = (0 << ADLAR)
+           | (0 << REFS1) | (1 << REFS0)
+           | (0 << MUX4) | (0 << MUX3) | (1 << MUX2) | (1 << MUX1) | (0 << MUX0) ;     // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РёСЃС‚РѕС‡РЅРёРє РѕРїРѕСЂРЅРѕРіРѕ РЅР°РїСЂСЏР¶РµРЅРёСЏ Рё СЂРµР·СѓР»СЊС‚Р°С‚ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ РІС‹СЂР°РІРЅРёРІР°РµС‚СЃСЏ РїРѕ Р»РµРІРѕР№ РіСЂР°РЅРёС†Рµ
+  ADCSRB |= (1 << MUX5);
 
-	i_osc=0;
-
-
-	for( xpos = 0; xpos < 239;	xpos ++) // Стереть старые данные
-
-		{
-			OldSample_osc[xpos][0] = 0;
-			OldSample_osc[xpos][1] = 0;
-		}
-
-	while(1) 
-	{
-		 DrawGrid();
-		 if (myTouch.dataAvailable())
-			{
-				delay(10);
-				myTouch.read();
-				x_osc=myTouch.getX();
-				y_osc=myTouch.getY();
-
-				if ((x_osc>=2) && (x_osc<=240))  //  Область экрана
-					{
-						if ((y_osc>=1) && (y_osc<=160))  // Delay row
-						{
-							break;
-						} 
-					}
-
-				myGLCD.setBackColor( 0, 0, 255);
-				myGLCD.setFont( SmallFont);
-				myGLCD.setColor (255, 255,255);
-				myGLCD.drawRoundRect (250, 1, 318, 40);
-				myGLCD.drawRoundRect (250, 45, 318, 85);
-				myGLCD.drawRoundRect (250, 90, 318, 130);
-				myGLCD.drawRoundRect (250, 135, 318, 175);
-
-			if ((x_osc>=250) && (x_osc<=284))  // Боковые кнопки
-			  {
-				  if ((y_osc>=1) && (y_osc<=40))  // Первая  период
-				  {
-					waitForIt(250, 1, 318, 40);
-					mode -- ;
-					if (mode < 0) mode = 0;   
-					// Select delay times you can change values to suite your needs
-					if (mode == 0) {dTime = 1;    x_dTime = 282;}
-					if (mode == 1) {dTime = 10;   x_dTime = 278;}
-					if (mode == 2) {dTime = 20;   x_dTime = 278;}
-					if (mode == 3) {dTime = 50;   x_dTime = 278;}
-					if (mode == 4) {dTime = 100;  x_dTime = 274;}
-					if (mode == 5) {dTime = 200;  x_dTime = 274;}
-					if (mode == 6) {dTime = 300;  x_dTime = 274;}
-					if (mode == 7) {dTime = 500;  x_dTime = 274;}
-					if (mode == 8) {dTime = 1000; x_dTime = 270;}
-					if (mode == 9) {dTime = 5000; x_dTime = 270;}
-					myGLCD.print("    ", 270, 22);
-					myGLCD.printNumI(dTime, x_dTime, 22);
-				  }
-
-			 if ((y_osc>=45) && (y_osc<=85))  // Вторая - триггер
-				 {
-					waitForIt(250, 45, 318, 85);
-					tmode --;
-					if (tmode < 0)tmode = 0;
-					if (tmode == 1){ Trigger = MinAnalog+10; myGLCD.print(" 0%  ", 268, 65);}
-					if (tmode == 2){ Trigger = MaxAnalog/2;  myGLCD.print(" 50% ", 266, 65);}
-					if (tmode == 3){ Trigger = MaxAnalog-10; myGLCD.print("100%", 270, 65);}
-					if (tmode == 0)myGLCD.print(" Off ", 268, 65);
-
-				 }
-			 if ((y_osc>=90) && (y_osc<=130))  // Третья - делитель
-				 {
-					waitForIt(250, 90, 318, 130);
-					mode1 -- ;
-					myGLCD.setColor( 0, 0, 0);
-					myGLCD.fillRoundRect (1, 1,239, 159);
-					myGLCD.setColor (255, 255, 255);
-					myGLCD.setBackColor( 0, 0, 255);
-					myGLCD.setFont( SmallFont);
-					if (mode1 < 0) mode1 = 0;   
-					if (mode1 == 0){ koeff_h = 7.759*4; myGLCD.print(" 1  ", 275, 110);}
-					if (mode1 == 1){ koeff_h = 3.879*4; myGLCD.print("0.5 ", 275, 110);}
-					if (mode1 == 2){ koeff_h = 1.939*4; myGLCD.print("0.25", 275, 110);}
-					if (mode1 == 3){ koeff_h = 0.969*4; myGLCD.print("0.1 ", 275, 110);}
-				 }
-			 if ((y_osc>=135) && (y_osc<=175))  // Четвертая разрешение
-				 {
-
-				 }
-		   }
-		
-			if ((x_osc>=284) && (x_osc<=318))  // Боковые кнопки
-			  {
-				  if ((y_osc>=1) && (y_osc<=40))  // Первая  период
-				  {
-					waitForIt(250, 1, 318, 40);
-					mode ++ ;
-					if (mode > 9) mode = 9;   
-					if (mode == 0) {dTime = 1;    x_dTime = 282;}
-					if (mode == 1) {dTime = 10;   x_dTime = 278;}
-					if (mode == 2) {dTime = 20;   x_dTime = 278;}
-					if (mode == 3) {dTime = 50;   x_dTime = 278;}
-					if (mode == 4) {dTime = 100;  x_dTime = 274;}
-					if (mode == 5) {dTime = 200;  x_dTime = 274;}
-					if (mode == 6) {dTime = 300;  x_dTime = 274;}
-					if (mode == 7) {dTime = 500;  x_dTime = 274;}
-					if (mode == 8) {dTime = 1000; x_dTime = 270;}
-					if (mode == 9) {dTime = 5000; x_dTime = 270;}
-					myGLCD.print("    ", 270, 22);
-					myGLCD.printNumI(dTime, x_dTime, 22);
-				  }
-
-			 if ((y_osc>=45) && (y_osc<=85))  // Вторая - триггер
-				 {
-					waitForIt(250, 45, 318, 85);
-					tmode ++;
-					if (tmode > 3)tmode = 3;
-					if (tmode == 1){ Trigger = MinAnalog+10; myGLCD.print(" 0%  ", 268, 65);}
-					if (tmode == 2){ Trigger = MaxAnalog/2;  myGLCD.print(" 50% ", 266, 65);}
-					if (tmode == 3){ Trigger = MaxAnalog-10; myGLCD.print("100%", 270, 65);}
-					if (tmode == 0)myGLCD.print(" Off ", 268, 65);
-				 }
-			 if ((y_osc>=90) && (y_osc<=130))  // Третья - делитель
-				 {
-					waitForIt(250, 90, 318, 130);
-					mode1 ++ ;
-					myGLCD.setColor( 0, 0, 0);
-					myGLCD.fillRoundRect (1, 1,239, 159);
-					myGLCD.setColor (255, 255, 255);
-					myGLCD.setBackColor( 0, 0, 255);
-					myGLCD.setFont( SmallFont);
-					if (mode1 > 3) mode1 = 3;   
-					if (mode1 == 0){ koeff_h = 7.759*4; myGLCD.print(" 1  ", 275, 110);}
-					if (mode1 == 1){ koeff_h = 3.879*4; myGLCD.print("0.5 ", 275, 110);}
-					if (mode1 == 2){ koeff_h = 1.939*4; myGLCD.print("0.25", 275, 110);}
-					if (mode1 == 3){ koeff_h = 0.969*4; myGLCD.print("0.1 ", 275, 110);}
-				 }
-			 if ((y_osc>=135) && (y_osc<=175))  // Четвертая разрешение
-				 {
-					waitForIt(250, 135, 318, 175);
-				 }
-
-		   }
-
-		if ((x_osc>=250) && (x_osc<=318))  
-
-			{
-			if ((y_osc>=200) && (y_osc<=239))  //   Нижние кнопки  
-				{
-					waitForIt(250, 200, 318, 238);
-					Channel_trig = 0;
-					t_in_mode ++;
-						if (t_in_mode > 3)
-							{
-								t_in_mode = 0;
-							}
-						switch_trig(t_in_mode);
-						myGLCD.setBackColor( 0, 0, 255);
-						myGLCD.setColor (255, 255,255);
-						myGLCD.printNumI(t_in_mode, 282, 214);
-				}
-		  }
-
-			 if ((y_osc>=205) && (y_osc<=239))  // Нижние кнопки переключения входов
-					{
-						 touch_osc();
-					}
-		}
-		 trig_min_max(t_in_mode);
-		// if (tmode>0) trigger();
-	
-		    ADCSRA  |=(1 << ADSC)   // ADC Start Conversion
-	        |(1 << ADIE);   // Включить прерывание  Разрешение прерывания от АЦП
-
-			while(ADC_end){}
-		// Записать аналоговый сигнал в блок памяти
-		StartSample = micros();
+  i_osc = 0;
 
 
-		EndSample = micros();
-		DrawGrid();
- 
-		for( int xpos = 0; xpos < 239;	xpos ++)
-			{
-				//  Стереть предыдущий экран
-				myGLCD.setColor( 0, 0, 0);
-			
-				if (Channel0 | osc_line_off0)
-					{
-						ypos_osc1_0 = 255-(OldSample_osc[ xpos + 1][0]/koeff_h) - hpos; 
-						ypos_osc2_0 = 255-(OldSample_osc[ xpos + 2][0]/koeff_h) - hpos;
-						if(ypos_osc1_0 < 0) ypos_osc1_0 = 0;
-						if(ypos_osc2_0 < 0) ypos_osc2_0 = 0;
-						if(ypos_osc1_0 > 220) ypos_osc1_0 = 220;
-						if(ypos_osc2_0 > 220) ypos_osc2_0 = 220;
-						myGLCD.drawLine (xpos + 1, ypos_osc1_0, xpos + 2, ypos_osc2_0);
-						myGLCD.drawLine (xpos + 2, ypos_osc1_0+1, xpos + 3, ypos_osc2_0+1);
+  for ( xpos = 0; xpos < 239;	xpos ++) // РЎС‚РµСЂРµС‚СЊ СЃС‚Р°СЂС‹Рµ РґР°РЅРЅС‹Рµ
 
-						if (xpos > 237 & Channel0 == false )
-							{
-								osc_line_off0 = false;
-							}
-					}
-			
-				if (Channel1|osc_line_off1)
-					{
-						ypos_osc1_1 = 255-(OldSample_osc[ xpos + 1][1]/koeff_h) - hpos; 
-						ypos_osc2_1 = 255-(OldSample_osc[ xpos + 2][1]/koeff_h) - hpos;
-						if(ypos_osc1_1 < 0) ypos_osc1_1 = 0;
-						if(ypos_osc2_1 < 0) ypos_osc2_1 = 0;
-						if(ypos_osc1_1 > 220) ypos_osc1_1 = 220;
-						if(ypos_osc2_1 > 220) ypos_osc2_1 = 220;
-						myGLCD.drawLine (xpos + 1, ypos_osc1_1, xpos + 2, ypos_osc2_1);
-						myGLCD.drawLine (xpos + 2, ypos_osc1_1+1, xpos + 3, ypos_osc2_1+1);
-						if (xpos > 237 & Channel1 == false )
-							{
-								osc_line_off1 = false;
-							}
-					}
+  {
+    OldSample_osc[xpos][0] = 0;
+    OldSample_osc[xpos][1] = 0;
+  }
 
-					if (xpos == 0)
-						{
-							myGLCD.drawLine (xpos + 1, 1, xpos + 1, 220);
-							myGLCD.drawLine (xpos + 2, 1, xpos + 2, 220);
-						}
-					
-				if (Channel0)
-					{
-						myGLCD.setColor( 255, 255, 255);
-						ypos_osc1_0 = 255-(Sample_osc[ xpos][0]/koeff_h) - hpos;
-						ypos_osc2_0 = 255-(Sample_osc[ xpos + 1][0]/koeff_h)- hpos;
-						if(ypos_osc1_0 < 0) ypos_osc1_0 = 0;
-						if(ypos_osc2_0 < 0) ypos_osc2_0 = 0;
-						if(ypos_osc1_0 > 220) ypos_osc1_0  = 220;
-						if(ypos_osc2_0 > 220) ypos_osc2_0 = 220;
-						myGLCD.drawLine (xpos, ypos_osc1_0, xpos + 1, ypos_osc2_0);
-						myGLCD.drawLine (xpos+1, ypos_osc1_0+1, xpos + 2, ypos_osc2_0+1);
-					}
+  while (1)
+  {
+    DrawGrid();
+    if (myTouch.dataAvailable())
+    {
+      delay(10);
+      myTouch.read();
+      x_osc = myTouch.getX();
+      y_osc = myTouch.getY();
 
-				if (Channel1)
-					{
-						myGLCD.setColor( VGA_YELLOW);
-						ypos_osc1_1 = 255-(Sample_osc[ xpos][1]/koeff_h) - hpos;
-						ypos_osc2_1 = 255-(Sample_osc[ xpos + 1][1]/koeff_h)- hpos;
-						if(ypos_osc1_1 < 0) ypos_osc1_1 = 0;
-						if(ypos_osc2_1 < 0) ypos_osc2_1 = 0;
-						if(ypos_osc1_1 > 220) ypos_osc1_1  = 220;
-						if(ypos_osc2_1 > 220) ypos_osc2_1 = 220;
-						myGLCD.drawLine (xpos, ypos_osc1_1, xpos + 1, ypos_osc2_1);
-						myGLCD.drawLine (xpos+1, ypos_osc1_1+1, xpos + 2, ypos_osc2_1+1);
-					}
+      if ((x_osc >= 2) && (x_osc <= 240)) //  РћР±Р»Р°СЃС‚СЊ СЌРєСЂР°РЅР°
+      {
+        if ((y_osc >= 1) && (y_osc <= 160)) // Delay row
+        {
+          break;
+        }
+      }
 
-					OldSample_osc[xpos][0] = Sample_osc[xpos][0];
-					OldSample_osc[xpos][1] = Sample_osc[xpos][1];
-				
-			}
+      myGLCD.setBackColor( 0, 0, 255);
+      myGLCD.setFont( SmallFont);
+      myGLCD.setColor (255, 255, 255);
+      myGLCD.drawRoundRect (250, 1, 318, 40);
+      myGLCD.drawRoundRect (250, 45, 318, 85);
+      myGLCD.drawRoundRect (250, 90, 318, 130);
+      myGLCD.drawRoundRect (250, 135, 318, 175);
 
-		  ADC_end = false;
-		  
+      if ((x_osc >= 250) && (x_osc <= 284)) // Р‘РѕРєРѕРІС‹Рµ РєРЅРѕРїРєРё
+      {
+        if ((y_osc >= 1) && (y_osc <= 40)) // РџРµСЂРІР°СЏ  РїРµСЂРёРѕРґ
+        {
+          waitForIt(250, 1, 318, 40);
+          mode -- ;
+          if (mode < 0) mode = 0;
+          // Select delay times you can change values to suite your needs
+          if (mode == 0) {
+            dTime = 1;
+            x_dTime = 282;
+          }
+          if (mode == 1) {
+            dTime = 10;
+            x_dTime = 278;
+          }
+          if (mode == 2) {
+            dTime = 20;
+            x_dTime = 278;
+          }
+          if (mode == 3) {
+            dTime = 50;
+            x_dTime = 278;
+          }
+          if (mode == 4) {
+            dTime = 100;
+            x_dTime = 274;
+          }
+          if (mode == 5) {
+            dTime = 200;
+            x_dTime = 274;
+          }
+          if (mode == 6) {
+            dTime = 300;
+            x_dTime = 274;
+          }
+          if (mode == 7) {
+            dTime = 500;
+            x_dTime = 274;
+          }
+          if (mode == 8) {
+            dTime = 1000;
+            x_dTime = 270;
+          }
+          if (mode == 9) {
+            dTime = 5000;
+            x_dTime = 270;
+          }
+          myGLCD.print("    ", 270, 22);
+          myGLCD.printNumI(dTime, x_dTime, 22);
+        }
+
+        if ((y_osc >= 45) && (y_osc <= 85)) // Р’С‚РѕСЂР°СЏ - С‚СЂРёРіРіРµСЂ
+        {
+          waitForIt(250, 45, 318, 85);
+          tmode --;
+          if (tmode < 0)tmode = 0;
+          if (tmode == 1) {
+            Trigger = MinAnalog + 10;
+            myGLCD.print(" 0%  ", 268, 65);
+          }
+          if (tmode == 2) {
+            Trigger = MaxAnalog / 2;
+            myGLCD.print(" 50% ", 266, 65);
+          }
+          if (tmode == 3) {
+            Trigger = MaxAnalog - 10;
+            myGLCD.print("100%", 270, 65);
+          }
+          if (tmode == 0)myGLCD.print(" Off ", 268, 65);
+
+        }
+        if ((y_osc >= 90) && (y_osc <= 130)) // РўСЂРµС‚СЊСЏ - РґРµР»РёС‚РµР»СЊ
+        {
+          waitForIt(250, 90, 318, 130);
+          mode1 -- ;
+          myGLCD.setColor( 0, 0, 0);
+          myGLCD.fillRoundRect (1, 1, 239, 159);
+          myGLCD.setColor (255, 255, 255);
+          myGLCD.setBackColor( 0, 0, 255);
+          myGLCD.setFont( SmallFont);
+          if (mode1 < 0) mode1 = 0;
+          if (mode1 == 0) {
+            koeff_h = 7.759 * 4;
+            myGLCD.print(" 1  ", 275, 110);
+          }
+          if (mode1 == 1) {
+            koeff_h = 3.879 * 4;
+            myGLCD.print("0.5 ", 275, 110);
+          }
+          if (mode1 == 2) {
+            koeff_h = 1.939 * 4;
+            myGLCD.print("0.25", 275, 110);
+          }
+          if (mode1 == 3) {
+            koeff_h = 0.969 * 4;
+            myGLCD.print("0.1 ", 275, 110);
+          }
+        }
+        if ((y_osc >= 135) && (y_osc <= 175)) // Р§РµС‚РІРµСЂС‚Р°СЏ СЂР°Р·СЂРµС€РµРЅРёРµ
+        {
+
+        }
+      }
+
+      if ((x_osc >= 284) && (x_osc <= 318)) // Р‘РѕРєРѕРІС‹Рµ РєРЅРѕРїРєРё
+      {
+        if ((y_osc >= 1) && (y_osc <= 40)) // РџРµСЂРІР°СЏ  РїРµСЂРёРѕРґ
+        {
+          waitForIt(250, 1, 318, 40);
+          mode ++ ;
+          if (mode > 9) mode = 9;
+          if (mode == 0) {
+            dTime = 1;
+            x_dTime = 282;
+          }
+          if (mode == 1) {
+            dTime = 10;
+            x_dTime = 278;
+          }
+          if (mode == 2) {
+            dTime = 20;
+            x_dTime = 278;
+          }
+          if (mode == 3) {
+            dTime = 50;
+            x_dTime = 278;
+          }
+          if (mode == 4) {
+            dTime = 100;
+            x_dTime = 274;
+          }
+          if (mode == 5) {
+            dTime = 200;
+            x_dTime = 274;
+          }
+          if (mode == 6) {
+            dTime = 300;
+            x_dTime = 274;
+          }
+          if (mode == 7) {
+            dTime = 500;
+            x_dTime = 274;
+          }
+          if (mode == 8) {
+            dTime = 1000;
+            x_dTime = 270;
+          }
+          if (mode == 9) {
+            dTime = 5000;
+            x_dTime = 270;
+          }
+          myGLCD.print("    ", 270, 22);
+          myGLCD.printNumI(dTime, x_dTime, 22);
+        }
+
+        if ((y_osc >= 45) && (y_osc <= 85)) // Р’С‚РѕСЂР°СЏ - С‚СЂРёРіРіРµСЂ
+        {
+          waitForIt(250, 45, 318, 85);
+          tmode ++;
+          if (tmode > 3)tmode = 3;
+          if (tmode == 1) {
+            Trigger = MinAnalog + 10;
+            myGLCD.print(" 0%  ", 268, 65);
+          }
+          if (tmode == 2) {
+            Trigger = MaxAnalog / 2;
+            myGLCD.print(" 50% ", 266, 65);
+          }
+          if (tmode == 3) {
+            Trigger = MaxAnalog - 10;
+            myGLCD.print("100%", 270, 65);
+          }
+          if (tmode == 0)myGLCD.print(" Off ", 268, 65);
+        }
+        if ((y_osc >= 90) && (y_osc <= 130)) // РўСЂРµС‚СЊСЏ - РґРµР»РёС‚РµР»СЊ
+        {
+          waitForIt(250, 90, 318, 130);
+          mode1 ++ ;
+          myGLCD.setColor( 0, 0, 0);
+          myGLCD.fillRoundRect (1, 1, 239, 159);
+          myGLCD.setColor (255, 255, 255);
+          myGLCD.setBackColor( 0, 0, 255);
+          myGLCD.setFont( SmallFont);
+          if (mode1 > 3) mode1 = 3;
+          if (mode1 == 0) {
+            koeff_h = 7.759 * 4;
+            myGLCD.print(" 1  ", 275, 110);
+          }
+          if (mode1 == 1) {
+            koeff_h = 3.879 * 4;
+            myGLCD.print("0.5 ", 275, 110);
+          }
+          if (mode1 == 2) {
+            koeff_h = 1.939 * 4;
+            myGLCD.print("0.25", 275, 110);
+          }
+          if (mode1 == 3) {
+            koeff_h = 0.969 * 4;
+            myGLCD.print("0.1 ", 275, 110);
+          }
+        }
+        if ((y_osc >= 135) && (y_osc <= 175)) // Р§РµС‚РІРµСЂС‚Р°СЏ СЂР°Р·СЂРµС€РµРЅРёРµ
+        {
+          waitForIt(250, 135, 318, 175);
+        }
+
+      }
+
+      if ((x_osc >= 250) && (x_osc <= 318))
+
+      {
+        if ((y_osc >= 200) && (y_osc <= 239)) //   РќРёР¶РЅРёРµ РєРЅРѕРїРєРё
+        {
+          waitForIt(250, 200, 318, 238);
+          Channel_trig = 0;
+          t_in_mode ++;
+          if (t_in_mode > 3)
+          {
+            t_in_mode = 0;
+          }
+          switch_trig(t_in_mode);
+          myGLCD.setBackColor( 0, 0, 255);
+          myGLCD.setColor (255, 255, 255);
+          myGLCD.printNumI(t_in_mode, 282, 214);
+        }
+      }
+
+      if ((y_osc >= 205) && (y_osc <= 239)) // РќРёР¶РЅРёРµ РєРЅРѕРїРєРё РїРµСЂРµРєР»СЋС‡РµРЅРёСЏ РІС…РѕРґРѕРІ
+      {
+        touch_osc();
+      }
+    }
+    trig_min_max(t_in_mode);
+    // if (tmode>0) trigger();
+
+    ADCSRA  |= (1 << ADSC)  // ADC Start Conversion
+               | (1 << ADIE);  // Р’РєР»СЋС‡РёС‚СЊ РїСЂРµСЂС‹РІР°РЅРёРµ  Р Р°Р·СЂРµС€РµРЅРёРµ РїСЂРµСЂС‹РІР°РЅРёСЏ РѕС‚ РђР¦Рџ
+
+    while (ADC_end) {}
+    // Р—Р°РїРёСЃР°С‚СЊ Р°РЅР°Р»РѕРіРѕРІС‹Р№ СЃРёРіРЅР°Р» РІ Р±Р»РѕРє РїР°РјСЏС‚Рё
+    StartSample = micros();
+
+
+    EndSample = micros();
+    DrawGrid();
+
+    for ( int xpos = 0; xpos < 239;	xpos ++)
+    {
+      //  РЎС‚РµСЂРµС‚СЊ РїСЂРµРґС‹РґСѓС‰РёР№ СЌРєСЂР°РЅ
+      myGLCD.setColor( 0, 0, 0);
+
+      if (Channel0 | osc_line_off0)
+      {
+        ypos_osc1_0 = 255 - (OldSample_osc[ xpos + 1][0] / koeff_h) - hpos;
+        ypos_osc2_0 = 255 - (OldSample_osc[ xpos + 2][0] / koeff_h) - hpos;
+        if (ypos_osc1_0 < 0) ypos_osc1_0 = 0;
+        if (ypos_osc2_0 < 0) ypos_osc2_0 = 0;
+        if (ypos_osc1_0 > 220) ypos_osc1_0 = 220;
+        if (ypos_osc2_0 > 220) ypos_osc2_0 = 220;
+        myGLCD.drawLine (xpos + 1, ypos_osc1_0, xpos + 2, ypos_osc2_0);
+        myGLCD.drawLine (xpos + 2, ypos_osc1_0 + 1, xpos + 3, ypos_osc2_0 + 1);
+
+        if (xpos > 237 & Channel0 == false )
+        {
+          osc_line_off0 = false;
+        }
+      }
+
+      if (Channel1 | osc_line_off1)
+      {
+        ypos_osc1_1 = 255 - (OldSample_osc[ xpos + 1][1] / koeff_h) - hpos;
+        ypos_osc2_1 = 255 - (OldSample_osc[ xpos + 2][1] / koeff_h) - hpos;
+        if (ypos_osc1_1 < 0) ypos_osc1_1 = 0;
+        if (ypos_osc2_1 < 0) ypos_osc2_1 = 0;
+        if (ypos_osc1_1 > 220) ypos_osc1_1 = 220;
+        if (ypos_osc2_1 > 220) ypos_osc2_1 = 220;
+        myGLCD.drawLine (xpos + 1, ypos_osc1_1, xpos + 2, ypos_osc2_1);
+        myGLCD.drawLine (xpos + 2, ypos_osc1_1 + 1, xpos + 3, ypos_osc2_1 + 1);
+        if (xpos > 237 & Channel1 == false )
+        {
+          osc_line_off1 = false;
+        }
+      }
+
+      if (xpos == 0)
+      {
+        myGLCD.drawLine (xpos + 1, 1, xpos + 1, 220);
+        myGLCD.drawLine (xpos + 2, 1, xpos + 2, 220);
+      }
+
+      if (Channel0)
+      {
+        myGLCD.setColor( 255, 255, 255);
+        ypos_osc1_0 = 255 - (Sample_osc[ xpos][0] / koeff_h) - hpos;
+        ypos_osc2_0 = 255 - (Sample_osc[ xpos + 1][0] / koeff_h) - hpos;
+        if (ypos_osc1_0 < 0) ypos_osc1_0 = 0;
+        if (ypos_osc2_0 < 0) ypos_osc2_0 = 0;
+        if (ypos_osc1_0 > 220) ypos_osc1_0  = 220;
+        if (ypos_osc2_0 > 220) ypos_osc2_0 = 220;
+        myGLCD.drawLine (xpos, ypos_osc1_0, xpos + 1, ypos_osc2_0);
+        myGLCD.drawLine (xpos + 1, ypos_osc1_0 + 1, xpos + 2, ypos_osc2_0 + 1);
+      }
+
+      if (Channel1)
+      {
+        myGLCD.setColor( VGA_YELLOW);
+        ypos_osc1_1 = 255 - (Sample_osc[ xpos][1] / koeff_h) - hpos;
+        ypos_osc2_1 = 255 - (Sample_osc[ xpos + 1][1] / koeff_h) - hpos;
+        if (ypos_osc1_1 < 0) ypos_osc1_1 = 0;
+        if (ypos_osc2_1 < 0) ypos_osc2_1 = 0;
+        if (ypos_osc1_1 > 220) ypos_osc1_1  = 220;
+        if (ypos_osc2_1 > 220) ypos_osc2_1 = 220;
+        myGLCD.drawLine (xpos, ypos_osc1_1, xpos + 1, ypos_osc2_1);
+        myGLCD.drawLine (xpos + 1, ypos_osc1_1 + 1, xpos + 2, ypos_osc2_1 + 1);
+      }
+
+      OldSample_osc[xpos][0] = Sample_osc[xpos][0];
+      OldSample_osc[xpos][1] = Sample_osc[xpos][1];
+
+    }
+
+    ADC_end = false;
+
     //ADCSRA  |=(1 << ADSC)   // ADC Start Conversion
-	   //     |(1 << ADIE);   // Включить прерывание  Разрешение прерывания от АЦП
-		//  ADCSRA |= (1 << ADIE);  // Включить прерывание
-	}
-koeff_h = 7.759*4;
-mode1 = 2;
-Trigger = 0;
-StartSample = millis();
-myGLCD.setFont( BigFont);
-while (myTouch.dataAvailable()){}
+    //     |(1 << ADIE);   // Р’РєР»СЋС‡РёС‚СЊ РїСЂРµСЂС‹РІР°РЅРёРµ  Р Р°Р·СЂРµС€РµРЅРёРµ РїСЂРµСЂС‹РІР°РЅРёСЏ РѕС‚ РђР¦Рџ
+    //  ADCSRA |= (1 << ADIE);  // Р’РєР»СЋС‡РёС‚СЊ РїСЂРµСЂС‹РІР°РЅРёРµ
+  }
+  koeff_h = 7.759 * 4;
+  mode1 = 2;
+  Trigger = 0;
+  StartSample = millis();
+  myGLCD.setFont( BigFont);
+  while (myTouch.dataAvailable()) {}
 }
-void buttons_right()  //  Правые кнопки  oscilloscope
+void buttons_right()  //  РџСЂР°РІС‹Рµ РєРЅРѕРїРєРё  oscilloscope
 {
-	
-	myGLCD.setColor(0, 0, 255);
-	myGLCD.fillRoundRect (250, 1, 318, 40);
-	myGLCD.fillRoundRect (250, 45, 318, 85);
-	myGLCD.fillRoundRect (250, 90, 318, 130);
-	myGLCD.fillRoundRect (250, 135, 318, 175);
-	myGLCD.fillRoundRect (250, 200, 318, 239);
 
-	myGLCD.setBackColor( 0, 0, 255);
-	myGLCD.setFont( SmallFont);
-	myGLCD.setColor (255, 255,255);
-	myGLCD.print("Delay", 265, 6);
-	myGLCD.print("-      +", 255, 22);
-	myGLCD.printNumI(dTime, 282, 22);
-	myGLCD.print("Trig.", 270, 50);
-	myGLCD.print("-      +", 255, 65);
-	if (tmode == 0)myGLCD.print(" Off ", 268, 65);
-	if (tmode == 1)myGLCD.print(" 0%  ", 268, 65);
-	if (tmode == 2)myGLCD.print(" 50% ", 266, 65);
-	if (tmode == 3)myGLCD.print(" 100%", 270, 65);
+  myGLCD.setColor(0, 0, 255);
+  myGLCD.fillRoundRect (250, 1, 318, 40);
+  myGLCD.fillRoundRect (250, 45, 318, 85);
+  myGLCD.fillRoundRect (250, 90, 318, 130);
+  myGLCD.fillRoundRect (250, 135, 318, 175);
+  myGLCD.fillRoundRect (250, 200, 318, 239);
 
-	myGLCD.print("V/del.", 265, 95);
-	myGLCD.print("-      +", 255, 110);
-	if (mode1 == 0){ koeff_h = 7.759*4; myGLCD.print(" 1  ", 275, 110);}
-	if (mode1 == 1){ koeff_h = 3.879*4; myGLCD.print("0.5 ", 275, 110);}
-	if (mode1 == 2){ koeff_h = 1.939*4; myGLCD.print("0.25", 275, 110);}
-	if (mode1 == 3){ koeff_h = 0.969*4; myGLCD.print("0.1 ", 275, 110);}
+  myGLCD.setBackColor( 0, 0, 255);
+  myGLCD.setFont( SmallFont);
+  myGLCD.setColor (255, 255, 255);
+  myGLCD.print("Delay", 265, 6);
+  myGLCD.print("-      +", 255, 22);
+  myGLCD.printNumI(dTime, 282, 22);
+  myGLCD.print("Trig.", 270, 50);
+  myGLCD.print("-      +", 255, 65);
+  if (tmode == 0)myGLCD.print(" Off ", 268, 65);
+  if (tmode == 1)myGLCD.print(" 0%  ", 268, 65);
+  if (tmode == 2)myGLCD.print(" 50% ", 266, 65);
+  if (tmode == 3)myGLCD.print(" 100%", 270, 65);
 
-	myGLCD.setBackColor( 0, 0, 255);
-	myGLCD.setColor (255, 255,255);
-	myGLCD.print("Synchro", 255, 202);
-	switch_trig(t_in_mode);
-	myGLCD.printNumI(t_in_mode, 282, 212);
-	
+  myGLCD.print("V/del.", 265, 95);
+  myGLCD.print("-      +", 255, 110);
+  if (mode1 == 0) {
+    koeff_h = 7.759 * 4;
+    myGLCD.print(" 1  ", 275, 110);
+  }
+  if (mode1 == 1) {
+    koeff_h = 3.879 * 4;
+    myGLCD.print("0.5 ", 275, 110);
+  }
+  if (mode1 == 2) {
+    koeff_h = 1.939 * 4;
+    myGLCD.print("0.25", 275, 110);
+  }
+  if (mode1 == 3) {
+    koeff_h = 0.969 * 4;
+    myGLCD.print("0.1 ", 275, 110);
+  }
+
+  myGLCD.setBackColor( 0, 0, 255);
+  myGLCD.setColor (255, 255, 255);
+  myGLCD.print("Synchro", 255, 202);
+  switch_trig(t_in_mode);
+  myGLCD.printNumI(t_in_mode, 282, 212);
+
 }
 void buttons_right_time()
 {
-	
-	myGLCD.setColor(0, 0, 255);
-	myGLCD.fillRoundRect (250, 1, 318, 40);
-	myGLCD.fillRoundRect (250, 45, 318, 85);
-	myGLCD.fillRoundRect (250, 90, 318, 130);
-	myGLCD.fillRoundRect (250, 135, 318, 175);
-	myGLCD.fillRoundRect (250, 200, 318, 239);
 
-	myGLCD.setBackColor( 0, 0, 255);
-	myGLCD.setFont( SmallFont);
-	myGLCD.setColor (255, 255,255);
-	myGLCD.print("C\xA0""e\x99", 270, 140);                       //
-	if (sled == true) myGLCD.print("  B\x9F\xA0 ", 257, 155);     //
-	if (sled == false) myGLCD.print("O\xA4\x9F\xA0", 270, 155);
-	myGLCD.print(txt_info30, 260, 205);
-	if (repeat == true & count_repeat == 0)
-		{
-			myGLCD.print("  B\x9F\xA0 ", 257, 220);
-		}
-	if (repeat == true & count_repeat > 0)
-		{
-			if (repeat == true) myGLCD.print("       ", 257, 220);
-			if (repeat == true) myGLCD.printNumI(count_repeat, 270, 220);
-		}
-	if (repeat == false) myGLCD.print("O\xA4\x9F\xA0", 270, 220);    // 
+  myGLCD.setColor(0, 0, 255);
+  myGLCD.fillRoundRect (250, 1, 318, 40);
+  myGLCD.fillRoundRect (250, 45, 318, 85);
+  myGLCD.fillRoundRect (250, 90, 318, 130);
+  myGLCD.fillRoundRect (250, 135, 318, 175);
+  myGLCD.fillRoundRect (250, 200, 318, 239);
 
-	if(Set_x == true)
-	{
-	   myGLCD.print("V Max", 265, 50);
-	   myGLCD.print(" /x  ", 265, 65);
-	}
-	else
-	{
-	   myGLCD.print("V Max", 265, 50);
-	   myGLCD.print("     ", 265, 65);
-	}
+  myGLCD.setBackColor( 0, 0, 255);
+  myGLCD.setFont( SmallFont);
+  myGLCD.setColor (255, 255, 255);
+  myGLCD.print("C\xA0""e\x99", 270, 140);                       //
+  if (sled == true) myGLCD.print("  B\x9F\xA0 ", 257, 155);     //
+  if (sled == false) myGLCD.print("O\xA4\x9F\xA0", 270, 155);
+  myGLCD.print(txt_info30, 260, 205);
+  if (repeat == true & count_repeat == 0)
+  {
+    myGLCD.print("  B\x9F\xA0 ", 257, 220);
+  }
+  if (repeat == true & count_repeat > 0)
+  {
+    if (repeat == true) myGLCD.print("       ", 257, 220);
+    if (repeat == true) myGLCD.printNumI(count_repeat, 270, 220);
+  }
+  if (repeat == false) myGLCD.print("O\xA4\x9F\xA0", 270, 220);    //
 
-	myGLCD.print("V/del.", 260, 95);
-	myGLCD.print("-     +", 260, 110);
-	if (mode1 == 0){ koeff_h = 7.759*4; myGLCD.print(" 1  ", 275, 110);}
-	if (mode1 == 1){ koeff_h = 3.879*4; myGLCD.print("0.5 ", 275, 110);}
-	if (mode1 == 2){ koeff_h = 1.939*4; myGLCD.print("0.25", 275, 110);}
-	if (mode1 == 3){ koeff_h = 0.969*4; myGLCD.print("0.1 ", 275, 110);}
-	scale_time();   // вывод цифровой шкалы
-	
+  if (Set_x == true)
+  {
+    myGLCD.print("V Max", 265, 50);
+    myGLCD.print(" /x  ", 265, 65);
+  }
+  else
+  {
+    myGLCD.print("V Max", 265, 50);
+    myGLCD.print("     ", 265, 65);
+  }
+
+  myGLCD.print("V/del.", 260, 95);
+  myGLCD.print("-     +", 260, 110);
+  if (mode1 == 0) {
+    koeff_h = 7.759 * 4;
+    myGLCD.print(" 1  ", 275, 110);
+  }
+  if (mode1 == 1) {
+    koeff_h = 3.879 * 4;
+    myGLCD.print("0.5 ", 275, 110);
+  }
+  if (mode1 == 2) {
+    koeff_h = 1.939 * 4;
+    myGLCD.print("0.25", 275, 110);
+  }
+  if (mode1 == 3) {
+    koeff_h = 0.969 * 4;
+    myGLCD.print("0.1 ", 275, 110);
+  }
+  scale_time();   // РІС‹РІРѕРґ С†РёС„СЂРѕРІРѕР№ С€РєР°Р»С‹
+
 }
 void scale_time()
 {
-	
-	myGLCD.setBackColor( 0, 0, 255);
-	myGLCD.setFont( SmallFont);
-	myGLCD.setColor (255, 255, 255);
-	myGLCD.print("Delay", 264, 5);
-	myGLCD.print("-      +", 254, 20);
-	if (mode == 0)myGLCD.print("1min", 269, 20);
-	if (mode == 1)myGLCD.print("6min", 269, 20);
-	if (mode == 2)myGLCD.print("12min", 266, 20);
-	if (mode == 3)myGLCD.print("18min", 266, 20);
-	myGLCD.setBackColor(0, 0, 0);
-	myGLCD.print("0",3, 163);         // В начале шкалы
-	if (mode == 0)                    // Остальная сетка
-		{
-			myGLCD.print("10", 35, 163);
-			myGLCD.print("20", 75, 163);
-			myGLCD.print("30", 115, 163);
-			myGLCD.print("40", 155, 163);
-			myGLCD.print("50", 195, 163);
-			myGLCD.print("60", 230, 163);
-		}
-	if (mode == 1)
-		{
-			myGLCD.print(" 1 ", 32, 163);
-			myGLCD.print(" 2 ", 72, 163);
-			myGLCD.print(" 3 ", 112, 163);
-			myGLCD.print(" 4 ", 152, 163);
-			myGLCD.print(" 5 ", 192, 163);
-			myGLCD.print(" 6", 230, 163);
-		}
-	if (mode == 2)
-		{
-			myGLCD.print(" 2 ", 32, 163);
-			myGLCD.print(" 4 ", 72, 163);
-			myGLCD.print(" 6 ", 112, 163);
-			myGLCD.print(" 8 ", 152, 163);
-			myGLCD.print("10", 195, 163);
-			myGLCD.print("12", 230, 163);
-		}
-	if (mode == 3)
-		{
-			myGLCD.print(" 3 ", 32, 163);
-			myGLCD.print(" 6 ", 72, 163);
-			myGLCD.print(" 9 ", 112, 163);
-			myGLCD.print("12", 155, 163);
-			myGLCD.print("15", 195, 163);
-			myGLCD.print("18", 230, 163);
-		}
-		
+
+  myGLCD.setBackColor( 0, 0, 255);
+  myGLCD.setFont( SmallFont);
+  myGLCD.setColor (255, 255, 255);
+  myGLCD.print("Delay", 264, 5);
+  myGLCD.print("-      +", 254, 20);
+  if (mode == 0)myGLCD.print("1min", 269, 20);
+  if (mode == 1)myGLCD.print("6min", 269, 20);
+  if (mode == 2)myGLCD.print("12min", 266, 20);
+  if (mode == 3)myGLCD.print("18min", 266, 20);
+  myGLCD.setBackColor(0, 0, 0);
+  myGLCD.print("0", 3, 163);        // Р’ РЅР°С‡Р°Р»Рµ С€РєР°Р»С‹
+  if (mode == 0)                    // РћСЃС‚Р°Р»СЊРЅР°СЏ СЃРµС‚РєР°
+  {
+    myGLCD.print("10", 35, 163);
+    myGLCD.print("20", 75, 163);
+    myGLCD.print("30", 115, 163);
+    myGLCD.print("40", 155, 163);
+    myGLCD.print("50", 195, 163);
+    myGLCD.print("60", 230, 163);
+  }
+  if (mode == 1)
+  {
+    myGLCD.print(" 1 ", 32, 163);
+    myGLCD.print(" 2 ", 72, 163);
+    myGLCD.print(" 3 ", 112, 163);
+    myGLCD.print(" 4 ", 152, 163);
+    myGLCD.print(" 5 ", 192, 163);
+    myGLCD.print(" 6", 230, 163);
+  }
+  if (mode == 2)
+  {
+    myGLCD.print(" 2 ", 32, 163);
+    myGLCD.print(" 4 ", 72, 163);
+    myGLCD.print(" 6 ", 112, 163);
+    myGLCD.print(" 8 ", 152, 163);
+    myGLCD.print("10", 195, 163);
+    myGLCD.print("12", 230, 163);
+  }
+  if (mode == 3)
+  {
+    myGLCD.print(" 3 ", 32, 163);
+    myGLCD.print(" 6 ", 72, 163);
+    myGLCD.print(" 9 ", 112, 163);
+    myGLCD.print("12", 155, 163);
+    myGLCD.print("15", 195, 163);
+    myGLCD.print("18", 230, 163);
+  }
+
 }
-void buttons_channel()  // Нижние кнопки переключения входов
+void buttons_channel()  // РќРёР¶РЅРёРµ РєРЅРѕРїРєРё РїРµСЂРµРєР»СЋС‡РµРЅРёСЏ РІС…РѕРґРѕРІ
 {
-	
-	myGLCD.setFont( SmallFont);
 
-				if (Channel0)
-					{
-						myGLCD.setColor( 255, 255, 255);
-						myGLCD.fillRoundRect (10, 200, 60, 205);
-						myGLCD.setColor(VGA_LIME);
-						myGLCD.setBackColor( VGA_LIME);
-						myGLCD.fillRoundRect (10, 210, 60, 239);
-						myGLCD.setColor(0, 0, 0);
-						myGLCD.print("0", 32, 212);
-						myGLCD.print("BXOD", 20, 226);
-						osc_line_off0 = true;
-					}
-				else
-					{
-						myGLCD.setColor(0,0,0);
-						myGLCD.setBackColor( 0,0,0);
-						myGLCD.fillRoundRect (10, 200, 60, 205);   // Индикатор цвета линии
-						myGLCD.fillRoundRect (10, 210, 60, 239);
-						myGLCD.setColor(255, 255, 255);
-						myGLCD.print("0", 32, 212);
-						myGLCD.print("BXOD", 20, 226);
-					}
+  myGLCD.setFont( SmallFont);
 
-				if (Channel1)
-					{
-						myGLCD.setColor(VGA_YELLOW);
-						myGLCD.fillRoundRect (70, 200, 120, 205);
-						myGLCD.setColor(VGA_LIME);
-						myGLCD.setBackColor( VGA_LIME);
-						myGLCD.fillRoundRect (70, 210, 120, 239);
-						myGLCD.setColor(0, 0, 0);
-						myGLCD.print("1", 92, 212);
-						myGLCD.print("BXOD", 80, 226);
-						osc_line_off1 = true;
-					}
-				else
-					{
-						myGLCD.setColor(0,0,0);
-						myGLCD.setBackColor( 0,0,0);
-						myGLCD.fillRoundRect (70, 200, 120, 205);   // Индикатор цвета линии
-						myGLCD.fillRoundRect (70, 210, 120, 239);
-						myGLCD.setColor(255, 255, 255);
-						myGLCD.print("1", 92, 212);
-						myGLCD.print("BXOD", 80, 226);
-					}
+  if (Channel0)
+  {
+    myGLCD.setColor( 255, 255, 255);
+    myGLCD.fillRoundRect (10, 200, 60, 205);
+    myGLCD.setColor(VGA_LIME);
+    myGLCD.setBackColor( VGA_LIME);
+    myGLCD.fillRoundRect (10, 210, 60, 239);
+    myGLCD.setColor(0, 0, 0);
+    myGLCD.print("0", 32, 212);
+    myGLCD.print("BXOD", 20, 226);
+    osc_line_off0 = true;
+  }
+  else
+  {
+    myGLCD.setColor(0, 0, 0);
+    myGLCD.setBackColor( 0, 0, 0);
+    myGLCD.fillRoundRect (10, 200, 60, 205);   // РРЅРґРёРєР°С‚РѕСЂ С†РІРµС‚Р° Р»РёРЅРёРё
+    myGLCD.fillRoundRect (10, 210, 60, 239);
+    myGLCD.setColor(255, 255, 255);
+    myGLCD.print("0", 32, 212);
+    myGLCD.print("BXOD", 20, 226);
+  }
+
+  if (Channel1)
+  {
+    myGLCD.setColor(VGA_YELLOW);
+    myGLCD.fillRoundRect (70, 200, 120, 205);
+    myGLCD.setColor(VGA_LIME);
+    myGLCD.setBackColor( VGA_LIME);
+    myGLCD.fillRoundRect (70, 210, 120, 239);
+    myGLCD.setColor(0, 0, 0);
+    myGLCD.print("1", 92, 212);
+    myGLCD.print("BXOD", 80, 226);
+    osc_line_off1 = true;
+  }
+  else
+  {
+    myGLCD.setColor(0, 0, 0);
+    myGLCD.setBackColor( 0, 0, 0);
+    myGLCD.fillRoundRect (70, 200, 120, 205);   // РРЅРґРёРєР°С‚РѕСЂ С†РІРµС‚Р° Р»РёРЅРёРё
+    myGLCD.fillRoundRect (70, 210, 120, 239);
+    myGLCD.setColor(255, 255, 255);
+    myGLCD.print("1", 92, 212);
+    myGLCD.print("BXOD", 80, 226);
+  }
 
 
-	myGLCD.setColor(255, 255, 255);
-	myGLCD.drawRoundRect (10, 210, 60, 239);
-	myGLCD.drawRoundRect (70, 210, 120, 239);
-	myGLCD.drawRoundRect (130, 210, 180, 239);
-	myGLCD.drawRoundRect (190, 210, 240, 239);
-	
+  myGLCD.setColor(255, 255, 255);
+  myGLCD.drawRoundRect (10, 210, 60, 239);
+  myGLCD.drawRoundRect (70, 210, 120, 239);
+  myGLCD.drawRoundRect (130, 210, 180, 239);
+  myGLCD.drawRoundRect (190, 210, 240, 239);
+
 }
 void chench_Channel()
 {
-	//Подготовка номера аналогового сигнала, количества каналов и кода настройки АЦП
-		   Channel_x = 0;
-		//   ADC_CHER = Channel_x;
-		   count_pin = 0;
-	 
-		if (Channel0 )
-			{
-				Channel_x|=0x80;
-				count_pin++;
-			}
-		if (Channel1 )
-			{
-				Channel_x|=0x40;
-				count_pin++;
-			}
-		
-	
-		// ADC_CHER = Channel_x;
-		// SAMPLES_PER_BLOCK = DATA_DIM16/count_pin;
+  //РџРѕРґРіРѕС‚РѕРІРєР° РЅРѕРјРµСЂР° Р°РЅР°Р»РѕРіРѕРІРѕРіРѕ СЃРёРіРЅР°Р»Р°, РєРѕР»РёС‡РµСЃС‚РІР° РєР°РЅР°Р»РѕРІ Рё РєРѕРґР° РЅР°СЃС‚СЂРѕР№РєРё РђР¦Рџ
+  Channel_x = 0;
+  //   ADC_CHER = Channel_x;
+  count_pin = 0;
+
+  if (Channel0 )
+  {
+    Channel_x |= 0x80;
+    count_pin++;
+  }
+  if (Channel1 )
+  {
+    Channel_x |= 0x40;
+    count_pin++;
+  }
+
+
+  // ADC_CHER = Channel_x;
+  // SAMPLES_PER_BLOCK = DATA_DIM16/count_pin;
 }
 void DrawGrid()
 {
-	
+
   myGLCD.setColor( 0, 200, 0);
-  for(  dgvh = 0; dgvh < 5; dgvh ++)
+  for (  dgvh = 0; dgvh < 5; dgvh ++)
   {
-	  myGLCD.drawLine( dgvh * 40, 0, dgvh * 40, 160);
-	  myGLCD.drawLine(  0, dgvh * 40, 240 ,dgvh * 40);
+    myGLCD.drawLine( dgvh * 40, 0, dgvh * 40, 160);
+    myGLCD.drawLine(  0, dgvh * 40, 240 , dgvh * 40);
   }
-	myGLCD.drawLine( 200, 0, 200, 160);
-	myGLCD.drawLine( 240, 0, 240, 160);
-	myGLCD.setColor(255, 255, 255);           // Белая окантовка
-	myGLCD.drawRoundRect (250, 1, 318, 40);
-	myGLCD.drawRoundRect (250, 45, 318, 85);
-	myGLCD.drawRoundRect (250, 90, 318, 130);
-	myGLCD.drawRoundRect (250, 135, 318, 175);
+  myGLCD.drawLine( 200, 0, 200, 160);
+  myGLCD.drawLine( 240, 0, 240, 160);
+  myGLCD.setColor(255, 255, 255);           // Р‘РµР»Р°СЏ РѕРєР°РЅС‚РѕРІРєР°
+  myGLCD.drawRoundRect (250, 1, 318, 40);
+  myGLCD.drawRoundRect (250, 45, 318, 85);
+  myGLCD.drawRoundRect (250, 90, 318, 130);
+  myGLCD.drawRoundRect (250, 135, 318, 175);
 
-	myGLCD.drawRoundRect (10, 210, 60, 239);
-	myGLCD.drawRoundRect (70, 210, 120, 239);
-	myGLCD.drawRoundRect (130, 210, 180, 239);
-	myGLCD.drawRoundRect (190, 210, 240, 239);
-	myGLCD.drawRoundRect (250, 200, 318, 239);
-	myGLCD.setBackColor( 0, 0, 0);
-	myGLCD.setFont( SmallFont);
-	if (mode1 == 0)
-		{				
-			myGLCD.print("4", 241, 0);
-			myGLCD.print("3", 241, 34);
-			myGLCD.print("2", 241, 74);
-			myGLCD.print("1", 241, 114);
-			myGLCD.print("0", 241, 152);
-		}
-	if (mode1 == 1)
-		{
-			myGLCD.print("2", 241, 0);
-			myGLCD.print("1,5", 226, 34);
-			myGLCD.print("1", 241, 74);
-			myGLCD.print("0,5", 226, 114);
-			myGLCD.print("0", 241, 152);
-		}
+  myGLCD.drawRoundRect (10, 210, 60, 239);
+  myGLCD.drawRoundRect (70, 210, 120, 239);
+  myGLCD.drawRoundRect (130, 210, 180, 239);
+  myGLCD.drawRoundRect (190, 210, 240, 239);
+  myGLCD.drawRoundRect (250, 200, 318, 239);
+  myGLCD.setBackColor( 0, 0, 0);
+  myGLCD.setFont( SmallFont);
+  if (mode1 == 0)
+  {
+    myGLCD.print("4", 241, 0);
+    myGLCD.print("3", 241, 34);
+    myGLCD.print("2", 241, 74);
+    myGLCD.print("1", 241, 114);
+    myGLCD.print("0", 241, 152);
+  }
+  if (mode1 == 1)
+  {
+    myGLCD.print("2", 241, 0);
+    myGLCD.print("1,5", 226, 34);
+    myGLCD.print("1", 241, 74);
+    myGLCD.print("0,5", 226, 114);
+    myGLCD.print("0", 241, 152);
+  }
 
-	if (mode1 == 2)
-		{
-			myGLCD.print("1", 241, 0);
-			myGLCD.print("0,75", 218, 34);
-			myGLCD.print("0,5", 226, 74);
-			myGLCD.print("0,25", 218, 114);
-			myGLCD.print("0", 241, 152);
-		}
-	if (mode1 == 3)
-		{
-			myGLCD.print("0,4", 226, 0);
-			myGLCD.print("0,3", 226, 34);
-			myGLCD.print("0,2", 226, 74);
-			myGLCD.print("0,1", 226, 114);
-			myGLCD.print("0", 241, 152);
-		}
-	if (!strob_start) 
-		{
-			//myGLCD.setColor(VGA_RED);
-			//myGLCD.fillCircle(227,12,10);
-		}
-	else
-		{
-			//myGLCD.setColor(255,255,255);
-			//myGLCD.drawCircle(227,12,10);
-		}
-	myGLCD.setColor(255,255,255);
-	
+  if (mode1 == 2)
+  {
+    myGLCD.print("1", 241, 0);
+    myGLCD.print("0,75", 218, 34);
+    myGLCD.print("0,5", 226, 74);
+    myGLCD.print("0,25", 218, 114);
+    myGLCD.print("0", 241, 152);
+  }
+  if (mode1 == 3)
+  {
+    myGLCD.print("0,4", 226, 0);
+    myGLCD.print("0,3", 226, 34);
+    myGLCD.print("0,2", 226, 74);
+    myGLCD.print("0,1", 226, 114);
+    myGLCD.print("0", 241, 152);
+  }
+  if (!strob_start)
+  {
+    //myGLCD.setColor(VGA_RED);
+    //myGLCD.fillCircle(227,12,10);
+  }
+  else
+  {
+    //myGLCD.setColor(255,255,255);
+    //myGLCD.drawCircle(227,12,10);
+  }
+  myGLCD.setColor(255, 255, 255);
+
 }
 void DrawGrid1()
 {
-	
- myGLCD.setColor( 0, 200, 0);
-  for(  dgvh = 0; dgvh < 5; dgvh ++)
+
+  myGLCD.setColor( 0, 200, 0);
+  for (  dgvh = 0; dgvh < 5; dgvh ++)
   {
-	  myGLCD.drawLine( dgvh * 40, 0, dgvh * 40, 160);
-	  myGLCD.drawLine(  0, dgvh * 40, 240 ,dgvh * 40);
+    myGLCD.drawLine( dgvh * 40, 0, dgvh * 40, 160);
+    myGLCD.drawLine(  0, dgvh * 40, 240 , dgvh * 40);
   }
-	myGLCD.drawLine( 200, 0, 200, 160);
-	myGLCD.drawLine( 240, 0, 240, 160);
-	//myGLCD.setColor(255, 255, 255);           // Белая окантовка
+  myGLCD.drawLine( 200, 0, 200, 160);
+  myGLCD.drawLine( 240, 0, 240, 160);
+  //myGLCD.setColor(255, 255, 255);           // Р‘РµР»Р°СЏ РѕРєР°РЅС‚РѕРІРєР°
 
-	//if (!strob_start) 
-	//	{
-	//		myGLCD.setColor(VGA_RED);
-	//		//myGLCD.fillCircle(227,12,10);
-	//	}
-	//else
-	//	{
-	//		myGLCD.setColor(255,255,255);
-	//		//myGLCD.drawCircle(227,12,10);
-	//	}
-	myGLCD.setColor(255,255,255);
-	
+  //if (!strob_start)
+  //	{
+  //		myGLCD.setColor(VGA_RED);
+  //		//myGLCD.fillCircle(227,12,10);
+  //	}
+  //else
+  //	{
+  //		myGLCD.setColor(255,255,255);
+  //		//myGLCD.drawCircle(227,12,10);
+  //	}
+  myGLCD.setColor(255, 255, 255);
+
 }
-void touch_osc()  //  Нижнее меню осциллографа
+void touch_osc()  //  РќРёР¶РЅРµРµ РјРµРЅСЋ РѕСЃС†РёР»Р»РѕРіСЂР°С„Р°
 {
-	
-	delay(10);
-	myTouch.read();
-	x_osc=myTouch.getX();
-	y_osc=myTouch.getY();
-	myGLCD.setFont( SmallFont);
 
-	if ((y_osc>=210) && (y_osc<=239))                         //   Нижние кнопки
-	  {
-		if ((x_osc>=10) && (x_osc<=60))                       //  Вход 0
-			{
-				waitForIt(10, 210, 60, 239);
+  delay(10);
+  myTouch.read();
+  x_osc = myTouch.getX();
+  y_osc = myTouch.getY();
+  myGLCD.setFont( SmallFont);
 
-				Channel0 = !Channel0;
+  if ((y_osc >= 210) && (y_osc <= 239))                     //   РќРёР¶РЅРёРµ РєРЅРѕРїРєРё
+  {
+    if ((x_osc >= 10) && (x_osc <= 60))                   //  Р’С…РѕРґ 0
+    {
+      waitForIt(10, 210, 60, 239);
 
-				if (Channel0)
-					{
-						myGLCD.setColor( 255, 255, 255);
-						myGLCD.fillRoundRect (10, 200, 60, 205);
-						myGLCD.setColor(VGA_LIME);
-						myGLCD.setBackColor( VGA_LIME);
-						myGLCD.fillRoundRect (10, 210, 60, 239);
-						myGLCD.setColor(0, 0, 0);
-						myGLCD.print("0", 32, 212);
-						myGLCD.print("BXOD", 20, 226);
-						osc_line_off0 = true;
-					}
-				else
-					{
-						myGLCD.setColor(0,0,0);
-						myGLCD.setBackColor( 0,0,0);
-						myGLCD.fillRoundRect (10, 200, 60, 205);
-						myGLCD.fillRoundRect (10, 210, 60, 239);
-						myGLCD.setColor(255, 255, 255);
-						myGLCD.drawRoundRect (10, 210, 60, 239);
-						myGLCD.print("0", 32, 212);
-						myGLCD.print("BXOD", 20, 226);
-					}
+      Channel0 = !Channel0;
 
-				chench_Channel();
-				MinAnalog0 = 1023;
-				MaxAnalog0 = 0;
-			}
+      if (Channel0)
+      {
+        myGLCD.setColor( 255, 255, 255);
+        myGLCD.fillRoundRect (10, 200, 60, 205);
+        myGLCD.setColor(VGA_LIME);
+        myGLCD.setBackColor( VGA_LIME);
+        myGLCD.fillRoundRect (10, 210, 60, 239);
+        myGLCD.setColor(0, 0, 0);
+        myGLCD.print("0", 32, 212);
+        myGLCD.print("BXOD", 20, 226);
+        osc_line_off0 = true;
+      }
+      else
+      {
+        myGLCD.setColor(0, 0, 0);
+        myGLCD.setBackColor( 0, 0, 0);
+        myGLCD.fillRoundRect (10, 200, 60, 205);
+        myGLCD.fillRoundRect (10, 210, 60, 239);
+        myGLCD.setColor(255, 255, 255);
+        myGLCD.drawRoundRect (10, 210, 60, 239);
+        myGLCD.print("0", 32, 212);
+        myGLCD.print("BXOD", 20, 226);
+      }
 
-		else if ((x_osc>=70) && (x_osc<=120))                    //  Вход 1
-			{
+      chench_Channel();
+      MinAnalog0 = 1023;
+      MaxAnalog0 = 0;
+    }
 
-				waitForIt(70, 210, 120, 239);
+    else if ((x_osc >= 70) && (x_osc <= 120))                //  Р’С…РѕРґ 1
+    {
 
-					Channel1 = !Channel1;
+      waitForIt(70, 210, 120, 239);
 
-				if (Channel1)
-					{
-						myGLCD.setColor(VGA_YELLOW);
-						myGLCD.fillRoundRect (70, 200, 120, 205);
-						myGLCD.setColor(VGA_LIME);
-						myGLCD.setBackColor( VGA_LIME);
-						myGLCD.fillRoundRect (70, 210, 120, 239);
-						myGLCD.setColor(0, 0, 0);
-						myGLCD.print("1", 92, 212);
-						myGLCD.print("BXOD", 80, 226);
-						osc_line_off1 = true;
-					}
-				else
-					{
-						myGLCD.setColor(0,0,0);
-						myGLCD.setBackColor( 0,0,0);
-						myGLCD.fillRoundRect (70, 200, 120, 205);
-						myGLCD.fillRoundRect (70, 210, 120, 239);
-						myGLCD.setColor(255, 255, 255);
-						myGLCD.drawRoundRect (70, 210, 120, 239);
-						myGLCD.print("1", 92, 212);
-						myGLCD.print("BXOD", 80, 226);
-					}
+      Channel1 = !Channel1;
 
-				chench_Channel();
-				MinAnalog1 = 4095;
-				MaxAnalog1 = 0;
-			}
-		else if ((x_osc>=130) && (x_osc<=180))                    //  Вход 2
-			{
-				waitForIt(130, 210, 180, 239);
+      if (Channel1)
+      {
+        myGLCD.setColor(VGA_YELLOW);
+        myGLCD.fillRoundRect (70, 200, 120, 205);
+        myGLCD.setColor(VGA_LIME);
+        myGLCD.setBackColor( VGA_LIME);
+        myGLCD.fillRoundRect (70, 210, 120, 239);
+        myGLCD.setColor(0, 0, 0);
+        myGLCD.print("1", 92, 212);
+        myGLCD.print("BXOD", 80, 226);
+        osc_line_off1 = true;
+      }
+      else
+      {
+        myGLCD.setColor(0, 0, 0);
+        myGLCD.setBackColor( 0, 0, 0);
+        myGLCD.fillRoundRect (70, 200, 120, 205);
+        myGLCD.fillRoundRect (70, 210, 120, 239);
+        myGLCD.setColor(255, 255, 255);
+        myGLCD.drawRoundRect (70, 210, 120, 239);
+        myGLCD.print("1", 92, 212);
+        myGLCD.print("BXOD", 80, 226);
+      }
+
+      chench_Channel();
+      MinAnalog1 = 4095;
+      MaxAnalog1 = 0;
+    }
+    else if ((x_osc >= 130) && (x_osc <= 180))                //  Р’С…РѕРґ 2
+    {
+      waitForIt(130, 210, 180, 239);
 
 
-			}
-		else if ((x_osc>=190) && (x_osc<=240))                     //  Вход 3
-			{
-				waitForIt(190, 210, 240, 239);
+    }
+    else if ((x_osc >= 190) && (x_osc <= 240))                 //  Р’С…РѕРґ 3
+    {
+      waitForIt(190, 210, 240, 239);
 
-				
-			}
-	}
-	
+
+    }
+  }
+
 }
 void switch_trig(int trig_x)
 {
-	
-	switch (trig_x) 
-					{
-						case 1:
-						 if (Channel1)
-							{
-								Channel_trig = 0x40;
-								myGLCD.print(" ON ", 270, 226);
-								MinAnalog = MinAnalog1 ;
-								MaxAnalog = MaxAnalog1 ;
-							}
-						else
-							{
-								myGLCD.print(" OFF", 270, 226);
-							}
-						  break;
 
-						default: 
+  switch (trig_x)
+  {
+    case 1:
+      if (Channel1)
+      {
+        Channel_trig = 0x40;
+        myGLCD.print(" ON ", 270, 226);
+        MinAnalog = MinAnalog1 ;
+        MaxAnalog = MaxAnalog1 ;
+      }
+      else
+      {
+        myGLCD.print(" OFF", 270, 226);
+      }
+      break;
 
-						 if (Channel0)
-							{
-								Channel_trig = 0x80;
-								myGLCD.print(" ON ", 270, 226);
-								MinAnalog = MinAnalog0 ;
-								MaxAnalog = MaxAnalog0 ;
-							}
-						else
-							{
-								myGLCD.print(" OFF", 270, 226);
-							}
-					}
+    default:
+
+      if (Channel0)
+      {
+        Channel_trig = 0x80;
+        myGLCD.print(" ON ", 270, 226);
+        MinAnalog = MinAnalog0 ;
+        MaxAnalog = MaxAnalog0 ;
+      }
+      else
+      {
+        myGLCD.print(" OFF", 270, 226);
+      }
+  }
 
 }
 void trig_min_max(int trig_x)
 {
-	switch (trig_x) 
-					{
-						case 1:
-						 if (Channel1)
-							{
-								MinAnalog = MinAnalog1 ;
-								MaxAnalog = MaxAnalog1 ;
-							}
-						  break;
-						case 0:
+  switch (trig_x)
+  {
+    case 1:
+      if (Channel1)
+      {
+        MinAnalog = MinAnalog1 ;
+        MaxAnalog = MaxAnalog1 ;
+      }
+      break;
+    case 0:
 
-						if (Channel0)
-							{
-								MinAnalog = MinAnalog0 ;
-								MaxAnalog = MaxAnalog0 ;
-							}
-						  break;
+      if (Channel0)
+      {
+        MinAnalog = MinAnalog0 ;
+        MaxAnalog = MaxAnalog0 ;
+      }
+      break;
 
-						default: 
+    default:
 
-						 if (Channel0)
-							{
-								MinAnalog = MinAnalog0 ;
-								MaxAnalog = MaxAnalog0 ;
-							}
+      if (Channel0)
+      {
+        MinAnalog = MinAnalog0 ;
+        MaxAnalog = MaxAnalog0 ;
+      }
 
-					}
+  }
 
 }
-//--------------------- Конец программы осциллографа -------------
+//--------------------- РљРѕРЅРµС† РїСЂРѕРіСЂР°РјРјС‹ РѕСЃС†РёР»Р»РѕРіСЂР°С„Р° -------------
 
 //----------------------------------------------------------------
 void set_adr_EEPROM()
 {
- adr_memN1_1 = 100;                       // Начальный адрес памяти таблицы соответствия контактов разъемов №1А, №1В
- adr_memN1_2 = adr_memN1_1+sizeof(connektN1_default)+1;                       // Начальный адрес памяти таблицы соответствия контактов разъемов №2А, №2В
- adr_memN1_3 = adr_memN1_2+sizeof(connektN2_default)+1;                       // Начальный адрес памяти таблицы соответствия контактов разъемов №3А, №3В
- adr_memN1_4 = adr_memN1_3+sizeof(connektN3_default)+1;                       // Начальный адрес памяти таблицы соответствия контактов разъемов №4А, №4В
- //++++++++++++++++++ Вариант № 2 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- //adr_memN2_1 = adr_memN1_1+sizeof(connektN1_default)+1;                       // Начальный адрес памяти таблицы соответствия контактов разъемов №1А, №1В
- //adr_memN2_2 = adr_memN1_1+sizeof(connektN1_default)+1;                       // Начальный адрес памяти таблицы соответствия контактов разъемов №2А, №2В
- //adr_memN2_3 = adr_memN1_1+sizeof(connektN1_default)+1;                       // Начальный адрес памяти таблицы соответствия контактов разъемов №3А, №3В
- //adr_memN2_4 = adr_memN1_1+sizeof(connektN1_default)+1;                       // Начальный адрес памяти таблицы соответствия контактов разъемов №4А, №4В
- //
- } 
+  adr_memN1_1 = 100;                       // РќР°С‡Р°Р»СЊРЅС‹Р№ Р°РґСЂРµСЃ РїР°РјСЏС‚Рё С‚Р°Р±Р»РёС†С‹ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёСЏ РєРѕРЅС‚Р°РєС‚РѕРІ СЂР°Р·СЉРµРјРѕРІ в„–1Рђ, в„–1Р’
+  adr_memN1_2 = adr_memN1_1 + sizeof(connektN1_default) + 1;                   // РќР°С‡Р°Р»СЊРЅС‹Р№ Р°РґСЂРµСЃ РїР°РјСЏС‚Рё С‚Р°Р±Р»РёС†С‹ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёСЏ РєРѕРЅС‚Р°РєС‚РѕРІ СЂР°Р·СЉРµРјРѕРІ в„–2Рђ, в„–2Р’
+  adr_memN1_3 = adr_memN1_2 + sizeof(connektN2_default) + 1;                   // РќР°С‡Р°Р»СЊРЅС‹Р№ Р°РґСЂРµСЃ РїР°РјСЏС‚Рё С‚Р°Р±Р»РёС†С‹ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёСЏ РєРѕРЅС‚Р°РєС‚РѕРІ СЂР°Р·СЉРµРјРѕРІ в„–3Рђ, в„–3Р’
+  adr_memN1_4 = adr_memN1_3 + sizeof(connektN3_default) + 1;                   // РќР°С‡Р°Р»СЊРЅС‹Р№ Р°РґСЂРµСЃ РїР°РјСЏС‚Рё С‚Р°Р±Р»РёС†С‹ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёСЏ РєРѕРЅС‚Р°РєС‚РѕРІ СЂР°Р·СЉРµРјРѕРІ в„–4Рђ, в„–4Р’
+  //++++++++++++++++++ Р’Р°СЂРёР°РЅС‚ в„– 2 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  //adr_memN2_1 = adr_memN1_1+sizeof(connektN1_default)+1;                       // РќР°С‡Р°Р»СЊРЅС‹Р№ Р°РґСЂРµСЃ РїР°РјСЏС‚Рё С‚Р°Р±Р»РёС†С‹ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёСЏ РєРѕРЅС‚Р°РєС‚РѕРІ СЂР°Р·СЉРµРјРѕРІ в„–1Рђ, в„–1Р’
+  //adr_memN2_2 = adr_memN1_1+sizeof(connektN1_default)+1;                       // РќР°С‡Р°Р»СЊРЅС‹Р№ Р°РґСЂРµСЃ РїР°РјСЏС‚Рё С‚Р°Р±Р»РёС†С‹ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёСЏ РєРѕРЅС‚Р°РєС‚РѕРІ СЂР°Р·СЉРµРјРѕРІ в„–2Рђ, в„–2Р’
+  //adr_memN2_3 = adr_memN1_1+sizeof(connektN1_default)+1;                       // РќР°С‡Р°Р»СЊРЅС‹Р№ Р°РґСЂРµСЃ РїР°РјСЏС‚Рё С‚Р°Р±Р»РёС†С‹ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёСЏ РєРѕРЅС‚Р°РєС‚РѕРІ СЂР°Р·СЉРµРјРѕРІ в„–3Рђ, в„–3Р’
+  //adr_memN2_4 = adr_memN1_1+sizeof(connektN1_default)+1;                       // РќР°С‡Р°Р»СЊРЅС‹Р№ Р°РґСЂРµСЃ РїР°РјСЏС‚Рё С‚Р°Р±Р»РёС†С‹ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёСЏ РєРѕРЅС‚Р°РєС‚РѕРІ СЂР°Р·СЉРµРјРѕРІ в„–4Рђ, в„–4Р’
+  //
+}
 void setup_pin()
 {
-	pinMode(led_Red, OUTPUT);                             //  
-	pinMode(led_Green, OUTPUT);                           //
-	digitalWrite(led_Red, HIGH);                          // 
-	digitalWrite(led_Green, LOW);                         // 
-	pinMode(48, OUTPUT);                                  // Отключить оптрон включения звука U11_1
-	pinMode(49, OUTPUT);                                  // Отключить оптрон включения звука U11_2
-	digitalWrite(48,HIGH);                                // Отключить оптрон U11 канал №1
-	digitalWrite(49,HIGH);                                // Отключить оптрон U11 канал №2
-	pinMode(46, INPUT);                                   // Выход коммутаторов блока А
-	pinMode(47, INPUT);                                   // Выход коммутаторов блока В
-	pinMode(led_disp, INPUT);                             // 
-	pinMode(led_instr, INPUT);                            //  
+  pinMode(led_Red, OUTPUT);                             //
+  pinMode(led_Green, OUTPUT);                           //
+  digitalWrite(led_Red, HIGH);                          //
+  digitalWrite(led_Green, LOW);                         //
+  pinMode(48, OUTPUT);                                  // РћС‚РєР»СЋС‡РёС‚СЊ РѕРїС‚СЂРѕРЅ РІРєР»СЋС‡РµРЅРёСЏ Р·РІСѓРєР° U11_1
+  pinMode(49, OUTPUT);                                  // РћС‚РєР»СЋС‡РёС‚СЊ РѕРїС‚СЂРѕРЅ РІРєР»СЋС‡РµРЅРёСЏ Р·РІСѓРєР° U11_2
+  digitalWrite(48, HIGH);                               // РћС‚РєР»СЋС‡РёС‚СЊ РѕРїС‚СЂРѕРЅ U11 РєР°РЅР°Р» в„–1
+  digitalWrite(49, HIGH);                               // РћС‚РєР»СЋС‡РёС‚СЊ РѕРїС‚СЂРѕРЅ U11 РєР°РЅР°Р» в„–2
+  pinMode(46, INPUT);                                   // Р’С‹С…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂРѕРІ Р±Р»РѕРєР° Рђ
+  pinMode(47, INPUT);                                   // Р’С‹С…РѕРґ РєРѕРјРјСѓС‚Р°С‚РѕСЂРѕРІ Р±Р»РѕРєР° Р’
+  pinMode(led_disp, INPUT);                             //
+  pinMode(led_instr, INPUT);                            //
 }
 void setup_mcp()
 {
-	// Настройка расширителя портов
- 
-  mcp_Out1.begin(1);                               //  Адрес (4) второго  расширителя портов
+  // РќР°СЃС‚СЂРѕР№РєР° СЂР°СЃС€РёСЂРёС‚РµР»СЏ РїРѕСЂС‚РѕРІ
+
+  mcp_Out1.begin(1);                               //  РђРґСЂРµСЃ (4) РІС‚РѕСЂРѕРіРѕ  СЂР°СЃС€РёСЂРёС‚РµР»СЏ РїРѕСЂС‚РѕРІ
   mcp_Out1.pinMode(0, OUTPUT);                     //  1A1
-  mcp_Out1.pinMode(1, OUTPUT);                     //  1B1  
+  mcp_Out1.pinMode(1, OUTPUT);                     //  1B1
   mcp_Out1.pinMode(2, OUTPUT);                     //  1C1
-  mcp_Out1.pinMode(3, OUTPUT);                     //  1D1  
+  mcp_Out1.pinMode(3, OUTPUT);                     //  1D1
   mcp_Out1.pinMode(4, OUTPUT);                     //  1A2
   mcp_Out1.pinMode(5, OUTPUT);                     //  1B2
   mcp_Out1.pinMode(6, OUTPUT);                     //  1C2
   mcp_Out1.pinMode(7, OUTPUT);                     //  1D2
-  
+
   mcp_Out1.pinMode(8, OUTPUT);                     //  1E1   U13
   mcp_Out1.pinMode(9, OUTPUT);                     //  1E2   U17
   mcp_Out1.pinMode(10, OUTPUT);                    //  1E3   U23
   mcp_Out1.pinMode(11, OUTPUT);                    //  1E4   U14
   mcp_Out1.pinMode(12, OUTPUT);                    //  1E5   U19
-  mcp_Out1.pinMode(13, OUTPUT);                    //  1E6   U21 
-  mcp_Out1.pinMode(14, OUTPUT);                    //  1E7   Свободен  
-  mcp_Out1.pinMode(15, OUTPUT);                    //  1E8   Свободен
-	
-  mcp_Out2.begin(2);                               //  
-  mcp_Out2.pinMode(0, OUTPUT);                     //  2A1  
-  mcp_Out2.pinMode(1, OUTPUT);                     //  2B1  
+  mcp_Out1.pinMode(13, OUTPUT);                    //  1E6   U21
+  mcp_Out1.pinMode(14, OUTPUT);                    //  1E7   РЎРІРѕР±РѕРґРµРЅ
+  mcp_Out1.pinMode(15, OUTPUT);                    //  1E8   РЎРІРѕР±РѕРґРµРЅ
+
+  mcp_Out2.begin(2);                               //
+  mcp_Out2.pinMode(0, OUTPUT);                     //  2A1
+  mcp_Out2.pinMode(1, OUTPUT);                     //  2B1
   mcp_Out2.pinMode(2, OUTPUT);                     //  2C1
-  mcp_Out2.pinMode(3, OUTPUT);                     //  2D1  
+  mcp_Out2.pinMode(3, OUTPUT);                     //  2D1
   mcp_Out2.pinMode(4, OUTPUT);                     //  2A2
   mcp_Out2.pinMode(5, OUTPUT);                     //  2B2
   mcp_Out2.pinMode(6, OUTPUT);                     //  2C2
   mcp_Out2.pinMode(7, OUTPUT);                     //  2D2
-  
+
   mcp_Out2.pinMode(8, OUTPUT);                     //  2E1   U15
   mcp_Out2.pinMode(9, OUTPUT);                     //  2E2   U18
   mcp_Out2.pinMode(10, OUTPUT);                    //  2E3   U22
   mcp_Out2.pinMode(11, OUTPUT);                    //  2E4   U16
-  mcp_Out2.pinMode(12, OUTPUT);                    //  2E5   U20     
-  mcp_Out2.pinMode(13, OUTPUT);                    //  2E6   U24       
-  mcp_Out2.pinMode(14, OUTPUT);                    //  2E7   Реле №1, №2
-  mcp_Out2.pinMode(15, OUTPUT);                    //  2E8   Свободен
-  for(int i=0;i<16;i++)
+  mcp_Out2.pinMode(12, OUTPUT);                    //  2E5   U20
+  mcp_Out2.pinMode(13, OUTPUT);                    //  2E6   U24
+  mcp_Out2.pinMode(14, OUTPUT);                    //  2E7   Р РµР»Рµ в„–1, в„–2
+  mcp_Out2.pinMode(15, OUTPUT);                    //  2E8   РЎРІРѕР±РѕРґРµРЅ
+  for (int i = 0; i < 16; i++)
   {
-	  mcp_Out1.digitalWrite(i, HIGH); 
-	  mcp_Out2.digitalWrite(i, HIGH); 
+    mcp_Out1.digitalWrite(i, HIGH);
+    mcp_Out2.digitalWrite(i, HIGH);
   }
-   mcp_Out2.digitalWrite(14, LOW);                 // Отключить реле
+  mcp_Out2.digitalWrite(14, LOW);                 // РћС‚РєР»СЋС‡РёС‚СЊ СЂРµР»Рµ
 }
 void setup_sound_port()
 {
-	//pinMode(ledPin13, OUTPUT);   
-	//pinMode(ledPin12, OUTPUT);  
-	//digitalWrite(ledPin12, LOW);                   // 
-	//digitalWrite(ledPin13, LOW);                   // 
+  //pinMode(ledPin13, OUTPUT);
+  //pinMode(ledPin12, OUTPUT);
+  //digitalWrite(ledPin12, LOW);                   //
+  //digitalWrite(ledPin13, LOW);                   //
 
-	pinMode(kn1Nano, OUTPUT);  
-	pinMode(kn2Nano, OUTPUT);  
-	pinMode(kn3Nano, OUTPUT);  
-	pinMode(kn4Nano, OUTPUT);  
-	pinMode(kn5Nano, OUTPUT);  
-	pinMode(kn6Nano, OUTPUT);  
+  pinMode(kn1Nano, OUTPUT);
+  pinMode(kn2Nano, OUTPUT);
+  pinMode(kn3Nano, OUTPUT);
+  pinMode(kn4Nano, OUTPUT);
+  pinMode(kn5Nano, OUTPUT);
+  pinMode(kn6Nano, OUTPUT);
 
-	digitalWrite(kn1Nano, HIGH);                        // 
-	digitalWrite(kn2Nano, HIGH);                        //
-	digitalWrite(kn3Nano, HIGH);                        //
-	digitalWrite(kn4Nano, LOW);                         // 
-	digitalWrite(kn5Nano, HIGH);                        // 
-	digitalWrite(kn6Nano, HIGH);                        //
+  digitalWrite(kn1Nano, HIGH);                        //
+  digitalWrite(kn2Nano, HIGH);                        //
+  digitalWrite(kn3Nano, HIGH);                        //
+  digitalWrite(kn4Nano, LOW);                         //
+  digitalWrite(kn5Nano, HIGH);                        //
+  digitalWrite(kn6Nano, HIGH);                        //
 }
 void setup_regModbus()
 {
-    regBank.setId(1);    // Slave ID 1
+  regBank.setId(1);    // Slave ID 1
 
-  	regBank.add(1);      //  
-	regBank.add(2);      //  
-	regBank.add(3);      //  
-	regBank.add(4);      //  
-	regBank.add(5);      //  
-	regBank.add(6);      //  
-	regBank.add(7);      //  
-	regBank.add(8);      //  
+  regBank.add(1);      //
+  regBank.add(2);      //
+  regBank.add(3);      //
+  regBank.add(4);      //
+  regBank.add(5);      //
+  regBank.add(6);      //
+  regBank.add(7);      //
+  regBank.add(8);      //
 
-	regBank.add(10001);  //  
-	regBank.add(10002);  //  
-	regBank.add(10003);  //  
-	regBank.add(10004);  //  
-	regBank.add(10005);  //  
-	regBank.add(10006);  //  
-	regBank.add(10007);  //  
-	regBank.add(10008);  //  
+  regBank.add(10001);  //
+  regBank.add(10002);  //
+  regBank.add(10003);  //
+  regBank.add(10004);  //
+  regBank.add(10005);  //
+  regBank.add(10006);  //
+  regBank.add(10007);  //
+  regBank.add(10008);  //
 
-	regBank.add(30001);  //  
-	regBank.add(30002);  //  
-	regBank.add(30003);  //  
-	regBank.add(30004);  //  
-	regBank.add(30005);  //  
-	regBank.add(30006);  //  
-	regBank.add(30007);  //  
-	regBank.add(30008);  //  
+  regBank.add(30001);  //
+  regBank.add(30002);  //
+  regBank.add(30003);  //
+  regBank.add(30004);  //
+  regBank.add(30005);  //
+  regBank.add(30006);  //
+  regBank.add(30007);  //
+  regBank.add(30008);  //
 
-	regBank.add(40001);  //  Адрес передачи комманд на выполнение 
-	regBank.add(40002);  //  Адрес счетчика всех ошибок
-	regBank.add(40003);  //  Адрес хранения величины сигнала резистором № 1
-	regBank.add(40004);  //  Адрес хранения величины сигнала резистором № 2
-	regBank.add(40005);  //  Адрес блока регистров для передачи в ПК таблиц.
-	regBank.add(40006);  //  Адрес блока памяти для передачи в ПК таблиц.
-	regBank.add(40007);  //  Адрес длины блока таблиц
-	regBank.add(40008);  //  Номер блока таблиц по умолчанию
-	regBank.add(40009);  //  
+  regBank.add(40001);  //  РђРґСЂРµСЃ РїРµСЂРµРґР°С‡Рё РєРѕРјРјР°РЅРґ РЅР° РІС‹РїРѕР»РЅРµРЅРёРµ
+  regBank.add(40002);  //  РђРґСЂРµСЃ СЃС‡РµС‚С‡РёРєР° РІСЃРµС… РѕС€РёР±РѕРє
+  regBank.add(40003);  //  РђРґСЂРµСЃ С…СЂР°РЅРµРЅРёСЏ РІРµР»РёС‡РёРЅС‹ СЃРёРіРЅР°Р»Р° СЂРµР·РёСЃС‚РѕСЂРѕРј в„– 1
+  regBank.add(40004);  //  РђРґСЂРµСЃ С…СЂР°РЅРµРЅРёСЏ РІРµР»РёС‡РёРЅС‹ СЃРёРіРЅР°Р»Р° СЂРµР·РёСЃС‚РѕСЂРѕРј в„– 2
+  regBank.add(40005);  //  РђРґСЂРµСЃ Р±Р»РѕРєР° СЂРµРіРёСЃС‚СЂРѕРІ РґР»СЏ РїРµСЂРµРґР°С‡Рё РІ РџРљ С‚Р°Р±Р»РёС†.
+  regBank.add(40006);  //  РђРґСЂРµСЃ Р±Р»РѕРєР° РїР°РјСЏС‚Рё РґР»СЏ РїРµСЂРµРґР°С‡Рё РІ РџРљ С‚Р°Р±Р»РёС†.
+  regBank.add(40007);  //  РђРґСЂРµСЃ РґР»РёРЅС‹ Р±Р»РѕРєР° С‚Р°Р±Р»РёС†
+  regBank.add(40008);  //  РќРѕРјРµСЂ Р±Р»РѕРєР° С‚Р°Р±Р»РёС† РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
+  regBank.add(40009);  //
 
-	regBank.add(40010);  //  Регистры временного хранения для передачи таблицы
-	regBank.add(40011);   
-	regBank.add(40012);   
-	regBank.add(40013);   
-	regBank.add(40014);    
-	regBank.add(40015);   
-	regBank.add(40016);    
-	regBank.add(40017);   
-	regBank.add(40018);     
-	regBank.add(40019);   
+  regBank.add(40010);  //  Р РµРіРёСЃС‚СЂС‹ РІСЂРµРјРµРЅРЅРѕРіРѕ С…СЂР°РЅРµРЅРёСЏ РґР»СЏ РїРµСЂРµРґР°С‡Рё С‚Р°Р±Р»РёС†С‹
+  regBank.add(40011);
+  regBank.add(40012);
+  regBank.add(40013);
+  regBank.add(40014);
+  regBank.add(40015);
+  regBank.add(40016);
+  regBank.add(40017);
+  regBank.add(40018);
+  regBank.add(40019);
 
-	regBank.add(40020);                            
-	regBank.add(40021);   
-	regBank.add(40022);   
-	regBank.add(40023);   
-	regBank.add(40024);    
-	regBank.add(40025);   
-	regBank.add(40026);    
-	regBank.add(40027);   
-	regBank.add(40028);     
-	regBank.add(40029); 
+  regBank.add(40020);
+  regBank.add(40021);
+  regBank.add(40022);
+  regBank.add(40023);
+  regBank.add(40024);
+  regBank.add(40025);
+  regBank.add(40026);
+  regBank.add(40027);
+  regBank.add(40028);
+  regBank.add(40029);
 
-	regBank.add(40030);                            
-	regBank.add(40031);   
-	regBank.add(40032);   
-	regBank.add(40033);   
-	regBank.add(40034);    
-	regBank.add(40035);   
-	regBank.add(40036);    
-	regBank.add(40037);   
-	regBank.add(40038);     
-	regBank.add(40039); 
+  regBank.add(40030);
+  regBank.add(40031);
+  regBank.add(40032);
+  regBank.add(40033);
+  regBank.add(40034);
+  regBank.add(40035);
+  regBank.add(40036);
+  regBank.add(40037);
+  regBank.add(40038);
+  regBank.add(40039);
 
-	regBank.add(40040);                            
-	regBank.add(40041);   
-	regBank.add(40042);   
-	regBank.add(40043);   
-	regBank.add(40044);    
-	regBank.add(40045);   
-	regBank.add(40046);    
-	regBank.add(40047);   
-	regBank.add(40048);     
-	regBank.add(40049); 
-						 // Текущее время 
-	regBank.add(40050);  // адрес день модуля часов контроллера
-	regBank.add(40051);  // адрес месяц модуля часов контроллера
-	regBank.add(40052);  // адрес год модуля часов контроллера
-	regBank.add(40053);  // адрес час модуля часов контроллера
-	regBank.add(40054);  // адрес минута модуля часов контроллера
-	regBank.add(40055);  // адрес секунда модуля часов контроллера
-						 // Установка времени в контроллере
-	regBank.add(40056);  // адрес день
-	regBank.add(40057);  // адрес месяц
-	regBank.add(40058);  // адрес год
-	regBank.add(40059);  // адрес час
-	regBank.add(40060);  // адрес минута
-	regBank.add(40061);  // 
-	regBank.add(40062);  // 
-	regBank.add(40063);  // 
-	slave._device = &regBank;  
+  regBank.add(40040);
+  regBank.add(40041);
+  regBank.add(40042);
+  regBank.add(40043);
+  regBank.add(40044);
+  regBank.add(40045);
+  regBank.add(40046);
+  regBank.add(40047);
+  regBank.add(40048);
+  regBank.add(40049);
+  // РўРµРєСѓС‰РµРµ РІСЂРµРјСЏ
+  regBank.add(40050);  // Р°РґСЂРµСЃ РґРµРЅСЊ РјРѕРґСѓР»СЏ С‡Р°СЃРѕРІ РєРѕРЅС‚СЂРѕР»Р»РµСЂР°
+  regBank.add(40051);  // Р°РґСЂРµСЃ РјРµСЃСЏС† РјРѕРґСѓР»СЏ С‡Р°СЃРѕРІ РєРѕРЅС‚СЂРѕР»Р»РµСЂР°
+  regBank.add(40052);  // Р°РґСЂРµСЃ РіРѕРґ РјРѕРґСѓР»СЏ С‡Р°СЃРѕРІ РєРѕРЅС‚СЂРѕР»Р»РµСЂР°
+  regBank.add(40053);  // Р°РґСЂРµСЃ С‡Р°СЃ РјРѕРґСѓР»СЏ С‡Р°СЃРѕРІ РєРѕРЅС‚СЂРѕР»Р»РµСЂР°
+  regBank.add(40054);  // Р°РґСЂРµСЃ РјРёРЅСѓС‚Р° РјРѕРґСѓР»СЏ С‡Р°СЃРѕРІ РєРѕРЅС‚СЂРѕР»Р»РµСЂР°
+  regBank.add(40055);  // Р°РґСЂРµСЃ СЃРµРєСѓРЅРґР° РјРѕРґСѓР»СЏ С‡Р°СЃРѕРІ РєРѕРЅС‚СЂРѕР»Р»РµСЂР°
+  // РЈСЃС‚Р°РЅРѕРІРєР° РІСЂРµРјРµРЅРё РІ РєРѕРЅС‚СЂРѕР»Р»РµСЂРµ
+  regBank.add(40056);  // Р°РґСЂРµСЃ РґРµРЅСЊ
+  regBank.add(40057);  // Р°РґСЂРµСЃ РјРµСЃСЏС†
+  regBank.add(40058);  // Р°РґСЂРµСЃ РіРѕРґ
+  regBank.add(40059);  // Р°РґСЂРµСЃ С‡Р°СЃ
+  regBank.add(40060);  // Р°РґСЂРµСЃ РјРёРЅСѓС‚Р°
+  regBank.add(40061);  //
+  regBank.add(40062);  //
+  regBank.add(40063);  //
+  slave._device = &regBank;
 }
 
 void setup()
 {
-	myGLCD.InitLCD();
-	myGLCD.clrScr();
-	myGLCD.setFont(BigFont);
-	myTouch.InitTouch();
-	delay(1000);
-	//myTouch.setPrecision(PREC_MEDIUM);
-	myTouch.setPrecision(PREC_HI);
-	//myTouch.setPrecision(PREC_EXTREME);
-	myButtons.setTextFont(BigFont);
-	myButtons.setSymbolFont(Dingbats1_XL);
-	Serial.begin(115200);                                    // Подключение к USB ПК
-	Serial1.begin(115200);                                 // Подключение к 
-	slave.setSerial(3,57600);                              // Подключение к протоколу MODBUS компьютера Serial3 
-	Serial2.begin(115200);                                 // Подключение к 
-    setup_pin();
-	Wire.begin();
-	if (!RTC.begin())                                      // Настройка часов 
-		{
-			Serial.println("RTC failed");
-			while(1);
-		};
-	//DateTime set_time = DateTime(16, 3, 15, 10, 19, 0);  // Занести данные о времени в строку "set_time" год, месяц, число, время...
-	//RTC.adjust(set_time);                                // Записать дату
-	Serial.println(" ");
-	Serial.println(" ***** Start system  *****");
-	Serial.println(" ");
-	//set_time();
-	serial_print_date();
-	setup_sound_port();
-	setup_mcp();                                          // Настроить порты расширения  
-	setup_resistor();                                     // Начальные установки резистора
-	MsTimer2::set(300, flash_time);                       // 300ms период таймера прерывани
-	resistor(1, 200);                                     // Установить уровень сигнала
-	resistor(2, 200);                                     // Установить уровень сигнала
-	setup_regModbus();
-	
-	//myGLCD.setFont(BigFont);
-	//myTouch.InitTouch();
-	////myTouch.setPrecision(PREC_MEDIUM);
-	//myTouch.setPrecision(PREC_HI);
-	////myTouch.setPrecision(PREC_EXTREME);
-	//myButtons.setTextFont(BigFont);
-	//myButtons.setSymbolFont(Dingbats1_XL);
-	// ++++++++++++++++++ Настройка АЦП +++++++++++++++++++++++++++++++++++++++++++++++++++
-	// set up the ADC
-	 
+  myGLCD.InitLCD();
+  myGLCD.clrScr();
+  myGLCD.setFont(BigFont);
+  myTouch.InitTouch();
+  delay(1000);
+  //myTouch.setPrecision(PREC_MEDIUM);
+  myTouch.setPrecision(PREC_HI);
+  //myTouch.setPrecision(PREC_EXTREME);
+  myButtons.setTextFont(BigFont);
+  myButtons.setSymbolFont(Dingbats1_XL);
+  Serial.begin(115200);                                    // РџРѕРґРєР»СЋС‡РµРЅРёРµ Рє USB РџРљ
+  Serial1.begin(115200);                                 // РџРѕРґРєР»СЋС‡РµРЅРёРµ Рє
+  slave.setSerial(3, 57600);                             // РџРѕРґРєР»СЋС‡РµРЅРёРµ Рє РїСЂРѕС‚РѕРєРѕР»Сѓ MODBUS РєРѕРјРїСЊСЋС‚РµСЂР° Serial3
+  Serial2.begin(115200);                                 // РџРѕРґРєР»СЋС‡РµРЅРёРµ Рє
+  setup_pin();
+  Wire.begin();
+  if (!RTC.begin())                                      // РќР°СЃС‚СЂРѕР№РєР° С‡Р°СЃРѕРІ
+  {
+    Serial.println("RTC failed");
+    while (1);
+  };
+  //DateTime set_time = DateTime(16, 3, 15, 10, 19, 0);  // Р—Р°РЅРµСЃС‚Рё РґР°РЅРЅС‹Рµ Рѕ РІСЂРµРјРµРЅРё РІ СЃС‚СЂРѕРєСѓ "set_time" РіРѕРґ, РјРµСЃСЏС†, С‡РёСЃР»Рѕ, РІСЂРµРјСЏ...
+  //RTC.adjust(set_time);                                // Р—Р°РїРёСЃР°С‚СЊ РґР°С‚Сѓ
+  Serial.println(" ");
+  Serial.println(" ***** Start system  *****");
+  Serial.println(" ");
+  //set_time();
+  serial_print_date();
+  setup_sound_port();
+  setup_mcp();                                          // РќР°СЃС‚СЂРѕРёС‚СЊ РїРѕСЂС‚С‹ СЂР°СЃС€РёСЂРµРЅРёСЏ
+  setup_resistor();                                     // РќР°С‡Р°Р»СЊРЅС‹Рµ СѓСЃС‚Р°РЅРѕРІРєРё СЂРµР·РёСЃС‚РѕСЂР°
+  MsTimer2::set(300, flash_time);                       // 300ms РїРµСЂРёРѕРґ С‚Р°Р№РјРµСЂР° РїСЂРµСЂС‹РІР°РЅРё
+  resistor(1, 200);                                     // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СѓСЂРѕРІРµРЅСЊ СЃРёРіРЅР°Р»Р°
+  resistor(2, 200);                                     // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СѓСЂРѕРІРµРЅСЊ СЃРёРіРЅР°Р»Р°
+  setup_regModbus();
+
+  //myGLCD.setFont(BigFont);
+  //myTouch.InitTouch();
+  ////myTouch.setPrecision(PREC_MEDIUM);
+  //myTouch.setPrecision(PREC_HI);
+  ////myTouch.setPrecision(PREC_EXTREME);
+  //myButtons.setTextFont(BigFont);
+  //myButtons.setSymbolFont(Dingbats1_XL);
+  // ++++++++++++++++++ РќР°СЃС‚СЂРѕР№РєР° РђР¦Рџ +++++++++++++++++++++++++++++++++++++++++++++++++++
+  // set up the ADC
+
 
 
   // Read the first sample pin to init the ADC.
- // analogRead(PIN_LIST[0]);
+  // analogRead(PIN_LIST[0]);
 
-   
 
-  
+
+
   Serial.print(F("FreeRam: "));
   Serial.println(FreeRam());
 
-//	TCCR1B = TCCR1B & 0b11111000 | 1; 
- //
- //  
+  //	TCCR1B = TCCR1B & 0b11111000 | 1;
+  //
+  //
 
- //ADCSRA=(1<<ADEN)|(1<<ADIE)|(1<<ADPS2)|(1<<ADPS1)|(1<<ADPS0);     //ADC Control and Status Register A 
+  //ADCSRA=(1<<ADEN)|(1<<ADIE)|(1<<ADPS2)|(1<<ADPS1)|(1<<ADPS0);     //ADC Control and Status Register A
 
-//ADCSRA=(1<<ADEN)|(1<<ADIE)|(1<<ADSC)|(1<<ADATE)|(1<<ADPS2)|(1<<ADPS1)|(1<<ADPS0);     //ADC Control and Status Register A 
-//    ADMUX=(1<<ADLAR)|(1<<REFS1)|(1<<REFS0);  // Установить источник опорного напряжения и результат преобразования выравнивается по левой границе 
+  //ADCSRA=(1<<ADEN)|(1<<ADIE)|(1<<ADSC)|(1<<ADATE)|(1<<ADPS2)|(1<<ADPS1)|(1<<ADPS0);     //ADC Control and Status Register A
+  //    ADMUX=(1<<ADLAR)|(1<<REFS1)|(1<<REFS0);  // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РёСЃС‚РѕС‡РЅРёРє РѕРїРѕСЂРЅРѕРіРѕ РЅР°РїСЂСЏР¶РµРЅРёСЏ Рё СЂРµР·СѓР»СЊС‚Р°С‚ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ РІС‹СЂР°РІРЅРёРІР°РµС‚СЃСЏ РїРѕ Р»РµРІРѕР№ РіСЂР°РЅРёС†Рµ
 
-//16 MHz / 2 = 8 MHz
-//16 MHz / 4 = 4 MHz
-//16 MHz / 8 = 2 MHz
-//16 MHz / 16 = 1 MHz
-//16 MHz / 32 = 500 kHz
-//16 MHz / 64 = 250 kHz
-//16 MHz / 128 = 125 kHz
+  //16 MHz / 2 = 8 MHz
+  //16 MHz / 4 = 4 MHz
+  //16 MHz / 8 = 2 MHz
+  //16 MHz / 16 = 1 MHz
+  //16 MHz / 32 = 500 kHz
+  //16 MHz / 64 = 250 kHz
+  //16 MHz / 128 = 125 kHz
 
-//TIMSK |= (1 << TOIE2); // Разрешение прерывания по таймеру2
-//TCCR2 |= (1 << CS21);  // Предделитель на 8 
-//// Настройка АЦП    
-//ADCSRA |= (1 << ADEN) // Разрешение АЦП
-//        |(1 << ADSC) // Запуск преобразования
-//        |(1 << ADATE) // Непрерывный режим работы АЦП
-//        |(1 << ADPS2)|(1 << ADPS1) // Предделитель на 64 (частота АЦП 125kHz)
-//        |(1 << ADIE); // Разрешение прерывания от АЦП
-//ADMUX |= (1 << REFS1)|(1 << REFS0); // Внутренний ИОН 2,56V, вход ADC0
-//     
-//
-//
-//	ADCSRA &= ~PS_128;  // remove bits set by Arduino library
-//
-//	// you can choose a prescaler from below.
-//	// PS_16, PS_32, PS_64 or PS_128
-//	ADCSRA |= PS_128;    // set our own prescaler  установить свой собственный предделитель
-//
-//	sei(); // Глобально разрешаем прерывания
+  //TIMSK |= (1 << TOIE2); // Р Р°Р·СЂРµС€РµРЅРёРµ РїСЂРµСЂС‹РІР°РЅРёСЏ РїРѕ С‚Р°Р№РјРµСЂСѓ2
+  //TCCR2 |= (1 << CS21);  // РџСЂРµРґРґРµР»РёС‚РµР»СЊ РЅР° 8
+  //// РќР°СЃС‚СЂРѕР№РєР° РђР¦Рџ
+  //ADCSRA |= (1 << ADEN) // Р Р°Р·СЂРµС€РµРЅРёРµ РђР¦Рџ
+  //        |(1 << ADSC) // Р—Р°РїСѓСЃРє РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ
+  //        |(1 << ADATE) // РќРµРїСЂРµСЂС‹РІРЅС‹Р№ СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ РђР¦Рџ
+  //        |(1 << ADPS2)|(1 << ADPS1) // РџСЂРµРґРґРµР»РёС‚РµР»СЊ РЅР° 64 (С‡Р°СЃС‚РѕС‚Р° РђР¦Рџ 125kHz)
+  //        |(1 << ADIE); // Р Р°Р·СЂРµС€РµРЅРёРµ РїСЂРµСЂС‹РІР°РЅРёСЏ РѕС‚ РђР¦Рџ
+  //ADMUX |= (1 << REFS1)|(1 << REFS0); // Р’РЅСѓС‚СЂРµРЅРЅРёР№ РРћРќ 2,56V, РІС…РѕРґ ADC0
+  //
+  //
+  //
+  //	ADCSRA &= ~PS_128;  // remove bits set by Arduino library
+  //
+  //	// you can choose a prescaler from below.
+  //	// PS_16, PS_32, PS_64 or PS_128
+  //	ADCSRA |= PS_128;    // set our own prescaler  СѓСЃС‚Р°РЅРѕРІРёС‚СЊ СЃРІРѕР№ СЃРѕР±СЃС‚РІРµРЅРЅС‹Р№ РїСЂРµРґРґРµР»РёС‚РµР»СЊ
+  //
+  //	sei(); // Р“Р»РѕР±Р°Р»СЊРЅРѕ СЂР°Р·СЂРµС€Р°РµРј РїСЂРµСЂС‹РІР°РЅРёСЏ
 
-	//draw_Glav_Menu();
+  //draw_Glav_Menu();
 
-	wait_time_Old =  millis();
-	digitalWrite(ledPin13, HIGH);                          // 
-	digitalWrite(ledPin12, LOW);                           // 
-	set_adr_EEPROM();
-	Serial.println(" ");                                   //
-	Serial.println("System initialization OK!.");          // Информация о завершении настройки
-	//set_komm_mcp(2,44,2);
+  wait_time_Old =  millis();
+  digitalWrite(ledPin13, HIGH);                          //
+  digitalWrite(ledPin12, LOW);                           //
+  set_adr_EEPROM();
+  Serial.println(" ");                                   //
+  Serial.println("System initialization OK!.");          // РРЅС„РѕСЂРјР°С†РёСЏ Рѕ Р·Р°РІРµСЂС€РµРЅРёРё РЅР°СЃС‚СЂРѕР№РєРё
+  //set_komm_mcp(2,44,2);
 }
 
 void loop()
 {
 
-	draw_Glav_Menu();
-	swichMenu();
-	//test_all_pin();
-	// test_cabel_N1();
-	//delay(100);
+  draw_Glav_Menu();
+  swichMenu();
+  //test_all_pin();
+  // test_cabel_N1();
+  //delay(100);
 }
