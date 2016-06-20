@@ -3602,7 +3602,11 @@ void test_panel_N1run()
   mcp_Out2.digitalWrite(14, LOW);                                        // Отключить реле питания +12в. от блока проверки
   delay(500);
   //------------------------------------------------------------------------------------------------------------------------------
-
+  test_mtg_disp_run();
+  delay(500);
+  test_mtg_instr_run();
+  delay(500);
+  /*
   strcpy_P(buffer, (char*)pgm_read_word(&(table_message[32])));          // Очистить экран
   myGLCD.print(buffer, CENTER, 20);                                      //
   myGLCD.setBackColor( 0, 0, 0);
@@ -3766,6 +3770,9 @@ void test_panel_N1run()
     strcpy_P(buffer, (char*)pgm_read_word(&(table_message[37])));         // Кабель дисп. откл.
     myGLCD.print(buffer, CENTER, 38);                                     //
   }
+
+
+  */
   digitalWrite(48, HIGH);
   digitalWrite(49, HIGH);
   strcpy_P(buffer, (char*)pgm_read_word(&(table_message[32])));   //
@@ -3789,6 +3796,7 @@ void test_mtg_disp_run()
   mcp_Out2.digitalWrite(13, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  2E6  U24
   digitalWrite(48, HIGH);                                         // Отключить оптрон U11 канал №1
   digitalWrite(49, HIGH);                                         // Отключить оптрон U11 канал №2                                      //
+  
   // ------------------------- Очистить экран от предыдущих сообщений ----------------------------------
   strcpy_P(buffer, (char*)pgm_read_word(&(table_message[32])));   // Строка очистки строк текста
   myGLCD.print(buffer, LEFT, 20);
@@ -3801,19 +3809,22 @@ void test_mtg_disp_run()
   myGLCD.print(buffer, LEFT, 145);                                // Линия 6
   myGLCD.print(buffer, LEFT, 160);                                // Линия 7
   myGLCD.print(buffer, LEFT, 175);                                // Линия 8
+
   //-----------------------------------------------------------------------------------------------------------
 
   pinMode(led_disp, OUTPUT);                                      // Светодиод на панели диспетчера/инструктора
   pinMode(led_instr, OUTPUT);                                     // Светодиод на панели диспетчера/инструктора
   digitalWrite(led_disp, HIGH);                                   // Управление светодиодом на панели диспетчера/инструктора
   digitalWrite(led_instr, HIGH);                                  // Управление светодиодом на панели диспетчера/инструктора
-   //------------------------------------------------------------------------------------------------------------------------------
+ 
+  //------------------------------------------------------------------------------------------------------------------------------
 
   strcpy_P(buffer, (char*)pgm_read_word(&(table_message[32])));          // Очистить экран
   myGLCD.print(buffer, CENTER, 20);                                      // Очистить экран
   myGLCD.setBackColor( 0, 0, 0);
-  pinMode(46, OUTPUT);                                                   // Установить выход коммутатора на ввод
- // digitalWrite(46,HIGH);                                                 // Установить "1" на выходе коммутатора группы "А"
+ // pinMode(46, OUTPUT);                                                   // Установить выход коммутатора на вывод. Контроль группы "А"
+  pinMode(46, INPUT);                                                    // Установить выход коммутатора на ввод
+  // digitalWrite(46,HIGH);                                               // Установить "1" на выходе коммутатора группы "А"
   pinMode(47, INPUT);                                                    // Установить выход коммутатора на ввод
   mcp_Out2.digitalWrite(14, LOW);                                        // Отключить реле питания +12в. от блока проверки
   delay(500);
@@ -3832,6 +3843,7 @@ void test_mtg_disp_run()
 
  // pinMode(46, INPUT);                                                    // Установить выход коммутатора на ввод
  // digitalWrite(46, HIGH);                                                // Подключить резистор к входу
+ 
   pinMode(47, INPUT);                                                    // Установить выход коммутатора на ввод
   digitalWrite(47, HIGH);                                                // Подключить резистор к входу
   // Проверка МТГ диспетчера
