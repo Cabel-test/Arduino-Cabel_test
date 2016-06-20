@@ -1355,9 +1355,9 @@ void draw_Glav_Menu()
   }
 }
 
-void swichMenu() // Тексты меню в строках "txt....."
+void swichMenu()                                             // Тексты меню в строках "txt....."
 {
-  m2 = 1;                                                       // Устанивить первую странице меню
+  m2 = 1;                                                    // Устанивить первую странице меню
   while (1)
   {
     wait_time = millis();                                    // Программа вызова часов при простое
@@ -1366,31 +1366,31 @@ void swichMenu() // Тексты меню в строках "txt....."
       wait_time_Old =  millis();
       AnalogClock();
       myGLCD.clrScr();
-      myButtons.drawButtons();                           // Восстановить кнопки
-      print_up();                                        // Восстановить верхнюю строку
+      myButtons.drawButtons();                               // Восстановить кнопки
+      print_up();                                            // Восстановить верхнюю строку
     }
 
     myButtons.setTextFont(BigFont);                          // Установить Большой шрифт кнопок
 
-    if (myTouch.dataAvailable() == true)                   // Проверить нажатие кнопок
+    if (myTouch.dataAvailable() == true)                     // Проверить нажатие кнопок
     {
-      pressed_button = myButtons.checkButtons();         // Если нажата - проверить что нажато
+      pressed_button = myButtons.checkButtons();             // Если нажата - проверить что нажато
       wait_time_Old =  millis();
 
-      if (pressed_button == butX)                   // Нажата вызов часы
+      if (pressed_button == butX)                            // Нажата - вызов часы
       {
         AnalogClock();
         myGLCD.clrScr();
-        myButtons.drawButtons();              // Восстановить кнопки
-        print_up();                           // Восстановить верхнюю строку
+        myButtons.drawButtons();                             // Восстановить кнопки
+        print_up();                                          // Восстановить верхнюю строку
       }
 
-      if (pressed_button == but_m1)                 // Нажата 1 страница меню
+      if (pressed_button == but_m1)                          // Нажата 1 страница меню
       {
         myButtons.setButtonColors(VGA_WHITE, VGA_GRAY, VGA_WHITE, VGA_RED, VGA_BLUE); // Голубой фон меню
-        myButtons.drawButtons();             // Восстановить кнопки
+        myButtons.drawButtons();                             // Восстановить кнопки
         default_colors = true;
-        m2 = 1;                              // Устанивить первую странице меню
+        m2 = 1;                                              // Устанивить первую странице меню
         myButtons.relabelButton(but1, txt_menu1_1, m2 == 1);
         myButtons.relabelButton(but2, txt_menu1_2, m2 == 1);
         myButtons.relabelButton(but3, txt_menu1_3, m2 == 1);
@@ -1399,7 +1399,7 @@ void swichMenu() // Тексты меню в строках "txt....."
         myGLCD.setBackColor(0, 0, 0);
         myGLCD.print("                      ", CENTER, 0);
         strcpy_P(buffer, (char*)pgm_read_word(&(table_message[2])));
-        myGLCD.print(buffer, CENTER, 0);                               // txt_info1 "Тест кабелей"
+        myGLCD.print(buffer, CENTER, 0);                     // txt_info1 "Тест кабелей"
 
       }
       if (pressed_button == but_m2)
@@ -1416,7 +1416,7 @@ void swichMenu() // Тексты меню в строках "txt....."
         myGLCD.setBackColor(0, 0, 0);
         myGLCD.print("                      ", CENTER, 0);
         strcpy_P(buffer, (char*)pgm_read_word(&(table_message[3])));
-        myGLCD.print(buffer, CENTER, 0);                              // txt_info2 Тест блока гарнитур
+        myGLCD.print(buffer, CENTER, 0);                     // txt_info2 Тест блока гарнитур
       }
 
       if (pressed_button == but_m3)
@@ -1433,7 +1433,7 @@ void swichMenu() // Тексты меню в строках "txt....."
         myGLCD.setBackColor(0, 0, 0);
         myGLCD.print("                      ", CENTER, 0);
         strcpy_P(buffer, (char*)pgm_read_word(&(table_message[4])));
-        myGLCD.print(buffer, CENTER, 0);                              // txt_info3 Настройка системы
+        myGLCD.print(buffer, CENTER, 0);                     // txt_info3 Настройка системы
       }
       if (pressed_button == but_m4)
       {
@@ -1449,7 +1449,7 @@ void swichMenu() // Тексты меню в строках "txt....."
         myGLCD.setBackColor(0, 0, 0);
         myGLCD.print("                      ", CENTER, 0);
         strcpy_P(buffer, (char*)pgm_read_word(&(table_message[5])));
-        myGLCD.print(buffer, CENTER, 0);                                // txt_info4 Генератор сигналов
+        myGLCD.print(buffer, CENTER, 0);                     // txt_info4 Генератор сигналов
       }
 
       if (pressed_button == but_m5)
@@ -1466,7 +1466,7 @@ void swichMenu() // Тексты меню в строках "txt....."
         myGLCD.setBackColor(0, 0, 0);
         myGLCD.print("                      ", CENTER, 0);
         strcpy_P(buffer, (char*)pgm_read_word(&(table_message[6])));
-        myGLCD.print(buffer, CENTER, 0);                                // txt_info5  Осциллограф
+        myGLCD.print(buffer, CENTER, 0);                     // txt_info5  Осциллограф
       }
 
       //*****************  Меню №1  **************
@@ -1474,7 +1474,7 @@ void swichMenu() // Тексты меню в строках "txt....."
       if (pressed_button == but1 && m2 == 1)
       {
         // Тест кабеля №1
-        myGLCD.clrScr();   // Очистить экран
+        myGLCD.clrScr();                                     // Очистить экран
         test_cabel_N1();
         myGLCD.clrScr();
         myButtons.drawButtons();
@@ -1484,7 +1484,7 @@ void swichMenu() // Тексты меню в строках "txt....."
       if (pressed_button == but2 && m2 == 1)
       {
         // Тест кабеля №2
-        myGLCD.clrScr();   // Очистить экран
+        myGLCD.clrScr();                                     // Очистить экран
         test_cabel_N2();
         myGLCD.clrScr();
         myButtons.drawButtons();
@@ -1494,7 +1494,7 @@ void swichMenu() // Тексты меню в строках "txt....."
       if (pressed_button == but3 && m2 == 1)
       {
         // Тест кабеля №3
-        myGLCD.clrScr();   // Очистить экран
+        myGLCD.clrScr();                                     // Очистить экран
         test_cabel_N3();
         myGLCD.clrScr();
         myButtons.drawButtons();
@@ -1503,7 +1503,7 @@ void swichMenu() // Тексты меню в строках "txt....."
       if (pressed_button == but4 && m2 == 1)
       {
         // Тест кабеля №4
-        myGLCD.clrScr();   // Очистить экран
+        myGLCD.clrScr();                                     // Очистить экран
         test_cabel_N4();
         myGLCD.clrScr();
         myButtons.drawButtons();
@@ -1547,17 +1547,15 @@ void swichMenu() // Тексты меню в строках "txt....."
       }
 
       //*****************  Меню №3  **************
-      if (pressed_button == but1 && m2 == 3) // Первый пункт меню 3
+      if (pressed_button == but1 && m2 == 3)                 // Первый пункт меню 3
       {
-        myGLCD.clrScr();   // Очистить экран
-        /*						myGLCD.print(txt_pass_ok, RIGHT, 208);
-        						delay (500);*/
-        myButtons.drawButtons();
+	     myGLCD.clrScr();                                    // Очистить экран
+         myButtons.drawButtons();
         print_up();
       }
 
       //--------------------------------------------------------------
-      if (pressed_button == but2 && m2 == 3) // Второй пункт меню 3
+      if (pressed_button == but2 && m2 == 3)                 // Второй пункт меню 3
       {
         myGLCD.clrScr();
         myGLCD.clrScr();
@@ -1567,7 +1565,7 @@ void swichMenu() // Тексты меню в строках "txt....."
 
       //------------------------------------------------------------------
 
-      if (pressed_button == but3 && m2 == 3) // Третий пункт меню 3
+      if (pressed_button == but3 && m2 == 3)                 // Третий пункт меню 3
       {
         myGLCD.clrScr();
         save_tab_def();
@@ -1577,26 +1575,26 @@ void swichMenu() // Тексты меню в строках "txt....."
       }
 
       //------------------------------------------------------------------
-      if (pressed_button == but4 && m2 == 3)               // Четвертый пункт меню 3
+      if (pressed_button == but4 && m2 == 3)                 // Четвертый пункт меню 3
       {
         myGLCD.clrScr();
         myGLCD.setFont(BigFont);
         myGLCD.setBackColor(0, 0, 255);
         myGLCD.clrScr();
-        drawButtons1();                            // Нарисовать цифровую клавиатуру
+        drawButtons1();                                      // Нарисовать цифровую клавиатуру
         myGLCD.printNumI(time_minute, LEFT, 208);
         strcpy_P(buffer, (char*)pgm_read_word(&(table_message[14])));
-        myGLCD.print(buffer, 35, 208);             // txt_time_wait
-        klav123();                                 // Считать информацию с клавиатуры
-        if (ret == 1)                              // Если "Возврат" - закончить
+        myGLCD.print(buffer, 35, 208);                       // txt_time_wait
+        klav123();                                           // Считать информацию с клавиатуры
+        if (ret == 1)                                        // Если "Возврат" - закончить
         {
-          goto bailout41;                    // Перейти на окончание выполнения пункта меню
+          goto bailout41;                                    // Перейти на окончание выполнения пункта меню
         }
-        else                                       // Иначе выполнить пункт меню
+        else                                                 // Иначе выполнить пункт меню
         {
           time_minute = atol(stLast);
         }
-bailout41:                                 // Восстановить пункты меню
+       bailout41:                                            // Восстановить пункты меню
         myGLCD.clrScr();
         myButtons.drawButtons();
         print_up();
@@ -1665,7 +1663,7 @@ bailout41:                                 // Восстановить пунк�
       }
       //*****************  Меню №5  **************
 
-      if (pressed_button == but1 && m2 == 5) // Сброс данных
+      if (pressed_button == but1 && m2 == 5)                 // Сброс данных
       {
         myGLCD.clrScr();
         oscilloscope();
@@ -1677,17 +1675,17 @@ bailout41:                                 // Восстановить пунк�
       {
         myGLCD.clrScr();
         logData();
-        myGLCD.clrScr();   // Очистить экран
+        myGLCD.clrScr();                                     // Очистить экран
         delay (500);
         myButtons.drawButtons();
         print_up();
       }
 
-      if (pressed_button == but3 && m2 == 5) // Ввод пароля пользователя
+      if (pressed_button == but3 && m2 == 5)                 // Ввод 
       {
-        myGLCD.clrScr();   // Очистить экран
+        myGLCD.clrScr();                                     // Очистить экран
         test_ADC();
-        myGLCD.clrScr();   // Очистить экран
+        myGLCD.clrScr();                                     // Очистить экран
         myButtons.drawButtons();
         print_up();
       }
@@ -4012,7 +4010,8 @@ void test_mtg_instr_run()
   mcp_Out2.digitalWrite(12, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  2E5  U20
   mcp_Out2.digitalWrite(13, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  2E6  U24
   digitalWrite(48, HIGH);                                         // Отключить оптрон U11 канал №1
-  digitalWrite(49, HIGH);                                         // Отключить оптрон U11 канал №2                                      //
+  digitalWrite(49, HIGH);                                         // Отключить оптрон U11 канал №2   
+ 
   // ------------------------- Очистить экран от предыдущих сообщений ----------------------------------
   strcpy_P(buffer, (char*)pgm_read_word(&(table_message[32])));   // Строка очистки строк текста
   myGLCD.print(buffer, LEFT, 20);
@@ -4053,6 +4052,7 @@ void test_mtg_instr_run()
 
   pinMode(46, INPUT);                                                        // Установить выход коммутатора на ввод
   digitalWrite(46, HIGH);                                                    // Подключить резистор к входу
+ 
   // Проверка МТГ диспетчера
 
   strcpy_P(buffer, (char*)pgm_read_word(&(table_message[34])));              // Вывод сообщения "Тест инстр."
@@ -4087,7 +4087,6 @@ void test_mtg_instr_run()
 		  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[52])));      // Кабель инстр. откл.
 		  myGLCD.print(buffer, LEFT, 70);
 		}
-
 	  }
 	  else
 	  {
@@ -4438,78 +4437,6 @@ void test_mtt_run()
     myGLCD.print(buffer, CENTER, 38);                                     //
   }
 }
-
-
-void test_panel_N3run()
-{
-   mcp_Out1.digitalWrite(8,  HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  1E1  U13
-  mcp_Out1.digitalWrite(9,  HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  1E2  U17
-  mcp_Out1.digitalWrite(10, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  1E3  U23
-  mcp_Out1.digitalWrite(11, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  1E4  U14
-  mcp_Out1.digitalWrite(12, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  1E5  U19
-  mcp_Out1.digitalWrite(13, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  1E6  U21
-
-  mcp_Out2.digitalWrite(8,  HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  2E1  U15
-  mcp_Out2.digitalWrite(9,  HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  2E2  U18
-  mcp_Out2.digitalWrite(10, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  2E3  U22
-  mcp_Out2.digitalWrite(11, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  2E4  U16
-  mcp_Out2.digitalWrite(12, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  2E5  U20
-  mcp_Out2.digitalWrite(13, HIGH);                                // Сброс выбора EN микросхемы аналового коммутатора  2E6  U24
-  digitalWrite(48, HIGH);                                         // Отключить оптрон U11 канал №1
-  digitalWrite(49, HIGH);                                         // Отключить оптрон U11 канал №2                                      //
-  // ------------------------- Очистить экран от предыдущих сообщений ----------------------------------
-  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[32])));   // Строка очистки строк текста
-  myGLCD.print(buffer, LEFT, 20);
-  myGLCD.print(buffer, LEFT, 38);
-  myGLCD.print(buffer, LEFT, 70);                                 // Линия 1
-  myGLCD.print(buffer, LEFT, 85);                                 // Линия 2
-  myGLCD.print(buffer, LEFT, 100);                                // Линия 3
-  myGLCD.print(buffer, LEFT, 115);                                // Линия 4
-  myGLCD.print(buffer, LEFT, 130);                                // Линия 5
-  myGLCD.print(buffer, LEFT, 145);                                // Линия 6
-  myGLCD.print(buffer, LEFT, 160);                                // Линия 7
-  myGLCD.print(buffer, LEFT, 175);                                // Линия 8
-  //-----------------------------------------------------------------------------------------------------------
-
-  pinMode(led_disp, OUTPUT);                                      // Светодиод на панели диспетчера/инструктора
-  pinMode(led_instr, OUTPUT);                                     // Светодиод на панели диспетчера/инструктора
-  digitalWrite(led_disp, HIGH);                                   // Управление светодиодом на панели диспетчера/инструктора
-  digitalWrite(led_instr, HIGH);                                  // Управление светодиодом на панели диспетчера/инструктора
-   //------------------------------------------------------------------------------------------------------------------------------
-
-  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[32])));          // Очистить экран
-  myGLCD.print(buffer, CENTER, 20);                                      // Очистить экран
-  myGLCD.setBackColor( 0, 0, 0);
-  pinMode(46, OUTPUT);                                                   // Установить выход коммутатора на ввод
-  digitalWrite(46,HIGH);                                                 // Установить "1" на выходе коммутатора группы "А"
-  pinMode(47, INPUT);                                                    // Установить выход коммутатора на ввод
-  mcp_Out2.digitalWrite(14, LOW);                                        // Отключить реле питания +12в. от блока проверки
-  delay(500);
-  // Проверка МТГ инстр.
-  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[34])));          // Вывод сообщения "Тест инстр."
-  myGLCD.print(buffer, CENTER, 20);                                      // Вывод сообщения "Тест инстр."
-  myGLCD.setBackColor( 0, 0, 0);                                         //
-
-    mcp_Out2.digitalWrite(14, LOW);                                        // Отключить реле питания +12в. от блока проверки
-  delay(500);
-  //------------------------------------------------------------------------------------------------------------------------------
-
-  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[32])));          // Очистить экран
-  myGLCD.print(buffer, CENTER, 20);                                      //
-  myGLCD.setBackColor( 0, 0, 0);
-
-  pinMode(46, INPUT);                                                    // Установить выход коммутатора на ввод
-  digitalWrite(46, HIGH);                                                // Подключить резистор к входу
-  pinMode(47, INPUT);                                                    // Установить выход коммутатора на ввод
-  digitalWrite(47, HIGH);                                                // Подключить резистор к входу
-  // Проверка МТГ диспетчера
-
-  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[34])));          // Вывод сообщения "Тест инстр."
-  myGLCD.print(buffer, CENTER, 20);                                          // Вывод сообщения "Тест инстр."
-  myGLCD.setBackColor( 0, 0, 0);                                             //
-}
-
-
 void test_all_pin()
 {
   myGLCD.clrScr();
@@ -4575,7 +4502,6 @@ void test_all_pin()
 }
 
 //+++++++++++++++++++++ Осциллограф +++++++++++++++++++++++++++++
-
 
 ISR(ADC_vect)
 {
