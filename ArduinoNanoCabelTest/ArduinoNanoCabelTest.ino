@@ -92,9 +92,9 @@ void setup() {
   PORTB = 1<<type;
   
   //initialize variables
-  frequency = analogRead(A7);//initialize frequency
+  frequency = analogRead(A7);//initialize *
   if(frequency == 0) frequency = 1;
-  freqscaled = 48*frequency+1;//from 1 to ~50,000
+  freqscaled = 8*frequency+1;//from 1 to ~50,000
   period = samplerate/freqscaled;
    
   pulseWidth = analogRead(A6);//initalize pulse width
@@ -113,7 +113,7 @@ void checkFreq()
   if(freqCurrent == 0) freqCurrent = 1;
   if (abs(freqCurrent-frequency)>freqTolerance){//if reading from pin exceeds tolerance 
     frequency = freqCurrent/2;//new frequency- number between 0 and 1024
-    freqscaled = 48*frequency+1;//from 1 to ~50,000
+    freqscaled = 16*frequency+1;//from 1 to ~50,000
     period = samplerate/freqscaled;
     pulseWidthScaled = int(pulseWidth/1023*period);
     triInc = 511/period;
