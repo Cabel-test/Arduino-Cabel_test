@@ -18,7 +18,6 @@ VisualMicro
 */
 
 
-
 #include "Globals.h"                             // Глобальные настройки
 #include <SPI.h>
 #include <SdFat.h>
@@ -348,32 +347,32 @@ char  txt_menu2_2[]            = "MT""\x81"" ""\x99\x9D""c""\xA3""e""\xA4\xA7""e
 char  txt_menu2_3[]            = "MT""\x81"" ""\x9D\xA2""c""\xA4""py""\x9F\xA4""opa";                      // МТГ инструктора
 char  txt_menu2_4[]            = "Tec""\xA4"" MTT";                                                        // Тест МТТ                                 //
 char  txt_menu3_1[]            = "Ta""\x96\xA0\x9D\xA6""a coe""\x99"".";                                   // Таблица соед.
-char  txt_menu3_2[]            = "Pe""\x99""a""\x9F\xA4"". ""\xA4""a""\x96\xA0\x9D\xA6";                   // Редакт. таблиц
-char  txt_menu3_3[]            = "\x85""a""\x98""py""\x9C"". y""\xA1""o""\xA0\xA7"".";                     // Загруз. умолч.
+char  txt_menu3_2[]            = "*******";//"Pe""\x99""a""\x9F\xA4"". ""\xA4""a""\x96\xA0\x9D\xA6";       // Редакт. таблиц
+char  txt_menu3_3[]            = "\x85""a""\x98""py""\x9C"".\xA4""a""\x96\xA0\x9D\xA6";//"\x85""a""\x98""py""\x9C"". y""\xA1""o""\xA0\xA7"".";                     // Загруз. умолч.
 char  txt_menu3_4[]            = "Bpe""\xA1\xAF"" ""\xA3""poc""\xA4""o""\xAF";                             // Время простоя
 char  txt_menu4_1[]            = "C\x9D\xA2yco\x9D\x99""a";                                                // Синусоида
 char  txt_menu4_2[]            = "\x89\x9D\xA0oo\x96pa\x9C\xA2\xAB\x9E";                                   // Пилообразный
 char  txt_menu4_3[]            = "Tpey\x98o\xA0\xAC\xA2\xAB\x9E";                                          // Треугольный
 char  txt_menu4_4[]            = "\x89p\xAF\xA1oy\x98o\xA0\xAC\xA2\xAB\x9E";                               // Прямоугольный
-char  txt_menu5_1[]            = "Oc\xA6\x9D\xA0\xA0o\x98pa\xA5";                                                                    //
-char  txt_menu5_2[]            = "Log data";                                                                      //
-char  txt_menu5_3[]            = "test_ADC";                                                                        //
+char  txt_menu5_1[]            = "Oc\xA6\x9D\xA0\xA0o\x98pa\xA5";                                          // Осциллограф
+char  txt_menu5_2[]            = "Tec""\xA4"" ""\x98""ap""\xA2\x9D\xA4""yp";                               // Тест гарнитур
+char  txt_menu5_3[]            = "*******";                                                                //
 char  txt_menu5_4[]            = "Tec""\xA4"" pa""\x9C\xAA""e""\xA1""o""\x97";                             // Тест разъемов 
 
-const char  txt_pass_ok[]           PROGMEM  = " ";                                                                      //
-const char  txt_pass_no[]           PROGMEM  = " ";                                                                      //
+const char  txt_head_instr[]        PROGMEM  = "\x86\xA2""c""\xA4""py""\x9F\xA4""op";                                    // Инструктор
+const char  txt_head_disp[]         PROGMEM  = "\x82\x9D""c""\xA3""e""\xA4\xA7""ep";                                     // Диспетчер
 const char  txt_info1[]             PROGMEM  = "Tec\xA4 ""\x9F""a\x96""e\xA0""e\x9E";                                    // Тест кабелей
 const char  txt_info2[]             PROGMEM  = "Tec\xA4 \x96\xA0o\x9F""a \x98""ap\xA2\x9D\xA4yp";                        // Тест блока гарнитур
 const char  txt_info3[]             PROGMEM  = "Hac\xA4po\x9E\x9F""a c\x9D""c\xA4""e\xA1\xAB";                           // Настройка системы
 const char  txt_info4[]             PROGMEM  = "\x81""e\xA2""epa\xA4op c\x9D\x98\xA2""a\xA0o\x97";                       // Генератор сигналов
 const char  txt_info5[]             PROGMEM  = "Oc\xA6\x9D\xA0\xA0o\x98pa\xA5";                                          // Осциллограф
-const char  txt_botton_clear[]      PROGMEM  = " ";                                                                      //
+const char  txt_MTT[]               PROGMEM  = "\x81""ap""\xA2\x9D\xA4""ypa MTT";                                        // Гарнитура МТТ
 const char  txt_botton_otmena[]     PROGMEM  = "O""\xA4\xA1""e""\xA2""a";                                                // "Отмена"
 const char  txt_botton_vvod[]       PROGMEM  = "B\x97o\x99 ";                                                            // Ввод
 const char  txt_botton_ret[]        PROGMEM  = "B""\xAB""x";                                                             // "Вых"
 const char  txt_system_clear3[]     PROGMEM  = " ";                                                                      //
-const char  txt9[]                  PROGMEM  = " ";                                                                      //
-const char  txt10[]                 PROGMEM  = " ";                                                                      //
+const char  txt9[]                  PROGMEM  = "\x85\x97""y""\x9F"" ""\x97"" ""\x98""ap""\xA2\x9D\xA4""ype";             // Звук в гарнитуре
+const char  txt10[]                 PROGMEM  = "\x85\x97""y""\x9F"" OTK""\x88";                                           // Звук ОТКЛ
 const char  txt_time_wait[]         PROGMEM  = "\xA1\x9D\xA2"".""\x97""pe""\xA1\xAF"" ""\xA3""poc""\xA4""o""\xAF";       //  мин. время простоя
 const char  txt_info29[]            PROGMEM  = "Stop->PUSH Disp";
 const char  txt_info30[]            PROGMEM  = " ";
@@ -424,14 +423,14 @@ const char  txt__cont9_disconnect[] PROGMEM  = "Ko""\xA2\xA4"". N9 - He""\xA4""!
 char buffer[40];
 const char* const table_message[] PROGMEM =
 {
-  txt_pass_ok,             // 0 " ";                                                                      //
-  txt_pass_no,             // 1 " ";                                                                      //
+  txt_head_instr,          // 0 "\x86\xA2""c""\xA4""py""\x9F\xA4""op";                                    // Инструктор                                                                  //
+  txt_head_disp,           // 1 "\x82\x9D""c""\xA3""e""\xA4\xA7""ep";                                     // Диспетчер                                                                      //
   txt_info1,               // 2 "Tec\xA4 ""\x9F""a\x96""e\xA0""e\x9E";                                    // Тест кабелей
   txt_info2,               // 3 "Tec\xA4 \x96\xA0o\x9F""a \x98""ap\xA2\x9D\xA4yp";                        // Тест блока гарнитур
   txt_info3,               // 4 "Hac\xA4po\x9E\x9F""a c\x9D""c\xA4""e\xA1\xAB";                           // Настройка системы
   txt_info4,               // 5 "\x81""e\xA2""epa\xA4op c\x9D\x98\xA2""a\xA0o\x97";                       // Генератор сигналов
   txt_info5,               // 6 "Oc\xA6\x9D\xA0\xA0o\x98pa\xA5";                                          // Осциллограф
-  txt_botton_clear,        // 7 " ";                                                                      //
+  txt_MTT,                 // 7 "\x81""ap""\xA2\x9D\xA4""ypa MTT";                                        // Гарнитура МТТ                                                                  //
   txt_botton_otmena,       // 8 " ";                                                                      //
   txt_botton_vvod,         // 9 " ";                                                                      //
   txt_botton_ret,          // 10 ""B""\xAB""x" ";                                                         //  Вых
@@ -1674,7 +1673,7 @@ void swichMenu()                                             // Тексты м�
       if (pressed_button == but2 && m2 == 5)
       {
         myGLCD.clrScr();
-        logData();
+        test_headset();
         myGLCD.clrScr();                                     // Очистить экран
         delay (500);
         myButtons.drawButtons();
@@ -2773,6 +2772,244 @@ void test_mtt()
   delay(100);
   mcp_Out2.digitalWrite(14, LOW);                 // Отключить реле
 }
+void test_headset()
+{
+  myGLCD.clrScr();
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[12])));
+  myGLCD.print(buffer, CENTER, 1);                                           // Звук в гарнитуре
+  myGLCD.setColor(255, 255, 255);                                            // Белая окантовка
+  myGLCD.drawRoundRect (5, 200, 155, 239);
+  myGLCD.drawRoundRect (160, 200, 315, 239);
+//  myGLCD.drawLine( 10, 60, 310, 60);
+  myGLCD.setColor(0, 0, 255);
+  myGLCD.fillRoundRect (6, 201, 154, 238);
+  myGLCD.fillRoundRect (161, 201, 314, 238);
+  myGLCD.setColor(255, 255, 255);
+  myGLCD.setBackColor( 0, 0, 255);
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[13])));
+  myGLCD.print(buffer, 8, 210);                                             // Звук Откл
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[20])));
+  myGLCD.print(buffer, 168, 210);                                            //txt_test_end Завершить
+  myGLCD.setBackColor( 0, 0, 0);                                             //
+  mcp_Out2.digitalWrite(14, LOW);                                            // Отключить реле +12v
+  mcp_Out2.digitalWrite(15, HIGH);                                           // Включить реле подключения "земли" от блока проверки
+  delay(500);
+
+  kommut_off();
+
+  digitalWrite(48, HIGH);                                                    // Отключить оптрон U11 канал №1
+  digitalWrite(49, HIGH);                                                    // Отключить оптрон U11 канал №2   
+ 
+  // ------------------------- Очистить экран от предыдущих сообщений ----------------------------------
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[32])));              // Строка очистки строк текста
+  disp_clear();
+ 
+  //-----------------------------------------------------------------------------------------------------------
+
+  pinMode(led_disp, OUTPUT);                                                 // Светодиод на панели диспетчера/инструктора
+  pinMode(led_instr, OUTPUT);                                                // Светодиод на панели диспетчера/инструктора
+  digitalWrite(led_disp, HIGH);                                              // Управление светодиодом на панели диспетчера/инструктора
+  digitalWrite(led_instr, HIGH);                                             // Управление светодиодом на панели диспетчера/инструктора
+
+  //------------------------------------------------------------------------------------------------------------------------------
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[0])));    // Вывод сообщения  
+  myGLCD.print(buffer, CENTER, 30);
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[1])));    // Вывод сообщения  
+  myGLCD.print(buffer, CENTER, 85);
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[7])));    // Вывод сообщения  
+  myGLCD.print(buffer, CENTER, 140);
+  myGLCD.print("SpkLout", 28, 54);
+  myGLCD.print("SpkRout", 178, 54);
+  myGLCD.print("SpkLout", 28, 109);
+  myGLCD.print("SpkRout", 178, 109);
+  myGLCD.print("SpkOut", CENTER, 164);
+
+  myGLCD.setColor(255, 255, 255);                                            // Белая окантовка
+  myGLCD.drawRoundRect (20, 50, 150, 75);
+  myGLCD.drawRoundRect (170,50, 300, 75);
+  myGLCD.drawRoundRect (20, 105, 150, 130);
+  myGLCD.drawRoundRect (170,105, 300, 130);
+  myGLCD.drawRoundRect (95, 160, 225, 185);
+ 
+  bool SpkLout_Instr = false;
+  bool SpkRout_Instr = false;
+  bool SpkLout_Disp  = false;
+  bool SpkRout_Disp  = false;
+  bool SpkOut_MTT    = false;
+  bool Sound_Off      = true;
+
+    while (true)                                                             // Ожидание очередных комманд
+    {
+
+      if (myTouch.dataAvailable())
+      {
+        myTouch.read();
+        x = myTouch.getX();
+        y = myTouch.getY();
+
+		if (((x >= 20) && (x <= 150)) && ((y >= 50) && (y <= 75)))         //нажата кнопка 
+        {
+          waitForIt(20, 50, 150, 75);
+		  SpkLout_Instr = !SpkLout_Instr;
+          SpkRout_Instr = false;
+          SpkLout_Disp  = false;
+          SpkRout_Disp  = false;
+          SpkOut_MTT    = false;
+                                         
+        }
+		if (((x >= 170) && (x <= 300)) && ((y >= 50) && (y <= 75)))         //нажата кнопка 
+        {
+          waitForIt(170, 50, 300, 75);
+          SpkLout_Instr = false;
+          SpkRout_Instr = !SpkRout_Instr;
+          SpkLout_Disp  = false;
+          SpkRout_Disp  = false;
+          SpkOut_MTT    = false;                              
+        }
+		
+		if (((x >= 20) && (x <= 150)) && ((y >= 105) && (y <= 130)))         //нажата кнопка 
+        {
+          waitForIt(20, 105, 150, 130);
+          SpkLout_Instr = false;
+          SpkRout_Instr = false;
+          SpkLout_Disp  = !SpkLout_Disp;
+          SpkRout_Disp  = false;
+          SpkOut_MTT    = false;                              
+        }
+		if (((x >= 170) && (x <= 300)) && ((y >= 105) && (y <= 130)))         //нажата кнопка 
+        {
+          waitForIt(170, 105, 300, 130);
+          SpkLout_Instr = false;
+          SpkRout_Instr = false;
+          SpkLout_Disp  = false;
+          SpkRout_Disp  = !SpkRout_Disp;
+          SpkOut_MTT    = false;                              
+        }
+	
+		
+		if (((x >= 95) && (x <= 225)) && ((y >= 160) && (y <= 185)))         //нажата кнопка 
+        {
+          waitForIt(95, 160, 225, 185);
+          SpkLout_Instr = false;
+          SpkRout_Instr = false;
+          SpkLout_Disp  = false;
+          SpkRout_Disp  = false;
+          SpkOut_MTT    = !SpkOut_MTT;                               
+        }
+
+		if(SpkLout_Instr)
+		{
+		  myGLCD.setColor(0, 255, 0);  
+		  myGLCD.drawRoundRect (20, 50, 150, 75);
+		  digitalWrite(49, LOW);                                        // Включить оптрон U11 канал №2   
+		}
+		else
+		{
+          myGLCD.setColor(255, 255, 255);  
+		  myGLCD.drawRoundRect (20, 50, 150, 75);
+		  kommut_off();
+		  digitalWrite(49, HIGH);                                    // Отключить оптрон U11 канал №2   
+		}
+	
+		if(SpkRout_Instr)
+		{
+	      myGLCD.setColor(0, 255, 0); 
+		  myGLCD.drawRoundRect (170,50, 300, 75);
+		  digitalWrite(49, LOW);                                        // Включить оптрон U11 канал №2   
+		}
+		else
+		{
+          myGLCD.setColor(255, 255, 255);  
+		  myGLCD.drawRoundRect (170,50, 300, 75);
+		  kommut_off();
+		  digitalWrite(49, HIGH);                                    // Отключить оптрон U11 канал №2   
+		}
+			
+		if(SpkLout_Disp)
+		{
+	       myGLCD.setColor(0, 255, 0); 
+		   myGLCD.drawRoundRect (20, 105, 150, 130);
+		   digitalWrite(49, LOW);                                        // Включить оптрон U11 канал №2   
+		}
+		else
+		{
+		   myGLCD.setColor(255, 255, 255);  
+		   myGLCD.drawRoundRect (20, 105, 150, 130);
+		   kommut_off();
+		   digitalWrite(49, HIGH);                                    // Отключить оптрон U11 канал №2   
+		}
+	
+		if(SpkRout_Disp)
+		{
+	       myGLCD.setColor(0, 255, 0); 
+		   myGLCD.drawRoundRect (170,105, 300, 130);
+		   digitalWrite(49, LOW);                                        // Включить оптрон U11 канал №2   
+		}
+		else
+		{
+		   myGLCD.setColor(255, 255, 255);  
+		   myGLCD.drawRoundRect (170,105, 300, 130);
+           kommut_off();
+		   digitalWrite(49, HIGH);                                    // Отключить оптрон U11 канал №2   
+		}
+		if(SpkOut_MTT)
+		{
+	       myGLCD.setColor(0, 255, 0); 
+		   myGLCD.drawRoundRect (95, 160, 225, 185);
+		   digitalWrite(49, LOW);                                        // Включить оптрон U11 канал №2   
+		}
+		else
+		{
+		   myGLCD.setColor(255, 255, 255); 
+		   myGLCD.drawRoundRect (95, 160, 225, 185);
+		   kommut_off();
+		   digitalWrite(49, HIGH);                                    // Отключить оптрон U11 канал №2   
+		}
+
+
+
+        if (((y >= 200) && (y <= 239)) && ((x >= 5) && (x <= 155)))         //нажата кнопка "Повторить проверку"
+        {
+          waitForIt(5, 200, 155, 239);
+
+		  Sound_Off = !Sound_Off;
+		  if(Sound_Off)
+		  {
+			myGLCD.setColor(255, 0, 0); 
+			myGLCD.drawRoundRect (5, 200, 155, 239);
+			digitalWrite(49, HIGH);                                    // Отключить оптрон U11 канал №2   
+
+		  }
+		  else
+		  {
+			 myGLCD.setColor(255, 255, 255); 
+			 myGLCD.drawRoundRect (5, 200, 155, 239);
+			 digitalWrite(49, LOW);                                        // Включить оптрон U11 канал №2   
+		  }
+
+//SpkLout_Instr = false;
+//SpkRout_Instr = false;
+//SpkLout_Disp  = false;
+//SpkRout_Disp  = false;
+//SpkOut_MTT    = false;
+                        
+        }
+        if (((y >= 200) && (y <= 239)) && ((x >= 160) && (x <= 315)))       //нажата кнопка "Завершить  проверку"
+        {
+          waitForIt(160, 200, 315, 239);
+          myGLCD.setFont(BigFont);
+
+          break;                                                // Выход из программы
+        }
+      }
+    }
+
+  kommut_off();
+  digitalWrite(48, HIGH);                                                    // Отключить оптрон U11 канал №1
+  digitalWrite(49, HIGH);                                                    // Отключить оптрон U11 канал №2   
+ 
+}
+
 
 void test_cabel_N1_run()
 {
@@ -4319,6 +4556,9 @@ void disp_clear()
   myGLCD.print(buffer, LEFT, 160);                                // Линия 7
   myGLCD.print(buffer, LEFT, 175);                                // Линия 8
 }
+
+
+
 //+++++++++++++++++++++ Осциллограф +++++++++++++++++++++++++++++
 
 ISR(ADC_vect)
