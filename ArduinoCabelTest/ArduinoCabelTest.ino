@@ -303,8 +303,6 @@ inline uint8_t queueNext(uint8_t ht) {
   return (ht + 1) & (QUEUE_DIM - 1);
 }
 
-
-
 //==============================================================================
 // Interrupt Service Routines
 
@@ -1548,15 +1546,15 @@ void swichMenu()                                             // Тексты м�
       //*****************  Меню №3  **************
       if (pressed_button == but1 && m2 == 3)                 // Первый пункт меню 3
       {
+		 table_cont();
 	     myGLCD.clrScr();                                    // Очистить экран
          myButtons.drawButtons();
-        print_up();
+         print_up();
       }
 
       //--------------------------------------------------------------
       if (pressed_button == but2 && m2 == 3)                 // Второй пункт меню 3
       {
-        myGLCD.clrScr();
         myGLCD.clrScr();
         myButtons.drawButtons();
         print_up();
@@ -2846,7 +2844,6 @@ void test_headset()
 
     while (true)                                                             // Ожидание очередных комманд
     {
-
       if (myTouch.dataAvailable())
       {
         myTouch.read();
@@ -2873,7 +2870,6 @@ void test_headset()
 				myGLCD.drawRoundRect (20, 50, 150, 75);
 				chanal_headset = 1;
 			}
-                                         
         }
 		if (((x >= 170) && (x <= 300)) && ((y >= 50) && (y <= 75)))         //нажата кнопка 
         {
@@ -3027,7 +3023,6 @@ void test_headset()
 			myGLCD.setColor(255, 0, 0); 
 			myGLCD.drawRoundRect (5, 200, 155, 239);
 			digitalWrite(49, HIGH);                                    // Отключить оптрон U11 канал №2   
-
 		  }
 		  else
 		  {
@@ -3035,7 +3030,6 @@ void test_headset()
 			 myGLCD.drawRoundRect (5, 200, 155, 239);
 			 digitalWrite(49, LOW);                                        // Включить оптрон U11 канал №2   
 		  }
-
         }
         if (((y >= 200) && (y <= 239)) && ((x >= 160) && (x <= 315)))       //нажата кнопка "Завершить  проверку"
         {
@@ -3053,7 +3047,48 @@ void test_headset()
   mcp_Out2.digitalWrite(14, LOW);                                            // Отключить реле +12v
   mcp_Out2.digitalWrite(15, LOW);                                            // Выключить реле подключения "земли" от блока проверки
 }
+void table_cont()
+{
+  myGLCD.clrScr();
+//  myGLCD.print(txt_menu2_1, CENTER, 1);                            // "Тест панели"
+  myGLCD.setColor(255, 255, 255);                                    // Белая окантовка
+  myGLCD.drawRoundRect (5, 200, 155, 239);
+  myGLCD.drawRoundRect (160, 200, 315, 239);
+  myGLCD.setColor(0, 0, 255);
+  myGLCD.fillRoundRect (6, 201, 154, 238);
+  myGLCD.fillRoundRect (161, 201, 314, 238);
+  myGLCD.setColor(255, 255, 255);
+  myGLCD.setBackColor( 0, 0, 255);
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[21])));
+  myGLCD.print(buffer, 10, 210);                                    //txt_test_repeat  Повторить
+  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[20])));
+  myGLCD.print(buffer, 168, 210);                                   //txt_test_end Завершить
+  myGLCD.setBackColor( 0, 0, 0);                                    //
 
+  table_cont_run();                                                 // 
+  while (true)                                                      // Ожидание очередных комманд
+  {
+    if (myTouch.dataAvailable())
+    {
+      myTouch.read();
+      x = myTouch.getX();
+      y = myTouch.getY();
+
+      if (((y >= 200) && (y <= 239)) && ((x >= 5) && (x <= 155)))   //нажата кнопка "Повторить проверку"
+      {
+        waitForIt(5, 200, 155, 239);
+        myGLCD.setFont(BigFont);
+        table_cont_run();                                    // Выполнить программу проверки
+      }
+      if (((y >= 200) && (y <= 239)) && ((x >= 160) && (x <= 315))) //нажата кнопка "Завершить  проверку"
+      {
+        waitForIt(160, 200, 315, 239);
+        myGLCD.setFont(BigFont);
+        break;                                                // Выход из программы
+      }
+    }
+  }
+}
 
 void test_cabel_N1_run()
 {
@@ -4343,8 +4378,7 @@ void test_mtt_run()
 		  myGLCD.print(buffer, LEFT, 160);
 		}
 		  kommut_off();
-  
- 
+   
 	//+++++++++++++++++++++ Проверяем контакт №1 линия инстр. 70  +++++++++++++++++++++++++++++++++++++++++++
  		set_komm_mcp('B', 19, 'O');                                            // Подключить коммутатор к разъему XP1 вывод 1 
 		set_komm_mcp('A', 30, 'O');                                            // Подключить коммутатор к выводу
@@ -4578,7 +4612,142 @@ void disp_clear()
   myGLCD.print(buffer, LEFT, 160);                                // Линия 7
   myGLCD.print(buffer, LEFT, 175);                                // Линия 8
 }
+void table_cont_run()
+{
+    myGLCD.print("Ta""\x96\xA0\x9D\xA6""a coe""\x99\x9D\xA2""e""\xA2\x9D\x9E", CENTER, 1);                                      // "Тест кабель N 1"
+	myGLCD.print("N1", 27, 37);
+	myGLCD.print("N2", 105,37);
+	myGLCD.print("N3", 183,37);
+	myGLCD.print("N4", 261,37);
 
+	myGLCD.setColor(255, 255, 255);                                            // Белая окантовка
+	myGLCD.drawRoundRect (5, 30, 78,  60);
+	myGLCD.drawRoundRect (83, 30, 156, 60);
+	myGLCD.drawRoundRect (161,30, 234, 60);
+	myGLCD.drawRoundRect (239,30, 312, 60);
+
+	int tab_n = 1;
+
+	while (true)                                                             // Ожидание очередных комманд
+    {
+      if (myTouch.dataAvailable())
+      {
+        myTouch.read();
+        x = myTouch.getX();
+        y = myTouch.getY();
+
+		if (((x >= 5) && (x <= 78)) && ((y >= 30) && (y <= 60)))         //нажата кнопка 
+        {
+			waitForIt(5, 30, 78, 60);
+			tab_n = 1;
+
+        }
+		if (((x >= 83) && (x <= 156)) && ((y >= 30) && (y <= 60)))         //нажата кнопка 
+        {
+			waitForIt(83, 30, 156, 60);
+			tab_n = 2;
+
+        }
+		
+		if (((x >= 161) && (x <= 234)) && ((y >= 30) && (y <= 60)))         //нажата кнопка 
+        {
+			waitForIt(161, 30, 234, 60);
+			tab_n = 3;
+
+		}
+		if (((x >= 239) && (x <= 312)) && ((y >= 30) && (y <= 60)))         //нажата кнопка 
+        {
+			waitForIt(239, 30, 312, 60);
+			tab_n = 4;
+
+        }
+
+
+
+		/*
+
+		if (chanal_temp != chanal_headset)
+		{
+           chanal_temp = chanal_headset;
+
+			if(SpkLout_Instr == false)
+			{
+				myGLCD.setColor(255, 255, 255);  
+				myGLCD.drawRoundRect (20, 50, 150, 75);
+			}
+			if(SpkRout_Instr == false)
+			{
+				myGLCD.setColor(255, 255, 255);  
+				myGLCD.drawRoundRect (170,50, 300, 75);
+			}
+			if(SpkLout_Disp == false)
+			{
+				myGLCD.setColor(255, 255, 255);  
+				myGLCD.drawRoundRect (20, 105, 150, 130);
+			}
+			if(SpkRout_Disp == false)
+			{
+				myGLCD.setColor(255, 255, 255);   
+				myGLCD.drawRoundRect (170,105, 300, 130);
+			}
+			if(SpkOut_MTT == false)
+			{
+				myGLCD.setColor(255, 255, 255);  
+				myGLCD.drawRoundRect (95, 160, 225, 185);
+			}
+
+			switch (chanal_headset)
+			{
+				case 1:
+				set_komm_mcp('B', 7, 'O');                                             // Подключить коммутатор к разъему XP1 вывод 7 
+				break;
+				case 2:
+				set_komm_mcp('B', 9, 'O');                                             // Подключить коммутатор к разъему XP1 вывод 9 
+				break;
+				case 3:
+				set_komm_mcp('B', 7, 'O');                                             // Подключить коммутатор к разъему XP1 вывод 7 
+				break;
+				case 4:
+				set_komm_mcp('B', 9, 'O');                                             // Подключить коммутатор к разъему XP1 вывод 9 
+				break;
+				case 5:
+				set_komm_mcp('B', 9, 'O');                                             // Подключить коммутатор к разъему XP1 вывод 9 
+				break;
+				default:
+                kommut_off();
+           // break;
+			// выполняется, если не выбрана ни одна альтернатива
+			}
+		}
+		*/
+        if (((y >= 200) && (y <= 239)) && ((x >= 5) && (x <= 155)))         //нажата кнопка "Повторить проверку"
+        {
+          waitForIt(5, 200, 155, 239);
+
+		 // Sound_Off = !Sound_Off;
+		 // if(Sound_Off==true)
+		 // {
+			//myGLCD.setColor(255, 0, 0); 
+			//myGLCD.drawRoundRect (5, 200, 155, 239);
+			//digitalWrite(49, HIGH);                                    // Отключить оптрон U11 канал №2   
+		 // }
+		 // else
+		 // {
+			// myGLCD.setColor(255, 255, 255); 
+			// myGLCD.drawRoundRect (5, 200, 155, 239);
+			// digitalWrite(49, LOW);                                        // Включить оптрон U11 канал №2   
+		 // }
+        }
+        if (((y >= 200) && (y <= 239)) && ((x >= 160) && (x <= 315)))       //нажата кнопка "Завершить  проверку"
+        {
+          waitForIt(160, 200, 315, 239);
+         // myGLCD.setFont(BigFont);
+
+          break;                                                // Выход из программы
+        }
+      }
+    }
+}
 
 //+++++++++++++++++++++ Осциллограф +++++++++++++++++++++++++++++
 
@@ -6384,9 +6553,9 @@ void trig_min_max(int trig_x)
   }
 
 }
+
 //--------------------- Конец программы осциллографа -------------
 
-//----------------------------------------------------------------
 void set_adr_EEPROM()
 {
   adr_memN1_1 = 100;                       // Начальный адрес памяти таблицы соответствия контактов разъемов №1А, №1В
