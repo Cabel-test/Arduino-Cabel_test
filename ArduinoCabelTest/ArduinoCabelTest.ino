@@ -3047,7 +3047,7 @@ void test_headset()
   mcp_Out2.digitalWrite(14, LOW);                                            // Отключить реле +12v
   mcp_Out2.digitalWrite(15, LOW);                                            // Выключить реле подключения "земли" от блока проверки
 }
-void table_cont()
+void table_cont1()
 {
   myGLCD.clrScr();
 //  myGLCD.print(txt_menu2_1, CENTER, 1);                            // "Тест панели"
@@ -3065,7 +3065,7 @@ void table_cont()
   myGLCD.print(buffer, 168, 210);                                   //txt_test_end Завершить
   myGLCD.setBackColor( 0, 0, 0);                                    //
 
-  table_cont_run();                                                 // 
+//  table_cont_run();                                                 // 
   while (true)                                                      // Ожидание очередных комманд
   {
     if (myTouch.dataAvailable())
@@ -3078,7 +3078,7 @@ void table_cont()
       {
         waitForIt(5, 200, 155, 239);
         myGLCD.setFont(BigFont);
-        table_cont_run();                                    // Выполнить программу проверки
+      //  table_cont_run();                                    // Выполнить программу проверки
       }
       if (((y >= 200) && (y <= 239)) && ((x >= 160) && (x <= 315))) //нажата кнопка "Завершить  проверку"
       {
@@ -4612,10 +4612,25 @@ void disp_clear()
   myGLCD.print(buffer, LEFT, 160);                                // Линия 7
   myGLCD.print(buffer, LEFT, 175);                                // Линия 8
 }
-void table_cont_run()
+void table_cont()
 {
-    myGLCD.print("Ta""\x96\xA0\x9D\xA6""a coe""\x99\x9D\xA2""e""\xA2\x9D\x9E", CENTER, 1);                                      // "Тест кабель N 1"
-	myGLCD.print("N1", 27, 37);
+	myGLCD.clrScr();
+	myGLCD.print("Ta""\x96\xA0\x9D\xA6""a coe""\x99\x9D\xA2""e""\xA2\x9D\x9E", CENTER, 1);         
+	myGLCD.setColor(255, 255, 255);                                    // Белая окантовка
+	myGLCD.drawRoundRect (5, 200, 155, 239);
+	myGLCD.drawRoundRect (160, 200, 315, 239);
+	myGLCD.setColor(0, 0, 255);
+	myGLCD.fillRoundRect (6, 201, 154, 238);
+	myGLCD.fillRoundRect (161, 201, 314, 238);
+	myGLCD.setColor(255, 255, 255);
+	myGLCD.setBackColor( 0, 0, 255);
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[21])));
+	myGLCD.print(buffer, 10, 210);                                    //txt_test_repeat  Повторить
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[20])));
+	myGLCD.print(buffer, 168, 210);                                   //txt_test_end Завершить
+	myGLCD.setBackColor( 0, 0, 0);                                    //
+
+ 	myGLCD.print("N1", 27, 37);
 	myGLCD.print("N2", 105,37);
 	myGLCD.print("N3", 183,37);
 	myGLCD.print("N4", 261,37);
@@ -4626,9 +4641,15 @@ void table_cont_run()
 	myGLCD.drawRoundRect (161,30, 234, 60);
 	myGLCD.drawRoundRect (239,30, 312, 60);
 
-	int tab_n = 1;
+	int tab_n        = 0;
+	int tab_n_temp   = 0;
+	int x_p          = 1;                                                        // Определить начало вывода по Х
+    int y_p          = 70;                                                       // Определить начало вывода по У
+	int x_A          = 1;   
+	int canal_N      = 1;
 
-	while (true)                                                             // Ожидание очередных комманд
+
+	while (true)                                                                 // Ожидание очередных комманд
     {
       if (myTouch.dataAvailable())
       {
@@ -4663,80 +4684,52 @@ void table_cont_run()
         }
 
 
-
-		/*
-
-		if (chanal_temp != chanal_headset)
+		if (x_A < 10)
 		{
-           chanal_temp = chanal_headset;
-
-			if(SpkLout_Instr == false)
-			{
-				myGLCD.setColor(255, 255, 255);  
-				myGLCD.drawRoundRect (20, 50, 150, 75);
-			}
-			if(SpkRout_Instr == false)
-			{
-				myGLCD.setColor(255, 255, 255);  
-				myGLCD.drawRoundRect (170,50, 300, 75);
-			}
-			if(SpkLout_Disp == false)
-			{
-				myGLCD.setColor(255, 255, 255);  
-				myGLCD.drawRoundRect (20, 105, 150, 130);
-			}
-			if(SpkRout_Disp == false)
-			{
-				myGLCD.setColor(255, 255, 255);   
-				myGLCD.drawRoundRect (170,105, 300, 130);
-			}
-			if(SpkOut_MTT == false)
-			{
-				myGLCD.setColor(255, 255, 255);  
-				myGLCD.drawRoundRect (95, 160, 225, 185);
-			}
-
-			switch (chanal_headset)
+			myGLCD.printNumI(x_A, x_p + 13, y_p);            // Перечисление ошибочных контактов
+			myGLCD.print("-", x_p + 29, y_p);
+		}
+		else
+		{
+			myGLCD.printNumI(x_A, x_p, y_p);                 // Перечисление ошибочных контактов
+			myGLCD.print("-", x_p + 29, y_p);
+		}
+		if (canal_N < 10)
+		{
+			myGLCD.printNumI(canal_N, x_p + 32 + 26, y_p);   // Перечисление ошибочных контактов
+		}
+		else
+		{
+			myGLCD.printNumI(canal_N, x_p + 32 + 10, y_p);   // Перечисление ошибочных контактов
+		}
+	
+		if (tab_n_temp != tab_n)
+		{
+           tab_n_temp = tab_n;
+			switch (tab_n)
 			{
 				case 1:
-				set_komm_mcp('B', 7, 'O');                                             // Подключить коммутатор к разъему XP1 вывод 7 
+				Serial.println(tab_n);                                             // Подключить коммутатор к разъему XP1 вывод 7 
 				break;
 				case 2:
-				set_komm_mcp('B', 9, 'O');                                             // Подключить коммутатор к разъему XP1 вывод 9 
+				Serial.println(tab_n);                                           // Подключить коммутатор к разъему XP1 вывод 9 
 				break;
 				case 3:
-				set_komm_mcp('B', 7, 'O');                                             // Подключить коммутатор к разъему XP1 вывод 7 
+				Serial.println(tab_n);                                            // Подключить коммутатор к разъему XP1 вывод 7 
 				break;
 				case 4:
-				set_komm_mcp('B', 9, 'O');                                             // Подключить коммутатор к разъему XP1 вывод 9 
-				break;
-				case 5:
-				set_komm_mcp('B', 9, 'O');                                             // Подключить коммутатор к разъему XP1 вывод 9 
+				Serial.println(tab_n);                                            // Подключить коммутатор к разъему XP1 вывод 9 
 				break;
 				default:
-                kommut_off();
-           // break;
-			// выполняется, если не выбрана ни одна альтернатива
-			}
+                break;
+ 			}
 		}
-		*/
+		
+
+
         if (((y >= 200) && (y <= 239)) && ((x >= 5) && (x <= 155)))         //нажата кнопка "Повторить проверку"
         {
           waitForIt(5, 200, 155, 239);
-
-		 // Sound_Off = !Sound_Off;
-		 // if(Sound_Off==true)
-		 // {
-			//myGLCD.setColor(255, 0, 0); 
-			//myGLCD.drawRoundRect (5, 200, 155, 239);
-			//digitalWrite(49, HIGH);                                    // Отключить оптрон U11 канал №2   
-		 // }
-		 // else
-		 // {
-			// myGLCD.setColor(255, 255, 255); 
-			// myGLCD.drawRoundRect (5, 200, 155, 239);
-			// digitalWrite(49, LOW);                                        // Включить оптрон U11 канал №2   
-		 // }
         }
         if (((y >= 200) && (y <= 239)) && ((x >= 160) && (x <= 315)))       //нажата кнопка "Завершить  проверку"
         {
@@ -4745,8 +4738,9 @@ void table_cont_run()
 
           break;                                                // Выход из программы
         }
-      }
-    }
+     
+	  }
+   }
 }
 
 //+++++++++++++++++++++ Осциллограф +++++++++++++++++++++++++++++
