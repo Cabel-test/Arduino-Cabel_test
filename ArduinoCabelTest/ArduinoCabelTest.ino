@@ -2774,69 +2774,75 @@ void test_mtt()
 }
 void test_headset()
 {
-  myGLCD.clrScr();
-  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[12])));
-  myGLCD.print(buffer, CENTER, 1);                                           // Звук в гарнитуре
-  myGLCD.setColor(255, 255, 255);                                            // Белая окантовка
-  myGLCD.drawRoundRect (5, 200, 155, 239);
-  myGLCD.drawRoundRect (160, 200, 315, 239);
-//  myGLCD.drawLine( 10, 60, 310, 60);
-  myGLCD.setColor(0, 0, 255);
-  myGLCD.fillRoundRect (6, 201, 154, 238);
-  myGLCD.fillRoundRect (161, 201, 314, 238);
-  myGLCD.setColor(255, 255, 255);
-  myGLCD.setBackColor( 0, 0, 255);
-  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[13])));
-  myGLCD.print(buffer, 8, 210);                                             // Звук Откл
-  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[20])));
-  myGLCD.print(buffer, 168, 210);                                            //txt_test_end Завершить
-  myGLCD.setBackColor( 0, 0, 0);                                             //
-  mcp_Out2.digitalWrite(14, LOW);                                            // Отключить реле +12v
-  mcp_Out2.digitalWrite(15, HIGH);                                           // Включить реле подключения "земли" от блока проверки
-  delay(500);
+	myGLCD.clrScr();
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[12])));
+	myGLCD.print(buffer, CENTER, 1);                                           // Звук в гарнитуре
+	myGLCD.setColor(255, 255, 255);                                            // Белая окантовка
+	myGLCD.drawRoundRect (5, 200, 155, 239);
+	myGLCD.drawRoundRect (160, 200, 315, 239);
+	myGLCD.setColor(0, 0, 255);
+	myGLCD.fillRoundRect (6, 201, 154, 238);
+	myGLCD.fillRoundRect (161, 201, 314, 238);
+	myGLCD.setColor(255, 255, 255);
+	myGLCD.setBackColor( 0, 0, 255);
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[13])));
+	myGLCD.print(buffer, 8, 210);                                             // Звук Откл
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[20])));
+	myGLCD.print(buffer, 168, 210);                                            //txt_test_end Завершить
+	myGLCD.setBackColor( 0, 0, 0);                                             //
+	//mcp_Out2.digitalWrite(14, HIGH);                                           // Включить реле +12v
+	mcp_Out2.digitalWrite(15, HIGH);                                           // Включить реле подключения "земли" от блока проверки
+	delay(500);
 
-  kommut_off();
+	kommut_off();
 
-  digitalWrite(48, HIGH);                                                    // Отключить оптрон U11 канал №1
-  digitalWrite(49, HIGH);                                                    // Отключить оптрон U11 канал №2   
+	digitalWrite(48, HIGH);                                                    // Отключить оптрон U11 канал №1
+	digitalWrite(49, LOW);                                                     // Отключить оптрон U11 канал №2   
  
-  // ------------------------- Очистить экран от предыдущих сообщений ----------------------------------
-  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[32])));              // Строка очистки строк текста
-  disp_clear();
+	// ------------------------- Очистить экран от предыдущих сообщений ----------------------------------
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[32])));              // Строка очистки строк текста
+	disp_clear();
  
-  //-----------------------------------------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------------------------------
 
-  pinMode(led_disp, OUTPUT);                                                 // Светодиод на панели диспетчера/инструктора
-  pinMode(led_instr, OUTPUT);                                                // Светодиод на панели диспетчера/инструктора
-  digitalWrite(led_disp, HIGH);                                              // Управление светодиодом на панели диспетчера/инструктора
-  digitalWrite(led_instr, HIGH);                                             // Управление светодиодом на панели диспетчера/инструктора
+	pinMode(led_disp, OUTPUT);                                                 // Светодиод на панели диспетчера/инструктора
+	pinMode(led_instr, OUTPUT);                                                // Светодиод на панели диспетчера/инструктора
+	digitalWrite(led_disp, HIGH);                                              // Управление светодиодом на панели диспетчера/инструктора
+	digitalWrite(led_instr, HIGH);                                             // Управление светодиодом на панели диспетчера/инструктора
+	pinMode(46, INPUT);                                                        // Установить выход коммутатора на ввод
+	digitalWrite(46, LOW);                                                     // Отключить резистор от входа
+	pinMode(47, INPUT);                                                        // Установить выход коммутатора на ввод
+	digitalWrite(47, LOW);                                                     // Отключить резистор от входа
 
-  //------------------------------------------------------------------------------------------------------------------------------
-  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[0])));    // Вывод сообщения  
-  myGLCD.print(buffer, CENTER, 30);
-  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[1])));    // Вывод сообщения  
-  myGLCD.print(buffer, CENTER, 85);
-  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[7])));    // Вывод сообщения  
-  myGLCD.print(buffer, CENTER, 140);
-  myGLCD.print("SpkLout", 28, 54);
-  myGLCD.print("SpkRout", 178, 54);
-  myGLCD.print("SpkLout", 28, 109);
-  myGLCD.print("SpkRout", 178, 109);
-  myGLCD.print("SpkOut", CENTER, 164);
 
-  myGLCD.setColor(255, 255, 255);                                            // Белая окантовка
-  myGLCD.drawRoundRect (20, 50, 150, 75);
-  myGLCD.drawRoundRect (170,50, 300, 75);
-  myGLCD.drawRoundRect (20, 105, 150, 130);
-  myGLCD.drawRoundRect (170,105, 300, 130);
-  myGLCD.drawRoundRect (95, 160, 225, 185);
+	//------------------------------------------------------------------------------------------------------------------------------
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[0])));               // Вывод сообщения  
+	myGLCD.print(buffer, CENTER, 30);
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[1])));               // Вывод сообщения  
+	myGLCD.print(buffer, CENTER, 85);
+	strcpy_P(buffer, (char*)pgm_read_word(&(table_message[7])));               // Вывод сообщения  
+	myGLCD.print(buffer, CENTER, 140);
+	myGLCD.print("SpkLout", 28, 54);
+	myGLCD.print("SpkRout", 178, 54);
+	myGLCD.print("SpkLout", 28, 109);
+	myGLCD.print("SpkRout", 178, 109);
+	myGLCD.print("SpkOut", CENTER, 164);
+
+	myGLCD.setColor(255, 255, 255);                                            // Белая окантовка
+	myGLCD.drawRoundRect (20, 50, 150, 75);
+	myGLCD.drawRoundRect (170,50, 300, 75);
+	myGLCD.drawRoundRect (20, 105, 150, 130);
+	myGLCD.drawRoundRect (170,105, 300, 130);
+	myGLCD.drawRoundRect (95, 160, 225, 185);
  
-  bool SpkLout_Instr = false;
-  bool SpkRout_Instr = false;
-  bool SpkLout_Disp  = false;
-  bool SpkRout_Disp  = false;
-  bool SpkOut_MTT    = false;
-  bool Sound_Off      = true;
+	bool SpkLout_Instr = false;
+	bool SpkRout_Instr = false;
+	bool SpkLout_Disp  = false;
+	bool SpkRout_Disp  = false;
+	bool SpkOut_MTT    = false;
+	bool Sound_Off     = false;
+	int chanal_headset = 0;
+	int chanal_temp    = 0;
 
     while (true)                                                             // Ожидание очередных комманд
     {
@@ -2849,131 +2855,174 @@ void test_headset()
 
 		if (((x >= 20) && (x <= 150)) && ((y >= 50) && (y <= 75)))         //нажата кнопка 
         {
-          waitForIt(20, 50, 150, 75);
-		  SpkLout_Instr = !SpkLout_Instr;
-          SpkRout_Instr = false;
-          SpkLout_Disp  = false;
-          SpkRout_Disp  = false;
-          SpkOut_MTT    = false;
+			waitForIt(20, 50, 150, 75);
+			SpkLout_Instr  = !SpkLout_Instr;
+			SpkRout_Instr  = false;
+			SpkLout_Disp   = false;
+			SpkRout_Disp   = false;
+			SpkOut_MTT     = false;
+			if(SpkLout_Instr == false)
+			{
+			myGLCD.setColor(255, 255, 255);  
+			myGLCD.drawRoundRect (20, 50, 150, 75);
+			chanal_headset = 0;                                     
+			}
+			else
+			{
+				myGLCD.setColor(0, 255, 0);  
+				myGLCD.drawRoundRect (20, 50, 150, 75);
+				chanal_headset = 1;
+			}
                                          
         }
 		if (((x >= 170) && (x <= 300)) && ((y >= 50) && (y <= 75)))         //нажата кнопка 
         {
-          waitForIt(170, 50, 300, 75);
-          SpkLout_Instr = false;
-          SpkRout_Instr = !SpkRout_Instr;
-          SpkLout_Disp  = false;
-          SpkRout_Disp  = false;
-          SpkOut_MTT    = false;                              
+			waitForIt(170, 50, 300, 75);
+			SpkLout_Instr  = false;
+			SpkRout_Instr  = !SpkRout_Instr;
+			SpkLout_Disp   = false;
+			SpkRout_Disp   = false;
+			SpkOut_MTT     = false;   
+			if(SpkRout_Instr == false)
+			{
+				myGLCD.setColor(255, 255, 255);  
+				myGLCD.drawRoundRect (170,50, 300, 75);
+				chanal_headset = 0; 
+			}
+			else
+			{
+				myGLCD.setColor(0, 255, 0);  
+				myGLCD.drawRoundRect (170,50, 300, 75);
+				chanal_headset = 2;
+			}
         }
 		
 		if (((x >= 20) && (x <= 150)) && ((y >= 105) && (y <= 130)))         //нажата кнопка 
         {
-          waitForIt(20, 105, 150, 130);
-          SpkLout_Instr = false;
-          SpkRout_Instr = false;
-          SpkLout_Disp  = !SpkLout_Disp;
-          SpkRout_Disp  = false;
-          SpkOut_MTT    = false;                              
-        }
+			waitForIt(20, 105, 150, 130);
+			SpkLout_Instr  = false;
+			SpkRout_Instr  = false;
+			SpkLout_Disp   = !SpkLout_Disp;
+			SpkRout_Disp   = false;
+			SpkOut_MTT     = false; 
+			if(SpkLout_Disp == false)
+			{
+				myGLCD.setColor(255, 255, 255);  
+				myGLCD.drawRoundRect (20, 105, 150, 130);
+				chanal_headset = 0; 
+			}
+			else
+			{
+				myGLCD.setColor(0, 255,0);  
+				myGLCD.drawRoundRect (20, 105, 150, 130);
+				chanal_headset = 3;
+			}
+		}
 		if (((x >= 170) && (x <= 300)) && ((y >= 105) && (y <= 130)))         //нажата кнопка 
         {
-          waitForIt(170, 105, 300, 130);
-          SpkLout_Instr = false;
-          SpkRout_Instr = false;
-          SpkLout_Disp  = false;
-          SpkRout_Disp  = !SpkRout_Disp;
-          SpkOut_MTT    = false;                              
+			waitForIt(170, 105, 300, 130);
+			SpkLout_Instr  = false;
+			SpkRout_Instr  = false;
+			SpkLout_Disp   = false;
+			SpkRout_Disp   = !SpkRout_Disp;
+			SpkOut_MTT     = false;   
+			if(SpkRout_Disp == false)
+			{
+				myGLCD.setColor(255, 255, 255);   
+				myGLCD.drawRoundRect (170,105, 300, 130);
+				chanal_headset = 0;    
+			}
+			else
+			{
+				myGLCD.setColor(0, 255, 0);   
+				myGLCD.drawRoundRect (170,105, 300, 130);
+				chanal_headset = 4;
+			}
         }
-	
 		
 		if (((x >= 95) && (x <= 225)) && ((y >= 160) && (y <= 185)))         //нажата кнопка 
         {
-          waitForIt(95, 160, 225, 185);
-          SpkLout_Instr = false;
-          SpkRout_Instr = false;
-          SpkLout_Disp  = false;
-          SpkRout_Disp  = false;
-          SpkOut_MTT    = !SpkOut_MTT;                               
+			waitForIt(95, 160, 225, 185);
+			SpkLout_Instr  = false;
+			SpkRout_Instr  = false;
+			SpkLout_Disp   = false;
+			SpkRout_Disp   = false;
+			SpkOut_MTT     = !SpkOut_MTT;   
+
+			if(SpkOut_MTT == false)
+			{
+				myGLCD.setColor(255, 255, 255);  
+				myGLCD.drawRoundRect (95, 160, 225, 185);
+				chanal_headset = 0; 
+			}
+			else
+			{
+				myGLCD.setColor(0, 255, 0);  
+				myGLCD.drawRoundRect (95, 160, 225, 185);
+				chanal_headset = 5;
+			}
         }
 
-		if(SpkLout_Instr)
+		if (chanal_temp != chanal_headset)
 		{
-		  myGLCD.setColor(0, 255, 0);  
-		  myGLCD.drawRoundRect (20, 50, 150, 75);
-		  digitalWrite(49, LOW);                                        // Включить оптрон U11 канал №2   
-		}
-		else
-		{
-          myGLCD.setColor(255, 255, 255);  
-		  myGLCD.drawRoundRect (20, 50, 150, 75);
-		  kommut_off();
-		  digitalWrite(49, HIGH);                                    // Отключить оптрон U11 канал №2   
-		}
-	
-		if(SpkRout_Instr)
-		{
-	      myGLCD.setColor(0, 255, 0); 
-		  myGLCD.drawRoundRect (170,50, 300, 75);
-		  digitalWrite(49, LOW);                                        // Включить оптрон U11 канал №2   
-		}
-		else
-		{
-          myGLCD.setColor(255, 255, 255);  
-		  myGLCD.drawRoundRect (170,50, 300, 75);
-		  kommut_off();
-		  digitalWrite(49, HIGH);                                    // Отключить оптрон U11 канал №2   
-		}
-			
-		if(SpkLout_Disp)
-		{
-	       myGLCD.setColor(0, 255, 0); 
-		   myGLCD.drawRoundRect (20, 105, 150, 130);
-		   digitalWrite(49, LOW);                                        // Включить оптрон U11 канал №2   
-		}
-		else
-		{
-		   myGLCD.setColor(255, 255, 255);  
-		   myGLCD.drawRoundRect (20, 105, 150, 130);
-		   kommut_off();
-		   digitalWrite(49, HIGH);                                    // Отключить оптрон U11 канал №2   
-		}
-	
-		if(SpkRout_Disp)
-		{
-	       myGLCD.setColor(0, 255, 0); 
-		   myGLCD.drawRoundRect (170,105, 300, 130);
-		   digitalWrite(49, LOW);                                        // Включить оптрон U11 канал №2   
-		}
-		else
-		{
-		   myGLCD.setColor(255, 255, 255);  
-		   myGLCD.drawRoundRect (170,105, 300, 130);
-           kommut_off();
-		   digitalWrite(49, HIGH);                                    // Отключить оптрон U11 канал №2   
-		}
-		if(SpkOut_MTT)
-		{
-	       myGLCD.setColor(0, 255, 0); 
-		   myGLCD.drawRoundRect (95, 160, 225, 185);
-		   digitalWrite(49, LOW);                                        // Включить оптрон U11 канал №2   
-		}
-		else
-		{
-		   myGLCD.setColor(255, 255, 255); 
-		   myGLCD.drawRoundRect (95, 160, 225, 185);
-		   kommut_off();
-		   digitalWrite(49, HIGH);                                    // Отключить оптрон U11 канал №2   
-		}
+           chanal_temp = chanal_headset;
 
+			if(SpkLout_Instr == false)
+			{
+				myGLCD.setColor(255, 255, 255);  
+				myGLCD.drawRoundRect (20, 50, 150, 75);
+			}
+			if(SpkRout_Instr == false)
+			{
+				myGLCD.setColor(255, 255, 255);  
+				myGLCD.drawRoundRect (170,50, 300, 75);
+			}
+			if(SpkLout_Disp == false)
+			{
+				myGLCD.setColor(255, 255, 255);  
+				myGLCD.drawRoundRect (20, 105, 150, 130);
+			}
+			if(SpkRout_Disp == false)
+			{
+				myGLCD.setColor(255, 255, 255);   
+				myGLCD.drawRoundRect (170,105, 300, 130);
+			}
+			if(SpkOut_MTT == false)
+			{
+				myGLCD.setColor(255, 255, 255);  
+				myGLCD.drawRoundRect (95, 160, 225, 185);
+			}
 
+			switch (chanal_headset)
+			{
+				case 1:
+				set_komm_mcp('B', 7, 'O');                                             // Подключить коммутатор к разъему XP1 вывод 7 
+				break;
+				case 2:
+				set_komm_mcp('B', 9, 'O');                                             // Подключить коммутатор к разъему XP1 вывод 9 
+				break;
+				case 3:
+				set_komm_mcp('B', 7, 'O');                                             // Подключить коммутатор к разъему XP1 вывод 7 
+				break;
+				case 4:
+				set_komm_mcp('B', 9, 'O');                                             // Подключить коммутатор к разъему XP1 вывод 9 
+				break;
+				case 5:
+				set_komm_mcp('B', 9, 'O');                                             // Подключить коммутатор к разъему XP1 вывод 9 
+				break;
+				default:
+                kommut_off();
+           // break;
+			// выполняется, если не выбрана ни одна альтернатива
+			}
+		}
 
         if (((y >= 200) && (y <= 239)) && ((x >= 5) && (x <= 155)))         //нажата кнопка "Повторить проверку"
         {
           waitForIt(5, 200, 155, 239);
 
 		  Sound_Off = !Sound_Off;
-		  if(Sound_Off)
+		  if(Sound_Off==true)
 		  {
 			myGLCD.setColor(255, 0, 0); 
 			myGLCD.drawRoundRect (5, 200, 155, 239);
@@ -2987,12 +3036,6 @@ void test_headset()
 			 digitalWrite(49, LOW);                                        // Включить оптрон U11 канал №2   
 		  }
 
-//SpkLout_Instr = false;
-//SpkRout_Instr = false;
-//SpkLout_Disp  = false;
-//SpkRout_Disp  = false;
-//SpkOut_MTT    = false;
-                        
         }
         if (((y >= 200) && (y <= 239)) && ((x >= 160) && (x <= 315)))       //нажата кнопка "Завершить  проверку"
         {
@@ -3007,7 +3050,8 @@ void test_headset()
   kommut_off();
   digitalWrite(48, HIGH);                                                    // Отключить оптрон U11 канал №1
   digitalWrite(49, HIGH);                                                    // Отключить оптрон U11 канал №2   
- 
+  mcp_Out2.digitalWrite(14, LOW);                                            // Отключить реле +12v
+  mcp_Out2.digitalWrite(15, LOW);                                            // Выключить реле подключения "земли" от блока проверки
 }
 
 
@@ -4252,13 +4296,6 @@ void test_mtt_run()
   myGLCD.print(buffer, CENTER, 20);                               // Вывод сообщения "Тест МТТ"
   myGLCD.setBackColor( 0, 0, 0);       
  
-  	//+++++++++++++++++++++ Проверяем контакт №4 линия инстр. 115 +++++++++++++++++++++++++++++++++++++++++++
-		
-		set_komm_mcp('A', 28, 'O');                                        // Подключить коммутатор к выводу 7 разъема J40
-		delay(200);
-		if (digitalRead(46) == LOW)                                        // Проверяем подключение разъема
-		{
-	
 	//+++++++++++++++++++++ Проверяем контакт №2 линия инстр. 85  +++++++++++++++++++++++++++++++++++++++++++
 
         mcp_Out2.digitalWrite(15, HIGH);                                     // Включить реле подключения "земли" от блока проверки
@@ -4268,7 +4305,6 @@ void test_mtt_run()
 		delay(100);
 		int power = analogRead(A8);
 		float powerf = power*(5.0 / 1023.0*2.418);
-		Serial.println(powerf,2);
 		set_komm_mcp('A', 22, 'G');         
         mcp_Out2.digitalWrite(14, LOW);                                      // Отключить реле питания +12в. от блока проверки
 		delay(400);
@@ -4378,7 +4414,20 @@ void test_mtt_run()
 			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[54])));      // Кабель инстр. откл.
 			myGLCD.print(buffer, LEFT, 115);
 		}
- 
+ 	//+++++++++++++++++++++ Проверяем контакт №8 линия инстр. 175 +++++++++++++++++++++++++++++++++++++++++++
+		
+		set_komm_mcp('A', 27, 'O');                                        // Подключить коммутатор к выводу 7 разъема J40
+		delay(200);
+		if (digitalRead(46) == LOW)                                        // Проверяем подключение разъема
+		{
+			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[48])));  // Кабель инстр. подкл.
+			myGLCD.print(buffer, LEFT, 175);     //RIGHT
+		}
+		else
+		{
+			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[58])));  // Кабель инстр. откл.
+			myGLCD.print(buffer, LEFT, 175);
+		}
   
 	//+++++++++++++++++++++ Проверяем контакт №5 линия инстр. 130 +++++++++++++++++++++++++++++++++++++++++++
 		set_komm_mcp('B', 20, 'O');                                            // Подключить коммутатор к разъему XP1 вывод 1 
@@ -4408,7 +4457,7 @@ void test_mtt_run()
 		}
    
 	//+++++++++++++++++++++ Проверяем контакт №6 линия инстр. 145 +++++++++++++++++++++++++++++++++++++++++++
-				set_komm_mcp('B', 17, 'O');                                            // Подключить коммутатор к разъему XP1 вывод 1 
+		set_komm_mcp('B', 17, 'O');                                            // Подключить коммутатор к разъему XP1 вывод 1 
 		set_komm_mcp('A', 25, 'O');                                            // Подключить коммутатор к выводу
 		digitalWrite(46,HIGH);                                                 // Установить "1" на выходе коммутатора группы "А"
 		delay(200);
@@ -4433,34 +4482,7 @@ void test_mtt_run()
 		strcpy_P(buffer, (char*)pgm_read_word(&(table_message[56])));          // Кабель инстр. откл.
 		myGLCD.print(buffer, LEFT, 145);
 		}
-  
-
-
-	//+++++++++++++++++++++ Проверяем контакт №8 линия инстр. 175 +++++++++++++++++++++++++++++++++++++++++++
-		
-		set_komm_mcp('A', 27, 'O');                                        // Подключить коммутатор к выводу 7 разъема J40
-		delay(200);
-		if (digitalRead(46) == LOW)                                        // Проверяем подключение разъема
-		{
-			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[48])));  // Кабель инстр. подкл.
-			myGLCD.print(buffer, LEFT, 175);     //RIGHT
-		}
-		else
-		{
-			strcpy_P(buffer, (char*)pgm_read_word(&(table_message[58])));  // Кабель инстр. откл.
-			myGLCD.print(buffer, LEFT, 175);
-		}
- 	}
-	else
-	{
-	  strcpy_P(buffer, (char*)pgm_read_word(&(table_message[40])));   // Вывод сообщения "Тест светодиодов"
-       myGLCD.print(buffer, CENTER, 38);                               // Вывод сообщения "Тест светодиодов"
-	}
  
-
-
-
-
   mcp_Out2.digitalWrite(14, LOW);                       // Отключить реле питания +12в. от блока проверки
   mcp_Out2.digitalWrite(15, LOW);                       // Выключить реле подключения "земли" от блока проверки//
  }
@@ -4556,7 +4578,6 @@ void disp_clear()
   myGLCD.print(buffer, LEFT, 160);                                // Линия 7
   myGLCD.print(buffer, LEFT, 175);                                // Линия 8
 }
-
 
 
 //+++++++++++++++++++++ Осциллограф +++++++++++++++++++++++++++++
@@ -5366,13 +5387,13 @@ void test_ADC()
 
   while (ADC_end) {};
 
-  Serial.print("i_osc - ");
-  Serial.println(i_osc);
+ /* Serial.print("i_osc - ");
+  Serial.println(i_osc);*/
   i_osc = 0;
   for (int i = 0; i < 239; i++)
   {
     // Serial.println(analogRead(14));
-    Serial.println(Sample_osc[i][0]);
+   // Serial.println(Sample_osc[i][0]);
   }
   ADC_end = false;
   //adcStart() ;
