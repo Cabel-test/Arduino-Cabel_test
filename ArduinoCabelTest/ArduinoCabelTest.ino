@@ -4661,7 +4661,6 @@ void table_cont()
         {
 			waitForIt(5, 30, 78, 60);
 			tab_n = 1;
-
         }
 		if (((x >= 83) && (x <= 156)) && ((y >= 30) && (y <= 60)))         //нажата кнопка 
         {
@@ -4710,6 +4709,7 @@ void table_cont()
 			{
 				case 1:
 				Serial.println(tab_n);                                             // Подключить коммутатор к разъему XP1 вывод 7 
+				info_table1();
 				break;
 				case 2:
 				Serial.println(tab_n);                                           // Подключить коммутатор к разъему XP1 вывод 9 
@@ -4742,6 +4742,186 @@ void table_cont()
 	  }
    }
 }
+void info_table1()
+{
+  byte  _size_block = i2c_eeprom_read_byte(deviceaddress, adr_memN1_1);        // Получить количество выводов проверяемого разъема
+
+  byte canal_N     = 0;                                                        // Переменная хранения № канала в памяти
+  unsigned int x_A = 1;                                                        // Переменная установления канала А
+  unsigned int x_B = 1;                                                        // Переменная установления канала В
+  int x_p          = 1;                                                        // Определить начало вывода ошибок по Х
+  int y_p          = 82;                                                       // Определить начало вывода ошибок по У
+
+  for (int p = 0; p < 6; p++)                                                  // Очистить поле ошибок на дисплее
+  {
+    myGLCD.print("                    ", x_p, y_p);                            // Очистить 6 строк
+    y_p += 19;
+  }
+  y_p = 82;                                                                    // Восстановить начало вывода ошибок по У
+
+ 
+    for (int i = 1; i < _size_block + 1; i++)                               // Последовательное чтение контактов разьемов.
+    {
+      canal_N = i2c_eeprom_read_byte(deviceaddress, adr_memN1_1 + i);       // Получить № канала из EEPROM
+	  if (x_A < 10)
+        {
+            myGLCD.printNumI(canal_N, x_p + 13, y_p);            // Перечисление ошибочных контактов
+            myGLCD.print("-", x_p + 29, y_p);
+        }
+        else
+        {
+            myGLCD.printNumI(canal_N, x_p, y_p);                 // Перечисление ошибочных контактов
+            myGLCD.print("-", x_p + 29, y_p);
+        }
+	   canal_N = i2c_eeprom_read_byte(deviceaddress, adr_memN1_1 + i + _size_block); // Получить из таблицы номер входа коммутатора.
+
+        if (canal_N < 10)
+        {
+            myGLCD.printNumI(canal_N, x_p + 32 + 26, y_p);   // Перечисление ошибочных контактов
+        }
+        else
+        {
+            myGLCD.printNumI(canal_N, x_p + 32 + 10, y_p);   // Перечисление ошибочных контактов
+        }
+
+		y_p += 19;
+        if ( y_p > 190)                                          // Вывод на экран таблицы ошибок
+        {
+        myGLCD.drawLine( x_p + 75, 85, x_p + 75, 190);
+        x_p += 80;
+        y_p = 82;
+        }
+
+
+
+   //   if (canal_N == 1)                                                       // 40 канал для проверки номера проверяемого разъема
+   //   {
+   //     set_komm_mcp('A', 40, 'O');                                           // Установить вход коммутатора на контрольный 40 выход
+   //   }
+   //   else
+   //   {
+   //     set_komm_mcp('A', canal_N, 'O');                                      // Установить текущий вход коммутатора
+   //   }
+	  //myGLCD.printNumI(x_A, 30, 40);
+   //   myGLCD.print("<->", 66, 40);
+	  canal_N = i2c_eeprom_read_byte(deviceaddress, adr_memN1_1 + x_B + _size_block); // Получить из таблицы номер входа коммутатора.
+
+        //if (canal_N == 1)                                                // 40 канал для проверки номера проверяемого разъема
+        //{
+        //  set_komm_mcp('B', 40, 'O');                                  // Установить контрольный вход коммутатора
+        //}
+        //else
+        //{
+        //  set_komm_mcp('B', canal_N, 'O');                             // Установить текущий вход коммутатора
+        //}
+
+
+
+	}
+
+	/*
+      // Последовательно проверить все вывода разьема "В"
+      // Проверяем все выхода разьема "В"
+      for (x_B = 1; x_B < _size_block + 1; x_B++)                          // Последовательное чтение контактов разьемов "В" .
+      {
+        canal_N = i2c_eeprom_read_byte(deviceaddress, adr_memN1_1 + x_B + _size_block); // Получить из таблицы номер входа коммутатора.
+
+        if (canal_N == 1)                                                // 40 канал для проверки номера проверяемого разъема
+        {
+          set_komm_mcp('B', 40, 'O');                                  // Установить контрольный вход коммутатора
+        }
+        else
+        {
+          set_komm_mcp('B', canal_N, 'O');                             // Установить текущий вход коммутатора
+        }
+        // ++++++++++++++++++++++++ Проверка на соединение А - В +++++++++++++++++++++++++++++++++++
+        if (x_A == x_B)
+        {
+          myGLCD.printNumI(x_A, 30, 40);
+          myGLCD.print("<->", 66, 40);
+
+
+
+
+
+
+
+ 
+          if (digitalRead(47) == LOW && ware_on == 1)
+          {
+            myGLCD.print(" - Pass", 170, 40);
+          }
+          else
+          {
+            if (digitalRead(47) != LOW && ware_on == 0)                  // Должен быть соединен
+            {
+              myGLCD.print(" - Pass", 170, 40);
+            }
+            else
+            {
+              count_error++;
+              strcpy_P(buffer, (char*)pgm_read_word(&(table_message[25])));
+              myGLCD.print(buffer, 50, 65);                            // txt_error_connect4
+              myGLCD.printNumI(count_error, 190, 65);
+
+              //if ( ware_on == 1)
+              //{
+                if (x_A < 10)
+                {
+                  myGLCD.printNumI(x_A, x_p + 13, y_p);            // Перечисление ошибочных контактов
+                  myGLCD.print("-", x_p + 29, y_p);
+                }
+                else
+                {
+                  myGLCD.printNumI(x_A, x_p, y_p);                 // Перечисление ошибочных контактов
+                  myGLCD.print("-", x_p + 29, y_p);
+                }
+                if (canal_N < 10)
+                {
+                  myGLCD.printNumI(canal_N, x_p + 32 + 26, y_p);   // Перечисление ошибочных контактов
+                }
+                else
+                {
+                  myGLCD.printNumI(canal_N, x_p + 32 + 10, y_p);   // Перечисление ошибочных контактов
+                }
+              //}
+              //else
+              //{
+              //  if (x_A < 10)
+              //  {
+              //    myGLCD.printNumI(x_A, x_p + 13, y_p);            // Перечисление ошибочных контактов
+              //    myGLCD.print("+", x_p + 29, y_p);
+              //  }
+              //  else
+              //  {
+              //    myGLCD.printNumI(x_A, x_p, y_p);                 // Перечисление ошибочных контактов
+              //    myGLCD.print("+", x_p + 29, y_p);
+              //  }
+              //  if (canal_N < 10)
+              //  {
+              //    myGLCD.printNumI(canal_N, x_p + 32 + 26, y_p);   // Перечисление ошибочных контактов
+              //  }
+              //  else
+              //  {
+              //    myGLCD.printNumI(canal_N, x_p + 32 + 10, y_p);   // Перечисление ошибочных контактов
+              //  }
+              //}
+              y_p += 19;
+              if ( y_p > 190)                                          // Вывод на экран таблицы ошибок
+              {
+                myGLCD.drawLine( x_p + 75, 85, x_p + 75, 190);
+                x_p += 80;
+                y_p = 82;
+              }
+            }
+          }
+        }
+      }
+    }
+	*/
+}
+
+
 
 //+++++++++++++++++++++ Осциллограф +++++++++++++++++++++++++++++
 
