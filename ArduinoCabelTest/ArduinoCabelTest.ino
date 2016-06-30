@@ -3107,7 +3107,7 @@ void test_cabel_N1_run()
   int ware_on      = 0;                                                        // Проверка должно ли быть сединение
   for (int p = 0; p < 6; p++)                                                  // Очистить поле ошибок на дисплее
   {
-    myGLCD.print("                    ", x_p, y_p);                          // Очистить 6 строк
+    myGLCD.print("                    ", x_p, y_p);                            // Очистить 6 строк
     y_p += 19;
   }
   y_p = 82;                                                                    // Восстановить начало вывода ошибок по У
@@ -3115,15 +3115,15 @@ void test_cabel_N1_run()
   myGLCD.print(buffer, 50, 65);                                                // txt_error_connect3 "Ошибок нет"
   if (search_cabel(40) == 1)                                                   // Проверить корректность подключения кабеля №1
   {
-    digitalWrite(46, LOW);                                                   // Установить контрольный уровень на коммутаторах U13,U17,U23
-    delay(10);                                                               // Время на переключение вывода 46
-    for (x_A = 1; x_A < _size_block + 1; x_A++)                              // Последовательное чтение контактов разьемов.
+    digitalWrite(46, LOW);                                                     // Установить контрольный уровень на коммутаторах U13,U17,U23
+    delay(10);                                                                 // Время на переключение вывода 46
+    for (x_A = 1; x_A < _size_block + 1; x_A++)                                // Последовательное чтение контактов разьемов.
     {
-      canal_N = i2c_eeprom_read_byte(deviceaddress, adr_memN1_1 + x_A);    // Получить № канала из EEPROM
+      canal_N = i2c_eeprom_read_byte(deviceaddress, adr_memN1_1 + x_A);        // Получить № канала из EEPROM
       ware_on = i2c_eeprom_read_byte(deviceaddress, adr_memN1_1 + x_A + (_size_block * 4)); // Получить из таблицы признак соединения.
-      if (canal_N == 1)                                                    // 40 канал для проверки номера проверяемого разъема
+      if (canal_N == 1)                                                        // 40 канал для проверки номера проверяемого разъема
       {
-        set_komm_mcp('A', 40, 'O');                                      // Установить вход коммутатора на контрольный 40 выход
+        set_komm_mcp('A', 40, 'O');                                            // Установить вход коммутатора на контрольный 40 выход
       }
       else
       {
@@ -3149,6 +3149,7 @@ void test_cabel_N1_run()
           myGLCD.printNumI(x_A, 30, 40);
           if (ware_on == 1)myGLCD.print("<->", 66, 40);
           else myGLCD.print("<X>", 66, 40);
+		  myGLCD.print("  ",130, 40);
           myGLCD.printNumI(canal_N, 130, 40);
           if (digitalRead(47) == LOW && ware_on == 1)
           {
@@ -3342,6 +3343,7 @@ void test_cabel_N2_run()
           myGLCD.printNumI(x_A, 30, 40);
           if (ware_on == 1)myGLCD.print("<->", 66, 40);
           else myGLCD.print("<X>", 66, 40);
+		  myGLCD.print("  ",130, 40);
           myGLCD.printNumI(canal_N, 130, 40);
           if (digitalRead(47) == LOW && ware_on == 1)
           {
@@ -3537,6 +3539,7 @@ void test_cabel_N3_run()
           myGLCD.printNumI(x_A, 30, 40);
           if (ware_on == 1)myGLCD.print("<->", 66, 40);
           else myGLCD.print("<X>", 66, 40);
+		  myGLCD.print("  ",130, 40);
           myGLCD.printNumI(canal_N, 130, 40);
           if (digitalRead(47) == LOW && ware_on == 1)
           {
@@ -3715,13 +3718,13 @@ void test_cabel_N4_run()
       {
         canal_N = i2c_eeprom_read_byte(deviceaddress, adr_memN1_4 + x_B + _size_block); // Получить из таблицы номер входа коммутатора.
 
-        if (canal_N == 1)                                                // 40 канал для проверки номера проверяемого разъема
+        if (canal_N == 1)                                                   // 40 канал для проверки номера проверяемого разъема
         {
-          set_komm_mcp('B', 41, 'O');                                  // Установить контрольный вход коммутатора
+          set_komm_mcp('B', 41, 'O');                                       // Установить контрольный вход коммутатора
         }
         else
         {
-          set_komm_mcp('B', canal_N, 'O');                             // Установить текущий вход коммутатора
+          set_komm_mcp('B', canal_N, 'O');                                   // Установить текущий вход коммутатора
         }
         // ++++++++++++++++++++++++ Проверка на соединение А - В +++++++++++++++++++++++++++++++++++
         if (x_A == x_B)
@@ -3729,6 +3732,7 @@ void test_cabel_N4_run()
           myGLCD.printNumI(x_A, 30, 40);
           if (ware_on == 1)myGLCD.print("<->", 66, 40);
           else myGLCD.print("<X>", 66, 40);
+		  myGLCD.print("  ",130, 40);
           myGLCD.printNumI(canal_N, 130, 40);
           if (digitalRead(47) == LOW && ware_on == 1)
           {
