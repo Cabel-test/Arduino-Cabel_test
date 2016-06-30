@@ -7027,81 +7027,19 @@ void setup()
   resistor(2, 200);                                     // Установить уровень сигнала
   setup_regModbus();
 
-  //myGLCD.setFont(BigFont);
-  //myTouch.InitTouch();
-  ////myTouch.setPrecision(PREC_MEDIUM);
-  //myTouch.setPrecision(PREC_HI);
-  ////myTouch.setPrecision(PREC_EXTREME);
-  //myButtons.setTextFont(BigFont);
-  //myButtons.setSymbolFont(Dingbats1_XL);
-  // ++++++++++++++++++ Настройка АЦП +++++++++++++++++++++++++++++++++++++++++++++++++++
-  // set up the ADC
-
-
-
-  // Read the first sample pin to init the ADC.
-  // analogRead(PIN_LIST[0]);
-
-
-
-
   Serial.print(F("FreeRam: "));
   Serial.println(FreeRam());
-
-  //	TCCR1B = TCCR1B & 0b11111000 | 1;
-  //
-  //
-
-  //ADCSRA=(1<<ADEN)|(1<<ADIE)|(1<<ADPS2)|(1<<ADPS1)|(1<<ADPS0);     //ADC Control and Status Register A
-
-  //ADCSRA=(1<<ADEN)|(1<<ADIE)|(1<<ADSC)|(1<<ADATE)|(1<<ADPS2)|(1<<ADPS1)|(1<<ADPS0);     //ADC Control and Status Register A
-  //    ADMUX=(1<<ADLAR)|(1<<REFS1)|(1<<REFS0);  // Установить источник опорного напряжения и результат преобразования выравнивается по левой границе
-
-  //16 MHz / 2 = 8 MHz
-  //16 MHz / 4 = 4 MHz
-  //16 MHz / 8 = 2 MHz
-  //16 MHz / 16 = 1 MHz
-  //16 MHz / 32 = 500 kHz
-  //16 MHz / 64 = 250 kHz
-  //16 MHz / 128 = 125 kHz
-
-  //TIMSK |= (1 << TOIE2); // Разрешение прерывания по таймеру2
-  //TCCR2 |= (1 << CS21);  // Предделитель на 8
-  //// Настройка АЦП
-  //ADCSRA |= (1 << ADEN) // Разрешение АЦП
-  //        |(1 << ADSC) // Запуск преобразования
-  //        |(1 << ADATE) // Непрерывный режим работы АЦП
-  //        |(1 << ADPS2)|(1 << ADPS1) // Предделитель на 64 (частота АЦП 125kHz)
-  //        |(1 << ADIE); // Разрешение прерывания от АЦП
-  //ADMUX |= (1 << REFS1)|(1 << REFS0); // Внутренний ИОН 2,56V, вход ADC0
-  //
-  //
-  //
-  //	ADCSRA &= ~PS_128;  // remove bits set by Arduino library
-  //
-  //	// you can choose a prescaler from below.
-  //	// PS_16, PS_32, PS_64 or PS_128
-  //	ADCSRA |= PS_128;    // set our own prescaler  установить свой собственный предделитель
-  //
-  //	sei(); // Глобально разрешаем прерывания
-
-  //draw_Glav_Menu();
-
   wait_time_Old =  millis();
   digitalWrite(ledPin13, HIGH);                          //
   digitalWrite(ledPin12, LOW);                           //
   set_adr_EEPROM();
   Serial.println(" ");                                   //
   Serial.println("System initialization OK!.");          // Информация о завершении настройки
-  //set_komm_mcp(2,44,2);
+
 }
 
 void loop()
 {
-
   draw_Glav_Menu();
   swichMenu();
-  //test_all_pin();
-  // test_cabel_N1();
-  //delay(100);
 }
